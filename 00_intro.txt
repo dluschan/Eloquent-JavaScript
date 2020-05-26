@@ -158,37 +158,19 @@ JavaScript поддерживают не только браузеры. Базы
 
 ifdef::interactive_target[]
 
-When reading this book in your browser, you can edit (and run) all
-example programs by clicking them.
+Читая эту книгу в браузере, вы можете редактировать (и запускать) все примеры программ просто кликая по ним.
 
 endif::interactive_target[]
 
 ifdef::book_target[]
 
-(((download)))(((sandbox)))(((running code)))The easiest way to run
-the example code in the book, and to experiment with it, is to look it
-up in the online version of the book at
-http://eloquentjavascript.net/[_eloquentjavascript.net_]. There, you
-can click any code example to edit and run it and to see the
-output it produces. To work on the exercises, go to
-http://eloquentjavascript.net/2nd_edition/code[_eloquentjavascript.net/2nd_edition/code_],
-which provides starting code for each coding exercise and allows you
-to look at the solutions.
+Самый простой способ запустить пример программы из этой книги и поэкспериментировать с ним - это посмотреть их в онлайн версии книги http://eloquentjavascript.net/[_eloquentjavascript.net_]. Здесь вы можете просто кликнуть в код любого примера, чтобы отредактировать и запустить его, а также увидеть результат его работы. Чтобы выполнять задания, перейдите на страницу http://eloquentjavascript.net/2nd_edition/code[_eloquentjavascript.net/2nd_edition/code_], которая предоставляет шаблон кода для каждого упражнения и позволяет вам увидеть решения.
 
 endif::book_target[]
 
-(((developer tools)))(((JavaScript console)))If you want to run the
-programs defined in this book outside of the book's sandbox, some care
-is required. Many examples stand on their own and should work in any
-JavaScript environment. But code in later chapters is mostly written
-for a specific environment (the browser or Node.js) and can run only
-there. In addition, many chapters define bigger programs, and the
-pieces of code that appear in them depend on each other or on external
-files. The http://eloquentjavascript.net/2nd_edition/code[sandbox] on the website
-provides links to Zip files containing all of the scripts and data
-files necessary to run the code for a given chapter.
+Если вы хотите запускать программы, описанные в этой книге, за пределами песочницы книги, потребуются дополнительные усилия. Многие примеры самодостаточны и должны работать в любой среде JavaScript. Но код в следующих главах в основном написан для конкретной среды (браузера или Node.js) и может выполняться только в них. Кроме того, многие главы определяют крупные программы, фрагменты кода которых зависят друг от друга или от внешних файлов. На сайте http://eloquentjavascript.net/2nd_edition/code[песочницы] находятся ссылки на Zip-архивы со сценариями и данными, необходимыми для запуска кода из соответствующей главы.
 
-== Overview of this book ==
+== Обзор книги ==
 
 This book contains roughly three parts. The first 11 chapters discuss
 the JavaScript language itself. The next eight chapters are about web
@@ -247,13 +229,9 @@ speed.
 
 endif::commercial_target[]
 
-== Typographic conventions ==
+== Типографские соглашения ==
 
-(((factorial function)))In this book, text written in a `monospaced`
-font will represent elements of programs—sometimes
-they are self-sufficient fragments, and sometimes they just refer to
-part of a nearby program. Programs (of which you have already seen a
-few), are written as follows:
+В этой книге текст, написанный `моноширинным` шрифтом представляет собой элементы программ. Иногда они самодостаточны, а иногда просто ссылаются на части ближайших программ. Программы (несколько из них вы уже видели) записываются следующим образом:
 
 [source,javascript]
 ----
@@ -265,9 +243,7 @@ function fac(n) {
 }
 ----
 
-(((console.log)))Sometimes, in order to show the output that a program
-produces, the expected output is written after it, with two slashes
-and an arrow in front.
+Иногда, чтобы показать ожидаемый вывод программы, он записывается после неё с двумя косыми чертами и стрелкой впереди.
 
 [source,javascript]
 ----
@@ -275,4 +251,4 @@ console.log(fac(8));
 // → 40320
 ----
 
-Good luck!
+Удачи!
