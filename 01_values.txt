@@ -3,297 +3,156 @@
 :next_link: 02_program_structure
 :docid: values
 
-= Values, Types, and Operators =
+= Величины, типы и операторы =
 
 [chapterquote="true"]
-[quote, Master Yuan-Ma, The Book of Programming]
+[quote, Мастер Юан-Ма, Книга Программирования]
 ____
-Below the surface of the
-machine, the program moves. Without effort, it expands and contracts.
-In great harmony, electrons scatter and regroup. The forms on the
-monitor are but ripples on the water. The essence stays invisibly
-below.
+Под поверхностью машины движется программа. Без усилий, она расширяется и сжимается. Находясь в великой гармонии, электроны рассеиваются и собираются. Формы на мониторе – лишь рябь на воде. Суть остаётся скрытой внутри…
 ____
 
-(((Yuan-Ma)))(((Book of Programming)))(((binary
-data)))(((data)))(((bit)))(((memory)))Inside the computer's world,
-there is only data. You can read data, modify data, create new
-data—but anything that isn't data simply does not exist. All this data
-is stored as long sequences of bits and is thus fundamentally alike.
+(((Yuan-Ma)))(((Book of Programming)))(((binary data)))(((data)))(((bit)))(((memory)))В компьютерном мире есть только данные. Можно читать данные, изменять данные, создавать новые – но кроме данных ничего нет. Все данные хранятся как длинные последовательности бит, этим они сходны между собой.
 
-(((CD)))(((signal)))Bits are any kind of two-valued things, usually
-described as zeros and ones. Inside the computer, they take forms
-such as a high or low electrical charge, a strong or weak signal, or a
-shiny or dull spot on the surface of a CD. Any piece of discrete
-information can be reduced to a sequence of zeros and ones and thus
-represented in bits.
+(((CD)))(((signal)))Биты – это сущности с двумя состояниями, обычно описываемые как нули и единицы. В компьютере они живут в виде высоких и низких электрических зарядов, сильного или слабого сигнала, или блестящего и матового участка на поверхности CD. Каждая часть информации может быть представлена в виде последовательности нулей и единиц, то есть бит.
 
-(((binary number)))(((radix)))(((decimal number)))For example, think
-about how you might show the number 13 in bits. It works the same way
-you write decimal numbers, but instead of 10 different ((digit))s, you
-have only 2, and the weight of each increases by a factor of 2 from
-right to left. Here are the bits that make up the number 13, with the
-weights of the digits shown below them:
+(((binary number)))(((radix)))(((decimal number)))К примеру, число 13. Вместо десятичной системы, состоящей из 10 цифр, у вас есть двоичная система с двумя ((цифра))ми. Значение каждой позиции числа удваивается при движении справа налево. Биты, составляющие число 13, вместе с их весами:
 
 ----
    0   0   0   0   1   1   0   1
  128  64  32  16   8   4   2   1
 ----
 
-So that's the binary number 00001101, or 8 + 4 + 1, which equals 13.
+Получается двоичное число 00001101, или 8 + 4 + 1, что равно 13.
 
-== Values ==
+== Величины ==
 
-(((memory)))(((volatile data storage)))(((hard drive)))Imagine a sea of
-bits. An ocean of them. A typical modern computer has more than 30
-billion bits in its volatile data storage. Nonvolatile storage (the
-hard disk or equivalent) tends to have yet a few orders of magnitude
-more.
+(((memory)))(((volatile data storage)))(((hard drive)))Представьте океан бит. Типичный современный компьютер хранит более 30 миллиардов бит в оперативной памяти. Постоянная память (жёсткий диск) обычно ещё на пару порядков объёмнее.
 
 image::img/bit-sea.png[alt="The Ocean of Bits"]
 
-To be able to work with such quantities of bits without getting lost,
-you can separate them into chunks that represent pieces of
-information. In a JavaScript environment, those chunks are called
-_((value))s_. Though all values are made of bits, they play different
-roles. Every value has a ((type)) that determines its role. There are
-six basic types of values in JavaScript: numbers, strings, Booleans,
-objects, functions, and undefined values.
+Чтобы работать с ними и не заблудиться, вы можете делить их на куски, представляющие единицы информации. В JavaScript эти единицы называются _((величина))ми_. Все их значения состоят из бит, но играют разные роли. У каждой величины есть ((тип)), определяющий его роль. Всего есть шесть основных типов: числа, строки, булевые величины, объекты, функции и неопределённые величины.
 
-(((garbage collection)))To create a value, you must merely invoke its
-name. This is convenient. You don't have to gather building material
-for your values or pay for them. You just call for one, and _woosh_,
-you have it. They are not created from thin air, of course. Every
-value has to be stored somewhere, and if you want to use a gigantic
-amount of them at the same time, you might run out of bits.
-Fortunately, this is a problem only if you need them all
-simultaneously. As soon as you no longer use a value, it will
-dissipate, leaving behind its bits to be recycled as building material
-for the next generation of values.
+(((garbage collection)))Для создания величины вам нужно указать её имя. Это удобно. Вам не надо собирать стройматериалы или платить за них. Нужно просто позвать – и _оп-па_, готово. Они не создаются из воздуха – каждая величина где-то хранится, и если вы хотите использовать огромное их количество, у вас могут закончиться биты. К счастью, это только если они все нужны вам одновременно. Когда величина вам станет не нужна, она растворяется, и использованные ею биты поступают в переработку как стройматериал для новых величин.
 
-This chapter introduces the atomic elements of JavaScript programs,
-that is, the simple value types and the operators that can act on such
-values.
+В этой главе мы знакомимся с атомами программ JavaScript – это простые типы величин и операторы, которые к ним применимы.
 
-== Numbers ==
+== Числа ==
 
-(((syntax)))(((number)))(((number,notation)))Values of the
-_number_ type are, unsurprisingly, numeric values. In a JavaScript
-program, they are written as follows:
+(((syntax)))(((number)))(((number,notation)))Величины _числовых_ типов, это – сюрприз – числа. В программе JavaScript они записываются как:
 
 [source,javascript]
 ----
 13
 ----
 
-(((binary number)))Use that in a program, and it will cause the bit
-pattern for the number 13 to come into existence inside the computer's
-memory.
+(((binary number)))Используйте эту запись в программе, и она вызовет к жизни в компьютерной памяти цепочку бит, представляющую число 13.
 
-(((number,representation)))(((bit)))JavaScript uses a fixed
-number of bits, namely 64 of them, to store a single number value.
-There are only so many patterns you can make with 64 bits, which means
-that the amount of different numbers that can be represented is
-limited. For _N_ decimal ((digit))s, the amount of numbers that can be
-represented is 10^_N_^. Similarly, given 64 binary digits, you can
-represent 2^64^ different numbers, which is about 18 quintillion (an
-18 with 18 zeros after it). This is a lot.
+(((number,representation)))(((bit)))JavaScript использует фиксированное число бит (64) для хранения численных величин. Число величин, которые можно выразить при помощи 64 бит, ограничено – то есть и сами числа тоже ограничены. Для _N_ десятичных ((цифр)) количество чисел, которые ими можно записать, равно 10^_N_^. Аналогично, 64 битами можно выразить 2^64^ чисел, что составляет около 18 квинтиллионов (это 18 с 18 нулями). Это довольно много.
 
-Computer memory used to be a lot smaller, and people tended to use
-groups of 8 or 16 bits to represent their numbers. It was easy to
-accidentally _((overflow))_ such small numbers—to end up with a number
-that did not fit into the given amount of bits. Today, even personal
-computers have plenty of memory, so you are free to use 64-bit chunks,
-which means you need to worry about overflow only when dealing with
-truly astronomical numbers.
+Раньше у компьютеров памяти было меньше, и тогда для хранения чисел использовали группы из 8 или 16 бит. Было легко случайно превысить максимальное число для таких небольших чисел – то есть, использовать число, которое не помещалось в этот набор бит и происходило _((переполнение))_. Сегодня у компьютеров памяти много, можно использовать куски по 64 бит, и значит вам надо беспокоиться об этом только, если вы работаете с астрономическими числами.
 
-(((sign)))(((floating-point number)))(((fractional number)))(((sign bit)))Not
-all whole numbers below 18 quintillion fit in a JavaScript number,
-though. Those bits also store negative numbers, so one bit indicates
-the sign of the number. A bigger issue is that nonwhole numbers must
-also be represented. To do this, some of the bits are used to store
-the position of the decimal point. The actual maximum whole number
-that can be stored is more in the range of 9 quadrillion (15 zeros),
-which is still pleasantly huge.
+(((sign)))(((floating-point number)))(((fractional number)))(((sign bit)))Правда, не все числа меньше 18 квинтиллионов помещаются в число JavaScript. В этих битах также хранятся отрицательные числа – поэтому, один бит хранит знак числа. Кроме того, нам нужно иметь возможность хранить дроби. Для этого часть бит используется для хранения позиции десятичной точки. Реальный максимум для чисел – примерно 9 квадриллионов (число с 15 нулями), что в общем всё равно довольно много.
 
-(((number,notation)))Fractional numbers are written by using a
-dot.
+(((number,notation)))Дроби записываются с помощью точки.
 
 [source,javascript]
 ----
 9.81
 ----
 
-(((exponent)))(((scientific notation)))(((number,notation)))For
-very big or very small numbers, you can also use scientific notation
-by adding an “e” (for “exponent”), followed by the exponent of the
-number:
+(((exponent)))(((scientific notation)))(((number,notation)))Очень большие или маленькие числа записываются научной записью с буквой “e” (“exponent”), за которой следует степень:
 
 [source,javascript]
 ----
 2.998e8
 ----
 
-That is 2.998 × 10^8^ = 299,800,000.
+Это 2.998 × 10^8^ = 299,800,000.
 
-(((pi)))(((number,precision of)))(((floating-point
-number)))Calculations with whole numbers (also called _((integer))s_)
-smaller than the aforementioned 9 quadrillion are guaranteed to always
-be precise. Unfortunately, calculations with fractional numbers are
-generally not. Just as π (pi) cannot be precisely expressed by a
-finite number of decimal digits, many numbers lose some precision when
-only 64 bits are available to store them. This is a shame, but it
-causes practical problems only in specific situations. The important
-thing is to be aware of it and treat fractional digital numbers as
-approximations, not as precise values.
+(((pi)))(((number,precision of)))(((floating-point number)))Вычисления с целыми числами (которые также называются _((integer))_), меньшими, чем 9 квадриллионов, гарантировано будут точными. Вычисления с дробями обычно нет. Так же, как число π (пи) нельзя представить точно при помощи конечного числа цифр, так и многие дроби нельзя представить в случае, когда у нас есть только 64 бита. Плохо, но это мешает в очень специфических случаях. Важно помнить об этом и относиться к дробям как к приближённым значениям.
 
-=== Arithmetic ===
+=== Арифметика ===
 
-(((syntax)))(((operator)))(((binary
-operator)))(((arithmetic)))(((addition)))(((multiplication))) The main
-thing to do with numbers is arithmetic. Arithmetic operations such as
-addition or multiplication take two number values and produce a new
-number from them. Here is what they look like in JavaScript:
+(((syntax)))(((operator)))(((binary operator)))(((arithmetic)))(((addition)))(((multiplication)))Главное, что можно делать с числами – это арифметические вычисления. Сложения и умножения используют два числа и выдают третье. Как это записывается в JavaScript:
 
 [source,javascript]
 ----
 100 + 4 * 11
 ----
 
-(((operator,application)))(((asterisk)))(((plus
-character)))(((pass:[*] operator)))(((+ operator)))The `+` and `*`
-symbols are called _operators_. The first stands for addition, and the
-second stands for multiplication. Putting an operator between two
-values will apply it to those values and produce a new value.
+(((operator,application)))(((asterisk)))(((plus character)))(((pass:[*] operator)))(((+ operator)))Символы `+` и `*` называются _операторами_. Первый – сложение, второй – умножение. Помещаем оператор между двумя величинами и получаем значение выражения.
 
-(((grouping)))(((parentheses)))(((precedence)))Does the example mean
-“add 4 and 100, and multiply the result by 11”, or is the
-multiplication done before the adding? As you might have guessed, the
-multiplication happens first. But as in mathematics, you can change
-this by wrapping the addition in parentheses.
+(((grouping)))(((parentheses)))(((precedence)))А в примере получается “сложить 4 и 100 и затем умножить результат на 11” или умножение выполняется сначала? Как вы могли догадаться, умножение выполняется первым. Но как и в математике, это можно изменить при помощи скобок:
 
 [source,javascript]
 ----
 (100 + 4) * 11
 ----
 
-(((dash character)))(((slash
-character)))(((division)))(((subtraction)))(((minus)))(((-
-operator)))(((/ operator)))For subtraction, there is the `-` operator,
-and division can be done with the `/` operator.
+(((dash character)))(((slash character)))(((division)))(((subtraction)))(((minus)))(((- operator)))(((/ operator)))Для вычитания используется оператор `-`, а для деления — `/`.
 
-When operators appear together without parentheses, the order in which
-they are applied is determined by the _((precedence))_ of the
-operators. The example shows that multiplication comes before
-addition. The `/` operator has the same precedence as `*`. Likewise
-for `+` and `-`. When multiple operators with the same precedence
-appear next to each other, as in `1 - 2 + 1`, they are applied left
-to right: `(1 - 2) + 1`.
+Когда операторы используются без скобок, порядок их выполнения определяется их _((приоритет))ом_. У операторов `*` и `/` приоритет одинаковый, выше, чем у `+` и `-`, которые между собой равны по приоритету. При вычислении операторов с равным приоритетом, например, `1 - 2 + 1`, они вычисляются слева направо: `(1 - 2) + 1`.
 
-These rules of precedence are not something you should worry about.
-When in doubt, just add parentheses.
+Пока беспокоиться о приоритетах не надо. Если сомневаетесь – используйте скобки.
 
-(((modulo operator)))(((division)))(((remainder operator)))(((%
-operator)))There is one more arithmetic operator, which you might not
-immediately recognize. The `%` symbol is used to represent the
-_remainder_ operation. `X % Y` is the remainder of dividing `X` by
-`Y`. For example, `314 % 100` produces `14`, and `144 % 12` gives `0`.
-Remainder's precedence is the same as that of multiplication and
-division. You'll often see this operator referred to as _modulo_,
-though technically _remainder_ is more accurate.
+(((modulo operator)))(((division)))(((remainder operator)))(((% operator)))Есть ещё один оператор, который вы не сразу узнаете. Символ `%` используется для получения _остатка_. `X % Y` – остаток от деления `X` на `Y`. `314 % 100` даёт `14`, и `144 % 12` даёт `0`. Приоритет у оператора такой же, как у умножения и деления. Его ещё часто называют _модулем_, хотя более правильно _остатком_.
 
-=== Special numbers ===
+=== Специальные числа ===
 
-(((number,special values)))There are three special values in
-JavaScript that are considered numbers but don't behave like normal
-numbers.
+(((number,special values)))В JavaScript есть три специальных значения, которые считаются числами, но ведут себя не как обычные числа.
 
-(((infinity)))The first two are `Infinity` and `-Infinity`, which
-represent the positive and negative infinities. `Infinity - 1` is
-still `Infinity`, and so on. Don't put too much trust in
-infinity-based computation. It isn't mathematically solid, and it will
-quickly lead to our next special number: `NaN`.
+(((infinity)))Это `Infinity` и `-Infinity`, которые представляют положительную и отрицательную бесконечности. `Infinity — 1` всё ещё `Infinity`, и так далее. Не надейтесь сильно на вычисления с бесконечностями, они не слишком строгие.
 
-(((NaN)))(((not a number)))(((division by zero)))`NaN` stands for “not
-a number”, even though it is a value of the number type. You'll get
-this result when you, for example, try to calculate `0 / 0` (zero
-divided by zero), `Infinity - Infinity`, or any number of other
-numeric operations that don't yield a precise, meaningful result.
+(((NaN)))(((not a number)))(((division by zero)))Третье значение: NaN. Обозначает “not a number” (не число), хотя это величина числового типа. Вы можете получить её после вычислений типа `0 / 0`, `Infinity – Infinity`, или других операций, которые не ведут к точным осмысленным результатам.
 
-== Strings ==
+== Строки ==
 
-(((syntax)))(((text)))(((character)))(((string,notation)))(((single-quote
-character)))(((double-quote character)))(((quotation mark)))The next
-basic data type is the _((string))_. Strings are used to represent
-text. They are written by enclosing their content in quotes.
+(((syntax)))(((text)))(((character)))(((string,notation)))(((single-quote character)))(((double-quote character)))(((quotation mark)))
+Следующий базовый тип данных – _((строка))_. Они используются для хранения текста. Записываются они в кавычках:
 
 [source,javascript]
 ----
-"Patch my boat with chewing gum"
-'Monkeys wave goodbye'
+"Что посеешь, то из пруда"
+'Баба с возу, потехе час'
 ----
 
-Both single and double quotes can be used to mark strings as long as
-the quotes at the start and the end of the string match.
+Можно использовать как двойные, так и одинарные кавычки – главное использовать их вместе.
 
-(((line break)))(((newline character)))Almost anything can be put
-between quotes, and JavaScript will make a string value out of it. But
-a few characters are more difficult. You can imagine how putting
-quotes between quotes might be hard. _Newlines_ (the characters you
-get when you press Enter) also can't be put between quotes. The string
-has to stay on a single line.
+(((line break)))(((newline character)))Почти всё можно заключить в кавычки и сделать из этого строку. Но некоторые символы вызывают проблемы. Например, сложно заключить кавычки в кавычки. _Перевод строки_ тоже нельзя просто так заключить в них – строка должна идти одной строкой.
 
-(((escaping,in strings)))(((backslash character)))To make it possible to include
-such characters in a string, the following notation is used: whenever
-a backslash (`\`) is found inside quoted text, it indicates that the
-character after it has a special meaning. This is called _escaping_
-the character. A quote that is preceded by a backslash will not end
-the string but be part of it. When an `n` character occurs after a
-backslash, it is interpreted as a newline. Similarly, a `t` after a
-backslash means a ((tab character)). Take the following string:
+(((escaping,in strings)))(((backslash character)))Для заключения специальных символов используется обратный слеш `\`. Он обозначает, что символ, идущий за ним, имеет специальное значение – это называется _экранирование_ (“_escape_”) символов. `\”` можно заключать в двойные кавычки. `\n` обозначает перевод строки, `\t` – это ((табуляция)). Следующая строка:
 
 [source,javascript]
 ----
-"This is the first line\nAnd this is the second"
+"Между первой и второй\nсимвол будет небольшой"
 ----
 
-The actual text contained is this:
+на самом деле будет выглядеть так:
 
 ----
-This is the first line
-And this is the second
+Между первой и второй
+символ будет небольшой
 ----
 
-There are, of course, situations where you want a backslash in a
-string to be just a backslash, not a special code. If two backslashes
-follow each other, they will collapse together, and only one will be
-left in the resulting string value. This is how the string “++A newline
-character is written like "\n".++” can be expressed:
+Если вам нужно включить в строку обратный слеш, его тоже нужно экранировать: `\\`. Инструкцию “++Символ новой строки — это "\n".++” нужно будет написать так:
 
 [source,javascript]
 ----
-"A newline character is written like \"\\n\"."
+"Символ новой строки — это \"\\n\"."
 ----
 
-(((+ operator)))(((concatenation)))Strings cannot be divided,
-multiplied, or subtracted, but the `+` operator _can_ be used on them.
-It does not add, but it __concatenates__—it glues two strings together.
-The following line will produce the string `"concatenate"`:
+(((+ operator)))(((concatenation)))Строки нельзя делить, умножать и вычитать. Однако с ними _можно_ использовать оператор `+`, который будет _соединять_ их друг с другом. Следующее выражение выдаст слово `"соединение"`:
 
 [source,javascript]
 ----
-"con" + "cat" + "e" + "nate"
+"сое" + "ди" + "н" + "ение
 ----
 
-There are more ways of manipulating strings, which we will discuss
-when we get to methods in link:04_data.html#methods[Chapter 4].
+Есть много способов манипуляций со строками, которые мы обсудим в link:04_data.html#methods[Главе 4].
 
-== Unary operators ==
+== Унарные операторы ==
 
-(((operator)))(((typeof operator)))(((type)))Not all operators are
-symbols. Some are written as words. One example is the `typeof`
-operator, which produces a string value naming the type of the value
-you give it.
+(((operator)))(((typeof operator)))(((type)))Не все операторы записываются символами – некоторые словами. Один из таких операторов – `typeof`, который выдаёт название типа величины, к которой он применяется.
 
 [source,javascript]
 ----
@@ -305,18 +164,9 @@ console.log(typeof "x")
 
 [[console.log]]
 
-(((console.log)))(((output)))(((JavaScript console)))We will use
-`console.log` in example code to indicate that we want to see the
-result of evaluating something. When you run such code, the value
-produced should be shown on the screen, though how it appears will
-depend on the JavaScript environment you use to run it.
+(((console.log)))(((output)))(((JavaScript console)))Будем использовать вызов `console.log` в примерах, когда захотим увидеть результат на экране. Как именно будет выдан результат – зависит от окружения, в котором вы запускаете скрипт.
 
-(((negation)))(((- operator)))(((binary operator)))(((unary
-operator)))The other operators we saw all operated on two values, but
-`typeof` takes only one. Operators that use two values are called
-_binary_ operators, while those that take one are called _unary_
-operators. The minus operator can be used both as a binary operator
-and as a unary operator.
+(((negation)))(((- operator)))(((binary operator)))(((unary operator)))Предыдущие операторы работали с двумя величинами, однако `typeof` использует только одну. Операторы, работающие с двумя величинами, называются _бинарными_, а с одной – _унарными_. Минус (вычитание) можно использовать и как унарный, и как бинарный.
 
 [source,javascript]
 ----
@@ -324,17 +174,13 @@ console.log(- (10 - 2))
 // → -8
 ----
 
-== Boolean values ==
+== Булевские величины ==
 
-(((Boolean)))(((operator)))(((true)))(((false)))(((bit)))Often,
-you will need a value that simply distinguishes between two
-possibilities, like “yes” and “no” or “on” and “off”. For this,
-JavaScript has a _Boolean_ type, which has just two values: true and
-false (which are written simply as those words).
+(((Boolean)))(((operator)))(((true)))(((false)))(((bit)))Часто вам нужна величина, которая просто показывает одну из двух возможностей – типа “да” и “нет”, или “вкл” и “выкл”. Для этого в JavaScript есть тип _Boolean_, у которого есть всего два значения – true и false (правда и ложь).
 
-=== Comparisons ===
+=== Сравнения ===
 
-(((comparison)))Here is one way to produce Boolean values:
+(((comparison)))Один из способов получить булевские величины:
 
 [source,javascript]
 ----
@@ -344,46 +190,27 @@ console.log(3 < 2)
 // → false
 ----
 
-(((comparison,of numbers)))(((> operator)))(((< operator)))(((greater
-than)))(((less than)))The `>` and `<` signs are the traditional
-symbols for “is greater than” and “is less than”, respectively. They
-are binary operators. Applying them results in a Boolean value that
-indicates whether they hold true in this case.
+(((comparison,of numbers)))(((> operator)))(((< operator)))(((greater than)))(((less than)))Знаки `<` и `>` традиционно обозначают “меньше” и “больше”. Это бинарные операторы. В результате их использования мы получаем булевскую величину, которая показывает, является ли неравенство верным.
 
-Strings can be compared in the same way.
+Строки можно сравнивать так же.
 
 [source,javascript]
 ----
-console.log("Aardvark" < "Zoroaster")
+console.log("Арбуз" < "Яблоко")
 // → true
 ----
 
-(((comparison,of strings)))The way strings are ordered is more or less
-alphabetic: uppercase letters are always “less” than lowercase ones,
-so `"Z" < "a"` is true, and non-alphabetic characters (!, -, and so on)
-are also included in the ordering. The actual comparison is based on
-the _((Unicode))_ standard. This standard assigns a number to
-virtually every character you would ever need, including characters
-from Greek, Arabic, Japanese, Tamil, and so on. Having such numbers is
-useful for storing strings inside a computer because it makes it
-possible to represent them as a sequence of numbers. When comparing
-strings, JavaScript goes over them from left to right, comparing the
-numeric codes of the characters one by one.
+(((comparison,of strings)))Строки сравниваются по алфавиту: буквы в верхнем регистре всегда “меньше” букв в нижнем регистре. Сравнение основано на стандарте _((Unicode))_. Этот стандарт присваивает номер практически любому символу из любого языка. Во время сравнения строк JavaScript проходит по их символам слева направо, сравнивая номерные коды этих символов.
 
-(((equality)))(((>= operator)))(((pass:[<=] operator)))(((==
-operator)))(((!= operator)))Other similar operators are `>=` (greater
-than or equal to), `<=` (less than or equal to), `==` (equal to), and
-`!=` (not equal to).
+(((equality)))(((>= operator)))(((pass:[<=] operator)))(((== operator)))(((!= operator)))Другие сходные операторы – это `>=` (больше или равно), `<=` (меньше или равно), `==` (равно), `!=` (не равно).
 
 [source,javascript]
 ----
-console.log("Itchy" != "Scratchy")
+console.log("Хочется" != "Колется")
 // → true
 ----
 
-(((comparison,of NaN)))(((NaN)))There is only one value in JavaScript
-that is not equal to itself, and that is `NaN`, which stands for “not
-a number”.
+(((comparison,of NaN)))(((NaN)))В JavaScript есть только одна величина, которая не равна самой себе – `NaN` (“не число”).
 
 [source,javascript]
 ----
@@ -391,20 +218,14 @@ console.log(NaN == NaN)
 // → false
 ----
 
-`NaN` is supposed to denote the result of a nonsensical computation,
-and as such, it isn't equal to the result of any _other_ nonsensical
-computations.
+`NaN` – это результат любого бессмысленного вычисления, поэтому он не равен результату какого-то _другого_ бессмысленного вычисления.
 
-=== Logical operators ===
+=== Логические операторы ===
 
-(((reasoning)))(((logical operators)))There are also some operations
-that can be applied to Boolean values themselves. JavaScript supports
-three logical operators: _and_, _or_, and _not_. These can be used to
-“reason” about Booleans.
+(((reasoning)))(((logical operators)))Есть операции, которые можно совершать и с самими булевскими значениями. JavaScript поддерживает три логических оператора: _и_, _или_, _нет_.
+There are also some operations that can be applied to Boolean values themselves. JavaScript supports three logical operators: _and_, _or_, and _not_. These can be used to “reason” about Booleans.
 
-(((&& operator)))(((logical and)))The `&&` operator represents logical
-_and_. It is a binary operator, and its result is true only if both
-the values given to it are true.
+(((&& operator)))(((logical and)))Оператор `&&` — логическое _и_. Он бинарный, и его результат – правда, только если обе величины, к которым он применяется, тоже правда.
 
 [source,javascript]
 ----
@@ -414,8 +235,7 @@ console.log(true && true)
 // → true
 ----
 
-(((|| operator)))(((logical or)))The `||` operator denotes logical
-_or_. It produces true if either of the values given to it is true.
+(((|| operator)))(((logical or)))Оператор `||` — логическое _или_. Выдаёт true, если одна из величин true.
 
 [source,javascript]
 ----
@@ -425,29 +245,16 @@ console.log(false || false)
 // → false
 ----
 
-(((negation)))(((! operator)))_Not_ is written as an exclamation mark
-(`!`). It is a unary operator that flips the value given to it—`!true`
-produces `false` and `!false` gives `true`.
+(((negation)))(((! operator)))_Нет_ записывается при помощи восклицательного знака (`!`). Это унарный оператор, который обращает данную величину на обратную. `!true` получается `false`, `!false` получается `true`.
 
-(((precedence)))When mixing these Boolean operators with arithmetic
-and other operators, it is not always obvious when parentheses are
-needed. In practice, you can usually get by with knowing that of the
-operators we have seen so far, `||` has the lowest precedence, then
-comes `&&`, then the comparison operators (`>`, `==`, and so on), and
-then the rest. This order has been chosen such that, in typical
-expressions like the following one, as few parentheses as possible are
-necessary:
+(((precedence)))При использовании логических и арифметических операторов не всегда ясно, когда нужны скобки. На практике вы можете справиться с этим, зная, что у `||` приоритет ниже всех, потом идёт `&&`, потом операторы сравнения, потом все остальные. Такой порядок был выбран для того, чтобы в выражениях типа следующего можно было использовать скобок по минимуму:
 
 [source,javascript]
 ----
 1 + 1 == 2 && 10 * 10 > 50
 ----
 
-(((conditional execution)))(((ternary operator)))(((?:
-operator)))(((conditional operator)))(((colon character)))(((question
-mark)))The last logical operator I will discuss is not unary, not
-binary, but _ternary_, operating on three values. It is written with a
-question mark and a colon, like this:
+(((conditional execution)))(((ternary operator)))(((?: operator)))(((conditional operator)))(((colon character)))(((question mark)))Последний логический оператор не унарный и не бинарный – он _тернарный_ (_тройной_). Записывается при помощи вопросительного знака и двоеточия:
 
 [source,javascript]
 ----
@@ -457,34 +264,19 @@ console.log(false ? 1 : 2);
 // → 2
 ----
 
-This one is called the _conditional_ operator (or sometimes just
-_ternary_ operator since it is the only such operator in the
-language). The value on the left of the question mark “picks” which of
-the other two values will come out. When it is true, the middle value
-is chosen, and when it is false, the value on the right comes out.
+Это _условный_ оператор, у которого величина слева от вопросительного знака выбирает одну из двух величин, разделённых двоеточием. Когда величина слева true, выбираем первое значение. Когда false, второе.
 
-== Undefined values ==
+== Неопределённые значения ==
 
-(((undefined)))(((null)))There are two special values, written `null`
-and `undefined`, that are used to denote the absence of a meaningful
-value. They are themselves values, but they carry no
-information.
+(((undefined)))(((null)))Существуют два специальных значения, `null` и `undefined`, которые используются для обозначения отсутствия осмысленного значения. Сами по себе они никакой информации не несут.
 
-Many operations in the language that don't produce a meaningful value
-(you'll see some later) yield `undefined` simply because they have to
-yield _some_ value.
+Много операторов, которые не выдают значения, возвращают `undefined` просто для того, чтобы _что-то_ вернуть.
 
-The difference in meaning between `undefined` and `null` is an accident
-of JavaScript's design, and it doesn't matter most of the time. In the cases
-where you actually have to concern yourself with these values, I
-recommend treating them as interchangeable (more on that in a moment).
+Разница между `undefined` и `null` появилась в языке случайно, и обычно не имеет значения.
 
-== Automatic type conversion ==
+== Автоматическое преобразование типов ==
 
-(((NaN)))(((type coercion)))In the introduction, I mentioned that
-JavaScript goes out of its way to accept almost any program you give
-it, even programs that do odd things. This is nicely demonstrated by
-the following expressions:
+(((NaN)))(((type coercion)))Ранее я упоминал, что JavaScript позволяет выполнять любые, подчас очень странные программы. К примеру:
 
 [source,javascript]
 ----
@@ -494,38 +286,17 @@ console.log("5" - 1)
 // → 4
 console.log("5" + 1)
 // → 51
-console.log("five" * 2)
+console.log("пять" * 2)
 // → NaN
 console.log(false == 0)
 // → true
 ----
 
-(((+ operator)))(((arithmetic)))(((pass:[*] operator)))(((-
-operator)))When an operator is applied to the “wrong” type of value,
-JavaScript will quietly convert that value to the type it wants, using
-a set of rules that often aren't what you want or expect. This is
-called _((type coercion))_. So the `null` in the first expression becomes
-`0`, and the `"5"` in the second expression becomes `5` (from string
-to number). Yet in the third expression, `+` tries string
-concatenation before numeric addition, so the `1` is converted to
-`"1"` (from number to string).
+(((+ operator)))(((arithmetic)))(((pass:[*] operator)))(((- operator)))Когда оператор применяется “не к тому” типу величин, JavaScript втихую преобразовывает величину к нужному типу, используя набор правил, которые не всегда соответствуют вашим ожиданиям. Это называется _((приведение типов))_ (_type coercion_). В первом выражении `null` превращается в `0`, а `"5"` становится `5` (из строки – в число). Однако в третьем выражении `+` выполняет конкатенацию (объединение) строк, из-за чего `1` преобразовывается в `"1"` (из числа в строку).
 
-(((type coercion)))(((number,conversion to)))When something that
-doesn't map to a number in an obvious way (such as `"five"` or
-`undefined`) is converted to a number, the value `NaN` is produced.
-Further arithmetic operations on `NaN` keep producing `NaN`, so if you
-find yourself getting one of those in an unexpected place, look for
-accidental type conversions.
+(((type coercion)))(((number,conversion to)))Когда что-то неочевидное превращается в номер (к примеру, `"пять"` или `undefined`), возвращается значение `NaN`. Последующие арифметические операции с `NaN` опять получают `NaN`. Если вы получили такое значение, поищите, где произошло случайное преобразование типов.
 
-(((null)))(((undefined)))(((comparison,of undefined values)))(((==
-operator)))When comparing values of the same type using `==`, the
-outcome is easy to predict: you should get true when both values are
-the same, except in the case of `NaN`. But when the types differ,
-JavaScript uses a complicated and confusing set of rules to determine
-what to do. In most cases, it just tries to convert one of the values
-to the other value's type. However, when `null` or `undefined` occurs
-on either side of the operator, it produces true only if both sides
-are one of `null` or `undefined`.
+(((null)))(((undefined)))(((comparison,of undefined values)))(((== operator)))При сравнении величин одного типа через `==`, легко предсказать, что вы должны получить true, если они одинаковые (исключая случай с `NaN`). Но когда типы различаются, JavaScript использует сложный и запутанный набор правил для сравнений. Обычно он пытается преобразовать тип одной из величин в тип другой. Когда с одной из сторон оператора возникает `null` или `undefined`, он выдаёт true, если обе стороны имеют значение `null` или `undefined`.
 
 [source,javascript]
 ----
@@ -535,41 +306,17 @@ console.log(null == 0);
 // → false
 ----
 
-That last piece of behavior is often useful. When you want to test
-whether a value has a real value instead of `null` or `undefined`, you
-can simply compare it to `null` with the `==` (or `!=`) operator.
+Последний пример демонстрирует полезный приём. Когда вам надо проверить, имеет ли величина реальное значение вместо `null` или `undefined`, вы просто сравниваете её с `null` при помощи `==` или `!=`.
 
-(((type coercion)))(((Boolean,conversion to)))(((=== operator)))(((!==
-operator)))(((comparison)))But what if you want to test whether
-something refers to the precise value `false`? The rules for
-converting strings and numbers to Boolean values state that `0`,
-`NaN`, and the empty string (`""`) count as `false`, while all the
-other values count as `true`. Because of this, expressions like `0 ==
-false` and `"" == false` are also true. For cases like this, where you
-do _not_ want any automatic type conversions to happen, there are two
-extra operators: `===` and `!==`. The first tests whether a value is
-precisely equal to the other, and the second tests whether it is not
-precisely equal. So `"" === false` is false as expected.
+(((type coercion)))(((Boolean,conversion to)))(((=== operator)))(((!== operator)))(((comparison)))Но что, если вам надо сравнить нечто с точной величиной `false`? Правила преобразования типов в булевские значения говорят, что `0`, `NaN` и пустая строка `""` считаются `false`, а все остальные – `true`. Поэтому `0 == false` и `"" == false`. В случаях, когда вам _не_ нужно автоматическое преобразование типов, можно использовать ещё два оператора: `===` и `!==`. Первый проверяет, что две величины абсолютно идентичны, второй – наоборот. И тогда сравнение `"" === false` возвращает false.
 
-I recommend using the three-character comparison operators defensively to
-prevent unexpected type conversions from tripping you up. But when you're
-certain the types on both sides will be the same, there is no problem with
-using the shorter operators.
+Рекомендую использовать трёхсимвольные операторы сравнения для защиты от неожиданных преобразований типов, которые могут привести к непредсказуемым последствиям. Если вы уверены, что типы сравниваемых величин будут совпадать, можно спокойно использовать короткие операторы.
 
-=== Short-circuiting of logical operators ===
+=== Короткое вычисление логических операторов ===
 
-(((type coercion)))(((Boolean,conversion to)))(((operator)))The
-logical operators `&&` and `||` handle values of different types in a
-peculiar way. They will convert the value on their left side to
-Boolean type in order to decide what to do, but depending on the
-operator and the result of that conversion, they return either the
-_original_ left-hand value or the right-hand value.
+(((type coercion)))(((Boolean,conversion to)))(((operator)))Логические операторы `&&` и `||` работают с величинами разных типов очень странным образом. Они преобразовывают величину с левой стороны оператора в булевскую, чтобы понять, что делать дальше, но в зависимости от оператора и от результата этого преобразования, возвращают либо _оригинальное_ значение с левой или правой части.
 
-(((|| operator)))The `||` operator, for example, will return the value
-to its left when that can be converted to true and will return the
-value on its right otherwise. This conversion works as you'd expect
-for Boolean values and should do something analogous for values of
-other types.
+(((|| operator)))К примеру, `||` вернёт значение с левой части, когда его можно преобразовать в true – а иначе вернёт правую часть.
 
 [source,javascript]
 ----
@@ -579,44 +326,18 @@ console.log("Karl" || "user")
 // → Karl
 ----
 
-(((default value)))This functionality allows the `||` operator to be
-used as a way to fall back on a default value. If you give it an
-expression that might produce an empty value on the left, the value on
-the right will be used as a replacement in that case.
+(((default value)))Такая работа оператора `||` позволяет использовать его как откат к значению по умолчанию. Если вы дадите ему выражение, которое может вернуть пустое значение слева, то значение справа будет служить заменой на этот случай.
 
-(((&& operator)))The `&&` operator works similarly, but the other way
-around. When the value to its left is something that converts to
-false, it returns that value, and otherwise it returns the value on
-its right.
+(((&& operator)))Оператор `&&` работает сходным образом, но наоборот. Если величина слева преобразовывается в false, он возвращает эту величину, а иначе – величину справа.
 
-(((short-circuit evaluation)))Another important property of these two
-operators is that the expression to their right is evaluated only when
-necessary. In the case of `true || X`, no matter what `X` is—even if
-it's an expression that does something __terrible__—the result will be
-true, and `X` is never evaluated. The same goes for `false && X`,
-which is false and will ignore `X`. This is called _short-circuit
-evaluation_.
+(((short-circuit evaluation)))Ещё одно важное их свойство – выражение в правой части вычисляется только при необходимости. В случае `true || X` неважно, чему равно `X`. Даже если это какое-то _ужасное_ выражение. Результат всегда true и `X` не вычисляется. Так же работает `false && X` – `X` просто игнорируется. Это называется _коротким вычислением_.
 
-(((ternary operator)))(((?: operator)))(((conditional operator)))The
-conditional operator works in a similar way. The first expression is
-always evaluated, but the second or third value, the one that is not
-picked, is not.
+(((ternary operator)))(((?: operator)))(((conditional operator)))Оператор условия работает так же. Первое выражение всегда вычисляется, а из второго и третьего значения – только то, которое оказывается выбранным в результате.
 
-== Summary ==
+== Итог ==
 
-We looked at four types of JavaScript values in this chapter: numbers,
-strings, Booleans, and undefined values.
+Мы рассмотрели четыре типа величин JavaScript: числа, строки, булевские и неопределённые.
 
-Such values are created by typing in their name (`true`, `null`) or
-value (`13`, `"abc"`). You can combine and transform values with
-operators. We saw binary operators for arithmetic (`+`, `-`, `*`, `/`,
-and `%`), string concatenation (`+`), comparison (`==`, `!=`, `===`,
-`!==`, `<`, `>`, `<=`, `>=`), and logic (`&&`, `||`), as well as
-several unary operators (`-` to negate a number, `!` to negate
-logically, and `typeof` to find a value's type) and a ternary
-operator (`?:`) to pick one of two values based on a third value.
+Эти величины получаются, когда мы пишем их имена (`true`, `null`) или значения (`13`, `"ёпрст"`). Их можно комбинировать и изменять при помощи операторов. Для арифметики есть бинарные операторы (`+`, `-`, `*`, `/`, and `%`), объединение строк (`+`), сравнение (`==`, `!=`, `===`, `!==`, `<`, `>`, `<=`, `>=`), и логические операторы (`&&`, `||`), так же, как и несколько унарных операторов (`-` для отрицательного значения, `!` для логического отрицания, и `typeof` для определения типа величины) и тернарный оператор (`?:`) для выбора одного из двух значений на основании третьего.
 
-This gives you enough information to use JavaScript as a pocket
-calculator, but not much more. The
-link:02_program_structure.html#program_structure[next chapter] will
-start tying these expressions together into basic programs.
+Эти знания позволяют использовать JavaScript в качестве калькулятора, но и только. В link:02_program_structure.html#program_structure[следующей главе] мы будем связывать эти простые значения вместе, чтобы составлять простые программы.
