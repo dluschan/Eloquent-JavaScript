@@ -2,42 +2,23 @@
 :prev_link: 02_program_structure
 :next_link: 04_data
 
-= Functions =
+= Функции =
 
 [chapterquote="true"]
-[quote, Donald Knuth]
+[quote, Дональд Кнут]
 ____
-People think that computer science is the art of
-geniuses but the actual reality is the opposite, just many people
-doing things that build on each other, like a wall of mini stones.
+Люди считают, что компьютерные науки – это искусство для гениев. В реальности всё наоборот – просто множество людей делают вещи, которые стоят друг на друге, будто составляя стену из маленьких камушков.
 ____
 
-(((Knuth+++,+++ Donald)))(((function)))(((code structure)))You've seen function values, such
-as `alert`, and how to call them. Functions are the bread and butter
-of JavaScript programming. The concept of wrapping a piece of program
-in a value has many uses. It is a tool to structure larger programs,
-to reduce repetition, to associate names with subprograms, and to
-isolate these subprograms from each other.
+(((Knuth+++,+++ Donald)))(((function)))(((code structure)))Вы уже видели вызовы функций, таких как `alert`. Функции – это хлеб с маслом программирования на JavaScript. Идея оборачивания куска программы и вызова её как переменной очень востребована. Это инструмент для структурирования больших программ, уменьшения повторений, назначения имён подпрограммам, и изолирование подпрограмм друг от друга.
 
-(((human language)))The most obvious application of functions is
-defining new ((vocabulary)). Creating new words in regular,
-human-language prose is usually bad style. But in programming, it is
-indispensable.
+(((human language)))Самое очевидное использование функций – создание нового ((словаря)). Придумывать слова для обычной человеческой прозы – дурной тон. В языке программирования это необходимо.
 
-(((abstraction)))Typical adult English speakers have some 20,000 words
-in their vocabulary. Few programming languages come with 20,000
-commands built in. And the vocabulary that _is_ available tends to be
-more precisely defined, and thus less flexible, than in human
-language. Therefore, we usually _have_ to add some of our own
-vocabulary to avoid repeating ourselves too much.
+(((abstraction)))Средний взрослый русскоговорящий человек знает примерно 10000 слов. Редкий язык программирования содержит 10000 встроенных команд. И словарь языка программирования _определён_ чётче, поэтому он менее гибок, чем человеческий. Поэтому нам обычно _приходится_ добавлять в него свои слова, чтобы избежать излишних повторений.
 
-== Defining a function ==
+== Определение функции ==
 
-(((square)))(((function,definition)))A function definition is just a
-regular ((variable)) definition where the value given to the variable
-happens to be a function. For example, the following code defines the
-variable `square` to refer to a function that produces the square of a
-given number:
+(((square)))(((function,definition)))Определение функции – обычное определение ((переменной)), где значение, которое получает переменная, является функцией. Например, следующий код определяет переменную `square`, которая ссылается на функцию, подсчитывающую квадрат заданного числа:
 
 [source,javascript]
 ----
@@ -50,27 +31,18 @@ console.log(square(12));
 ----
 
 indexsee:[braces,curly braces]
-(((curly braces)))(((block)))(((syntax)))(((function
-keyword)))(((function,body)))(((function,as value)))A function is
-created by an expression that starts with the keyword `function`.
-Functions have a set of _((parameter))s_ (in this case, only `x`) and
-a _body_, which contains the statements that are to be executed when
-the function is called. The function body must always be wrapped in
-braces, even when it consists of only a single ((statement)) (as
-in the previous example).
+(((curly braces)))(((block)))(((syntax)))(((function keyword)))(((function,body)))(((function,as value)))Функция создаётся выражением, начинающимся с ключевого слова `function`. У функций есть набор _((параметр))ов_ (в данном случае, только `x`), и _тело_, содержащее инструкции, которые необходимо выполнить при вызове функции. Тело функции всегда заключают в фигурные скобки, даже если оно состоит из одной ((инструкции)).
 
-(((power example)))A function can have multiple parameters or no
-parameters at all. In the following example, `makeNoise` does not list
-any parameter names, whereas `power` lists two:
+(((power example)))У функции может быть несколько параметров, или вообще их не быть. В следующем примере `makeNoise` не имеет списка параметров, а у `power` их целых два:
 
 [source,javascript]
 ----
 var makeNoise = function() {
-  console.log("Pling!");
+  console.log("Хрясь!");
 };
 
 makeNoise();
-// → Pling!
+// → Хрясь!
 
 var power = function(base, exponent) {
   var result = 1;
@@ -83,44 +55,18 @@ console.log(power(2, 10));
 // → 1024
 ----
 
-(((return value)))(((return keyword)))(((undefined)))Some functions
-produce a value, such as `power` and `square`, and some don't, such as
-`makeNoise`, which produces only a ((side effect)). A `return`
-statement determines the value the function returns. When control
-comes across such a statement, it immediately jumps out of the current
-function and gives the returned value to the code that called the
-function. The `return` keyword without an expression after it will
-cause the function to return `undefined`.
+(((return value)))(((return keyword)))(((undefined)))Некоторые функции возвращают значение, как `power` и `square`, другие не возвращают, как `makeNoise`, которая производит только ((побочный эффект)). Инструкция `return` определяет значение, возвращаемое функцией. Когда обработка программы доходит до этой инструкции, она сразу же выходит из функции, и возвращает это значение в то место кода, откуда была вызвана функция. `return` без выражения возвращает значение `undefined`.
 
-== Parameters and scopes ==
+== Параметры и область видимости ==
 
-(((function,application)))(((variable,from parameter)))The
-((parameter))s to a function behave like regular variables, but their
-initial values are given by the _caller_ of the function, not the code
-in the function itself.
+(((function,application)))(((variable,from parameter)))((Параметры)) функции – такие же переменные, но их начальные значения задаются при _вызове_ функции, а не в её коде.
 
-(((function,scope)))(((scope)))(((local variable)))An
-important property of functions is that the variables created inside
-of them, including their parameters, are _local_ to the function. This
-means, for example, that the `result` variable in the `power` example
-will be newly created every time the function is called, and these
-separate incarnations do not interfere with each other.
+(((function,scope)))(((scope)))(((local variable)))Важное свойство функций в том, что переменные, созданные внутри функции (включая параметры), _локальны_ внутри этой функции. Это означает, что в примере с `power` переменная `result` будет создаваться каждый раз при вызове функции, и эти отдельные её инкарнации никак друг с другом не связаны.
 
 indexsee:[top-level scope,global scope]
-(((var keyword)))(((global scope)))(((variable,global)))This
-“localness” of variables applies only to the parameters and to variables
-declared with the `var` keyword inside the function body. Variables
-declared outside of any function are called _global_, because they are
-visible throughout the program. It is possible to access such
-variables from inside a function, as long as you haven't declared a
-local variable with the same name.
+(((var keyword)))(((global scope)))(((variable,global)))Эта “локальность” переменных применяется только к параметрам и созданным внутри функций переменным. Переменные, заданные снаружи какой бы то ни было функции, называются _глобальными_, поскольку они видны на протяжении всей программы. Получить доступ к таким переменным можно и внутри функции, если только вы не объявили локальную переменную с тем же именем.
 
-(((variable,assignment)))The following code demonstrates this. It
-defines and calls two functions that both assign a value to the
-variable `x`. The first one declares the variable as local and thus
-changes only the local variable. The second does not declare `x`
-locally, so references to `x` inside of it refer to the global
-variable `x` defined at the top of the example.
+(((variable,assignment)))Следующий код иллюстрирует это. Он определяет и вызывает две функции, которые присваивают значение переменной `x`. Первая объявляет её как локальную, тем самым меняя только локальную переменную. Вторая не объявляет, поэтому работа с `x` внутри функции относится к глобальной переменной `x`, заданной в начале примера.
 
 [source,javascript]
 ----
@@ -141,28 +87,14 @@ console.log(x);
 // → inside f2
 ----
 
-(((variable,naming)))(((scope)))(((global scope)))(((code,structure
-of)))This behavior helps prevent accidental interference between
-functions. If all variables were shared by the whole program, it'd
-take a lot of effort to make sure no name is ever used for two
-different purposes. And if you _did_ reuse a variable name, you might
-see strange effects from unrelated code messing with the value of your
-variable. By treating function-local variables as existing only within
-the function, the language makes it possible to read and understand
-functions as small universes, without having to worry about all the
-code at once.
+(((variable,naming)))(((scope)))(((global scope)))(((code,structure of)))Такое поведение помогает предотвратить случайное взаимодействие между функциями. Если бы все переменные использовались в любом месте программы, было бы очень трудно убедиться, что одна переменная не используется по разным назначениям. А если _бы_ вы использовали переменную повторно, вы _бы_ столкнулись со странными эффектами, когда сторонний код портит значения вашей переменной. Относясь к локальным для функций переменным так, что они существуют только внутри функции, язык делает возможным работу с функциями будто с отдельными маленькими вселенными, что позволяет не волноваться про весь код целиком.
 
 [[scoping]]
-== Nested scope ==
+== Вложенные области видимости ==
 
-(((nesting,of functions)))(((nesting,of
-scope)))(((scope)))(((inner function)))(((lexical
-scoping)))JavaScript distinguishes not just between _global_ and
-_local_ variables. Functions can be created inside other functions,
-producing several degrees of locality.
+(((nesting,of functions)))(((nesting,of scope)))(((scope)))(((inner function)))(((lexical scoping)))JavaScript различает не только _глобальные_ и _локальные_ переменные. Функции можно задавать внутри функций, что приводит к нескольким уровням локальности.
 
-(((landscape example)))For example, this rather nonsensical function
-has two functions inside of it:
+(((landscape example)))К примеру, следующая довольно бессмысленная функция содержит внутри ещё две:
 
 [source,javascript]
 ----
@@ -191,84 +123,48 @@ console.log(landscape());
 // → ___/''''\______/'\_
 ----
 
-(((function,scope)))(((scope)))The `flat` and `mountain` functions
-can “see” the variable called `result`, since they are inside the
-function that defines it. But they cannot see each other's `count`
-variables since they are outside each other's scope. The environment
-outside of the `landscape` function doesn't see any of the variables
-defined inside `landscape`.
+(((function,scope)))(((scope)))Функции `flat` и `mountain` “видят” переменную `result`, потому что они находятся внутри функции, в которой она определена. Но они не могут видеть переменные `count` друг друга, потому что переменные одной функции находятся вне области видимости другой. А окружение снаружи функции `landscape` не видит ни одной из переменных, определённых внутри этой функции.
 
-In short, each local scope can also see all the local scopes that
-contain it. The set of variables visible inside a function is
-determined by the place of that function in the program text. All
-variables from blocks _around_ a function's definition are
-visible—meaning both those in function bodies that enclose it and
-those at the top level of the program. This approach to variable
-visibility is called _((lexical scoping))_.
+Короче говоря, в каждой локальной области видимости можно увидеть все области, которые её содержат. Набор переменных, доступных внутри функции, определяется местом, где эта функция описана в программе. Все переменные из блоков, _окружающих_ определение функции, видны – включая и те, что определены на верхнем уровне в основной программе. Этот подход к областям видимости называется _((лексическим))_.
 
-((({} (block))))People who have experience with other programming
-languages might expect that any block of code between braces produces
-a new local environment. But in JavaScript, functions are the only
-things that create a new scope. You are allowed to use free-standing
-blocks.
+((({} (block))))Люди, изучавшие другие языки программирования, могут подумать, что любой блок, заключённый в фигурные скобки, создаёт своё локальное окружение. Но в JavaScript область видимости создают только функции. Вы можете использовать отдельно стоящие блоки.
 
 [source,javascript]
 ----
 var something = 1;
 {
   var something = 2;
-  // Do stuff with variable something...
+  // Делаем что-либо с переменной something...
 }
-// Outside of the block again...
+// Вышли из блока...
 ----
 
-But the `something` inside the block refers to the same variable as
-the one outside the block. In fact, although blocks like this are
-allowed, they are useful only to group the body of an `if` statement
-or a loop.
+Но `something` внутри блока – это та же переменная, что и снаружи. Хотя такие блоки и разрешены, имеет смысл использовать их только для команды `if` и циклов.
 
-(((let keyword)))(((ECMAScript 6)))If you find this odd, you're not
-alone. The next version of JavaScript will introduce a `let` keyword,
-which works like `var` but creates a variable that is local to the
-enclosing _block_, not the enclosing _function_.
+(((let keyword)))(((ECMAScript 6)))Если это кажется вам странным – так кажется не только вам. В версии JavaScript 1.7 появилось ключевое слово `let`, которое работает как `var`, но создаёт переменные, локальные для любого данного _блока_, а не только для _функции_.
 
-== Functions as values ==
+== Функции как значения ==
 
-(((function,as value)))Function ((variable))s usually simply act as
-names for a specific piece of the program. Such a variable is defined
-once and never changed. This makes it easy to start confusing the
-function and its name.
+(((function,as value)))((Переменные)), являющиеся функциями, обычно используют просто как имя для кусочка программы. Такая переменная однажды задаётся и не меняется. Так что легко перепутать функцию и её имя.
 
-(((variable,assignment)))But the two are different. A function value
-can do all the things that other values can do—you can use it in
-arbitrary ((expression))s, not just call it. It is possible to store a
-function value in a new place, pass it as an argument to a function,
-and so on. Similarly, a variable that holds a function is still just a
-regular variable and can be assigned a new value, like so:
+(((variable,assignment)))Но это – две разные вещи. Функцию можно не только вызывать, но и, как простую переменную, использовать её в любых ((выражения))х. Можно сохранить функцию в новой переменной, передать её как параметр другой функции, и так далее. Также переменная, хранящая функцию, остаётся обычной переменной и ей можно присвоить новое значение:
 
 // test: no
 
 [source,javascript]
 ----
 var launchMissiles = function(value) {
-  missileSystem.launch("now");
+  missileSystem.launch("пли!");
 };
 if (safeMode)
-  launchMissiles = function(value) {/* do nothing */};
+  launchMissiles = function(value) {/* отбой */};
 ----
 
-(((function,higher-order)))In
-link:05_higher_order.html#higher_order[Chapter 5], we will discuss the
-wonderful things that can be done by passing around function values to
-other functions.
+(((function,higher-order)))В link:05_higher_order.html#higher_order[Главе 5] мы обсудим чудесные вещи, которые возможно сделать, передавая вызовы функций другим функциям.
 
-== Declaration notation ==
+== Объявление функций ==
 
-(((syntax)))(((square example)))(((function
-keyword)))(((function,definition)))(((function,declaration)))There is
-a slightly shorter way to say “++var square = function…++”. The
-`function` keyword can also be used at the start of a statement, as in
-the following:
+(((syntax)))(((square example)))(((function keyword)))(((function,definition)))(((function,declaration)))Есть более короткая версия выражения “++var square = function…++”. Ключевое слово `function` можно использовать в начале инструкции:
 
 [source,javascript]
 ----
@@ -277,10 +173,7 @@ function square(x) {
 }
 ----
 
-(((future)))(((execution order)))This is a function _declaration_. The
-statement defines the variable `square` and points it at the given
-function. So far so good. There is one subtlety with this form of
-function definition, however.
+(((future)))(((execution order)))Это _объявление_ функции. Инструкция определяет переменную `square` и присваивает ей заданную функцию. Пока всё ок. Есть только один подводный камень в таком определении.
 
 [source,javascript]
 ----
@@ -291,58 +184,38 @@ function future() {
 }
 ----
 
-This code works, even though the function is defined _below_ the code
-that uses it. This is because function declarations are not part of
-the regular top-to-bottom flow of control. They are conceptually moved
-to the top of their scope and can be used by all the code in that
-scope. This is sometimes useful because it gives us the freedom to
-order code in a way that seems meaningful, without worrying about
-having to define all functions above their first use.
+Такой код работает, хотя функция объявляется _ниже_ того кода, который её использует. Это происходит оттого, что объявления функций не являются частью обычного исполнения программ сверху вниз. Они «перемещаются» наверх их области видимости и могут быть вызваны в любом коде в этой области. Иногда это удобно, потому что вы можете писать код в таком порядке, который выглядит наиболее осмысленно, не беспокоясь по поводу необходимости определять все функции выше того места, где они используются.
 
-(((function,declaration)))What happens when you put such a function
-definition inside a conditional (`if`) block or a loop? Well, don't do
-that. Different JavaScript platforms in different browsers have
-traditionally done different things in that situation, and the latest
-((standard)) actually forbids it. If you want your programs to behave
-consistently, only use this form of function-defining statements in
-the outermost block of a function or program.
+(((function,declaration)))А что будет, если мы поместим объявление функции внутрь условного блока или цикла? Не надо так делать. Исторически разные платформы для запуска JavaScript обрабатывали такие случаи по разному, а текущий ((стандарт)) языка запрещает так делать. Если вы хотите, чтобы ваши программы работали последовательно, используйте объявления функций только внутри других функций или основной программы.
 
 [source,javascript]
 ----
 function example() {
-  function a() {} // Okay
+  function a() {} // Нормуль
   if (something) {
-    function b() {} // Danger!
+    function b() {} // Ай-яй-яй!
   }
 }
 ----
 
 [[stack]]
-== The call stack ==
+== Стек вызовов ==
 
 indexsee:[stack,call stack]
-(((call stack)))(((function,application)))It will be helpful to take a
-closer look at the way control flows through functions. Here is a
-simple program that makes a few function calls:
+(((call stack)))(((function,application)))Полезным будет присмотреться к тому, как порядок выполнения работает с функциями. Вот простая программа с несколькими вызовами функций:
 
 [source,javascript]
 ----
 function greet(who) {
-  console.log("Hello " + who);
+  console.log("Привет, " + who);
 }
-greet("Harry");
-console.log("Bye");
+greet("Семён");
+console.log("Покеда");
 ----
 
-(((control flow)))(((execution order)))(((console.log)))A run through
-this program goes roughly like this: the call to `greet` causes
-control to jump to the start of that function (line 2). It calls
-`console.log` (a built-in browser function), which takes control, does
-its job, and then returns control to line 2. Then it reaches the end
-of the `greet` function, so it returns to the place that called it, at
-line 4. The line after that calls `console.log` again.
+(((control flow)))(((execution order)))(((console.log)))Обрабатывается она примерно так: вызов `greet` заставляет проход прыгнуть на начало функции. Он вызывает встроенную функцию `console.log`, которая перехватывает контроль, делает своё дело и возвращает контроль. Потом он доходит до конца `greet`, и возвращается к месту, откуда его вызвали. Следующая строчка опять вызывает `console.log`.
 
-We could show the flow of control schematically like this:
+Схематично это можно показать так:
 
 ----
 top
@@ -354,25 +227,11 @@ top
 top
 ----
 
-(((return keyword)))(((memory)))Because a function has to jump back to
-the place of the call when it returns, the computer must remember the
-context from which the function was called. In one case, `console.log`
-has to jump back to the `greet` function. In the other case, it jumps
-back to the end of the program.
+(((return keyword)))(((memory)))Поскольку функция должна вернуться на то место, откуда её вызвали, компьютер должен запомнить контекст, из которого была вызвана функция. В одном случае, `console.log` должна вернуться обратно в `greet`. В другом, она возвращается в конец программы.
 
-The place where the computer stores this context is the _((call
-stack))_. Every time a function is called, the current context is put
-on top of this “stack”. When the function returns, it removes the top
-context from the stack and uses it to continue execution.
+Место, где компьютер запоминает контекст, называется _((стек))ом_. Каждый раз при вызове функции, текущий контекст помещается наверх “стека”. Когда функция возвращается, она забирает верхний контекст из стека и использует его для продолжения работы.
 
-(((infinite loop)))(((stack overflow)))(((recursion)))Storing this
-stack requires space in the computer's memory. When the stack grows
-too big, the computer will fail with a message like “out of stack
-space” or “too much recursion”. The following code illustrates this by
-asking the computer a really hard question, which causes an infinite
-back-and-forth between two functions. Rather, it _would_ be infinite,
-if the computer had an infinite stack. As it is, we will run out of
-space, or “blow the stack”.
+(((infinite loop)))(((stack overflow)))(((recursion)))Хранение стека требует места в памяти. Когда стек слишком сильно разрастается, компьютер прекращает выполнение и выдаёт что-то вроде “out of stack space” или “too much recursion”. Следующий код это демонстрирует – он задаёт компьютеру очень сложный вопрос, который приводит к бесконечным прыжкам между двумя функциями. Точнее, это были _бы_ бесконечные прыжки, если бы у компьютера был бесконечный стек. В реальности стек переполняется.
 
 // test: no
 
@@ -388,36 +247,23 @@ console.log(chicken() + " came first.");
 // → ??
 ----
 
-== Optional Arguments ==
+== Необязательные аргументы ==
 
-(((argument)))(((function,application)))The following code is allowed
-and executes without any problem:
+(((argument)))(((function,application)))Следующий код вполне разрешён и выполняется без проблем:
 
 [source,javascript]
 ----
-alert("Hello", "Good Evening", "How do you do?");
+alert("Здрасьте", "Добрый вечер", "Всем привет!");
 ----
 
-(((alert function)))The function `alert` officially accepts only one
-argument. Yet when you call it like this, it doesn't complain. It
-simply ignores the other arguments and shows you “Hello”.
+(((alert function)))Официально функция принимает один аргумент. Однако, при таком вызове она не жалуется. Она игнорирует остальные аргументы и показывает “Здрасьте”.
 
-(((undefined)))(((parameter)))JavaScript is extremely broad-minded
-about the number of arguments you pass to a function. If you pass too
-many, the extra ones are ignored. If you pass too few, the missing
-parameters simply get assigned the value `undefined`.
+(((undefined)))(((parameter)))JavaScript очень лоялен по поводу количества аргументов, передаваемых функции. Если вы передадите слишком много, лишние будут проигнорированы. Слишком мало – отсутствующим будет назначено значение `undefined`.
 
-The downside of this is that it is possible—likely, even—that you'll
-accidentally pass the wrong number of arguments to functions and no
-one will tell you about it.
+Минус этого подхода в том, что возможно,- и даже вероятно,- передать функции неправильное количество аргументов, и вам никто на это не пожалуется.
 
 [[power]]
-(((power example)))(((optional argument)))The
-upside is that this behavior can be used to have a function take
-“optional” arguments. For example, the following version of `power`
-can be called either with two arguments or with a single argument, in
-which case the exponent is assumed to be two, and the function behaves
-like `square`.
+(((power example)))(((optional argument)))Плюс в том, что вы можете создавать функции, принимающие “необязательные” аргументы. К примеру, в следующей версии функции `power` её можно вызывать как с двумя, так и с одним аргументом,- в последнем случае экспонента будет равна двум, и функция работает как квадрат.
 
 // test: wrap
 
@@ -438,12 +284,7 @@ console.log(power(4, 3));
 // → 64
 ----
 
-(((console.log)))In the link:04_data.html#arguments_object[next
-chapter], we will see a way in which a function body can get at the
-exact list of arguments that were passed. This is helpful because it
-makes it possible for a function to accept any number of arguments.
-For example, `console.log` makes use of this—it outputs all of the
-values it is given.
+(((console.log)))В link:04_data.html#arguments_object[следующей главе] мы увидим, как в теле функции можно получить точный список переданных ей аргументов. Это полезно, т.к. позволяет создавать функцию, принимающую любое количество аргументов. К примеру, `console.log` использует это свойство, и выводит все переданные ему аргументы.
 
 [source,javascript]
 ----
@@ -451,18 +292,11 @@ console.log("R", 2, "D", 2);
 // → R 2 D 2
 ----
 
-== Closure ==
+== Замыкания ==
 
-(((call stack)))(((local variable)))(((function,as
-value)))(((closure)))(((scope)))The ability to treat functions as
-values, combined with the fact that local variables are “re-created”
-every time a function is called, brings up an interesting question.
-What happens to local variables when the function call that created
-them is no longer active?
+(((call stack)))(((local variable)))(((function,as value)))(((closure)))(((scope)))Возможность использовать вызовы функций как переменные вкупе с тем фактом, что локальные переменные каждый раз при вызове функции создаются заново, приводит нас к интересному вопросу. Что происходит с локальными переменными, когда функция перестаёт работать?
 
-The following code shows an example of this. It defines a function,
-`wrapValue`, which creates a local variable. It then returns a function
-that accesses and returns this local variable.
+Следующий пример иллюстрирует этот вопрос. В нём объявляется функция `wrapValue`, которая создаёт локальную переменную. Затем она возвращает функцию, которая читает эту локальную переменную и возвращает её значение.
 
 [source,javascript]
 ----
@@ -479,21 +313,11 @@ console.log(wrap2());
 // → 2
 ----
 
-This is allowed and works as you'd hope—the variable can still be
-accessed. In fact, multiple instances of the variable can be alive at
-the same time, which is another good illustration of the concept that
-local variables really are re-created for every call—different calls
-can't trample on one another's local variables.
+Это допустимо и работает так, как должно – доступ к переменной остаётся. Более того, в одно и то же время могут существовать несколько экземпляров одной и той же переменной, что ещё раз подтверждает тот факт, что с каждым вызовом функции локальные переменные пересоздаются.
 
-This feature—being able to reference a specific instance of local
-variables in an enclosing function—is called _closure_. A function
-that “closes over” some local variables is called _a_ closure. This
-behavior not only frees you from having to worry about lifetimes of
-variables but also allows for some creative use of function values.
+Эта возможность работать со ссылкой на какой-то экземпляр локальной переменной называется _замыканием_. Функция, “замыкающая” локальные переменные, называется замыкающей. Она не только освобождает вас от забот, связанных с временем жизни переменных, но и позволяет творчески использовать функции.
 
-(((multiplier function)))With a slight change, we can turn the
-previous example into a way to create functions that multiply by an
-arbitrary amount.
+(((multiplier function)))С небольшим изменением мы превращаем наш пример в функцию, умножающую числа на любое заданное число.
 
 [source,javascript]
 ----
@@ -508,34 +332,15 @@ console.log(twice(5));
 // → 10
 ----
 
-(((variable,from parameter)))The explicit `localVariable` from the
-`wrapValue` example isn't needed since a parameter is itself a local
-variable.
+(((variable,from parameter)))Отдельная переменная вроде `localVariable` из примера с `wrapValue` уже не нужна. Так как параметр – сам по себе локальная переменная.
 
-(((function,model of)))Thinking about programs like this takes some
-practice. A good mental model is to think of the `function` keyword as
-“freezing” the code in its body and wrapping it into a package (the
-function value). So when you read `return function(...) {...}`, think
-of it as returning a handle to a piece of computation, frozen for
-later use.
+(((function,model of)))Потребуется практика, чтобы начать мыслить подобным образом. Хороший вариант мысленной модели – представлять, что функция “замораживает” код в своём теле и обёртывает его в упаковку. Когда вы видите `return function(...) {...}`, представляйте, что это пульт управления куском кода, замороженным для употребления позже.
 
-In the example, `multiplier` returns a frozen chunk of code that gets
-stored in the `twice` variable. The last line then calls the value in
-this variable, causing the frozen code (`return number * factor;`) to
-be activated. It still has access to the `factor` variable from the
-`multiplier` call that created it, and in addition it gets access to
-the argument passed when unfreezing it, 5, through its `number`
-parameter.
+В нашем примере `multiplier` возвращает замороженный кусок кода, который мы сохраняем в переменной `twice`. Последняя строка вызывает функцию, заключённую в переменной, в связи с чем активируется сохранённый код (`return number * factor;`). У него всё ещё есть доступ к переменной `factor`, которая определялась при вызове multiplier, к тому же у него есть доступ к аргументу, переданному во время разморозки (5) в качестве параметра `number`.
 
-== Recursion ==
+== Рекурсия ==
 
-(((power example)))(((stack
-overflow)))(((recursion)))(((function,application)))It is perfectly
-okay for a function to call itself, as long as it takes care not to
-overflow the stack. A function that calls itself is called
-_recursive_. Recursion allows some functions to be written in a
-different style. Take, for example, this alternative implementation of
-`power`:
+(((power example)))(((stack overflow)))(((recursion)))(((function,application)))Функция вполне может вызывать сама себя, если она заботится о том, чтобы не переполнить стек. Такая функция называется _рекурсивной_. Вот пример альтернативной реализации возведения в степень:
 
 // test: wrap
 
@@ -552,67 +357,27 @@ console.log(power(2, 3));
 // → 8
 ----
 
-(((loop)))(((readability)))(((mathematics)))This is rather
-close to the way mathematicians define exponentiation and arguably
-describes the concept in a more elegant way than the looping variant
-does. The function calls itself multiple times with different
-arguments to achieve the repeated multiplication.
+(((loop)))(((readability)))(((mathematics)))Примерно так математики определяют возведение в степень, и, возможно, это описывает концепцию более элегантно, чем цикл. Функция вызывает себя много раз с разными аргументами для достижения многократного умножения.
 
-(((function,application)))(((efficiency)))But this implementation has
-one important problem: in typical JavaScript implementations, it's
-about 10 times slower than the looping version. Running through a
-simple loop is a lot cheaper than calling a function multiple times.
+(((function,application)))(((efficiency)))Однако, у такой реализации есть проблема – в обычной среде JavaScript она раз в 10 медленнее, чем версия с циклом. Проход по циклу выходит дешевле, чем вызов функции.
 
-(((optimization)))The dilemma of speed versus ((elegance)) is an
-interesting one. You can see it as a kind of continuum between
-human-friendliness and machine-friendliness. Almost any program can be
-made faster by making it bigger and more convoluted. The programmer
-must decide on an appropriate balance.
+(((optimization)))Дилемма “скорость против ((элегантности))” довольно интересна. Есть некий промежуток между удобством для человека и удобством для машины. Любую программу можно ускорить, сделав её больше и замысловатее. От программиста требуется находить подходящий баланс.
 
-In the case of the link:03_functions.html#power[earlier] `power`
-function, the inelegant (looping) version is still fairly simple and
-easy to read. It doesn't make much sense to replace it with the
-recursive version. Often, though, a program deals with such complex
-concepts that giving up some efficiency in order to make the program
-more straightforward becomes an attractive choice.
+В случае с link:03_functions.html#power[первым] возведением в степень, неэлегантный цикл довольно прост и понятен. Не имеет смысла заменять его рекурсией. Часто, однако, программы работают с такими сложными концепциями, что хочется уменьшить эффективность путём повышения читаемости.
 
-(((profiling)))The basic rule, which has been repeated by many
-programmers and with which I wholeheartedly agree, is to not worry
-about efficiency until you know for sure that the program is too slow.
-If it is, find out which parts are taking up the most time, and start
-exchanging elegance for efficiency in those parts.
+(((profiling)))Основное правило, которое уже не раз повторяли, и с которым я полностью согласен – не беспокойтесь насчёт быстродействия, пока вы точно не уверены, что программа тормозит. Если так, найдите те части, которые работают дольше всех, и меняйте там элегантность на эффективность.
 
-Of course, this rule doesn't mean one should start ignoring
-performance altogether. In many cases, like the `power` function, not
-much simplicity is gained from the “elegant” approach. And sometimes
-an experienced programmer can see right away that a simple approach is
-never going to be fast enough.
+Конечно, мы не должны сразу же полностью игнорировать быстродействие. Во многих случаях, как с возведением в степень, особой простоты от “элегантных” решений мы не получаем. Иногда опытный программист сразу видит, что простой подход никогда не будет достаточно быстрым.
 
-(((premature optimization)))The reason I'm stressing this is that
-surprisingly many beginning programmers focus fanatically on
-efficiency, even in the smallest details. The result is bigger, more
-complicated, and often less correct programs, that take longer to
-write than their more straightforward equivalents and that usually run
-only marginally faster.
+(((premature optimization)))Я заостряю на этом внимание оттого, что слишком много начинающих программистов хватаются за эффективность даже в мелочах. Результат получается больше, сложнее и часто не без ошибок. Такие программы дольше писать, а работают они часто не сильно быстрее.
 
-(((branching recursion)))But recursion is not always just a
-less-efficient alternative to looping. Some problems are much easier
-to solve with recursion than with loops. Most often these are problems
-that require exploring or processing several “branches”, each of which
-might branch out again into more branches.
+(((branching recursion)))Но рекурсия не всегда лишь менее эффективная альтернатива циклам. Некоторые задачи проще решить рекурсией. Чаще всего это обход нескольких “веток” дерева, каждая из которых может ветвиться.
 
 [[recursive_puzzle]]
 
-(((recursion)))(((number puzzle example)))Consider this puzzle: by
-starting from the number 1 and repeatedly either adding 5 or
-multiplying by 3, an infinite amount of new numbers can be produced.
-How would you write a function that, given a number, tries to find a
-sequence of such additions and multiplications that produce that
-number? For example, the number 13 could be reached by first
-multiplying by 3 and then adding 5 twice, whereas the number 15 cannot
-be reached at all.
+(((recursion)))(((number puzzle example)))Вот вам загадка: можно получить бесконечное количество чисел, начиная с числа 1, и потом либо добавляя 5, либо умножая на 3. Как нам написать функцию, которая, получив число, пытается найти последовательность таких сложений и умножений, которые приводят к заданному числу? К примеру, число 13 можно получить, сначала умножив 1 на 3, а затем добавив 5 два раза. А число 15 вообще нельзя так получить.
 
-Here is a recursive solution:
+Рекурсивное решение:
 
 [source,javascript]
 ----
@@ -633,34 +398,15 @@ console.log(findSolution(24));
 // → (((1 * 3) + 5) * 3)
 ----
 
-Note that this program doesn't necessarily find the _shortest_
-sequence of operations. It is satisfied when it finds any sequence at
-all.
+Этот пример не обязательно находит _самое короткое_ решение – он удовлетворяется любым.
 
-I don't necessarily expect you to see how it works right away. But
-let's work through it, since it makes for a great exercise in
-recursive thinking.
+Не ожидаю, что вы сразу поймёте, как программа работает. Но давайте разбираться в этом отличном упражнении на рекурсивное мышление.
 
-The inner function `find` does the actual recursing. It takes two
-((argument))s—the current number and a string that records how we
-reached this number—and returns either a string that shows how to get
-to the target or `null`.
+Внутренняя функция `find` занимается рекурсией. Она принимает два ((аргумент))а – текущее число и строку, которая содержит запись того, как мы пришли к этому номеру. И возвращает либо строчку, показывающую нашу последовательность шагов, либо `null`.
 
-(((null)))(((|| operator)))(((short-circuit evaluation)))To do this, the
-function performs one of three actions. If the current number is the
-target number, the current history is a way to reach that target, so
-it is simply returned. If the current number is greater than the
-target, there's no sense in further exploring this history since both
-adding and multiplying will only make the number bigger. And finally,
-if we're still below the target, the function tries both possible
-paths that start from the current number, by calling itself twice,
-once for each of the allowed next steps. If the first call returns
-something that is not `null`, it is returned. Otherwise, the second
-call is returned—regardless of whether it produces a string or `null`.
+(((null)))(((|| operator)))(((short-circuit evaluation)))Для этого функция выполняет одно из трёх действий. Если заданное число равно цели, то текущая история как раз и является способом её достижения, поэтому она и возвращается. Если заданное число больше цели, продолжать умножения и сложения смысла нет, потому что так оно будет только увеличиваться. А если мы ещё не достигли цели, функция пробует оба возможных пути, начинающихся с заданного числа. Она дважды вызывает себя, один раз с каждым из способов. Если первый вызов возвращает не `null`, он возвращается. В другом случае возвращается второй.
 
-(((call stack)))To better understand how this function produces the
-effect we're looking for, let's look at all the calls to `find` that
-are made when searching for a solution for the number 13.
+(((call stack)))Чтобы лучше понять, как функция достигает нужного эффекта, давайте просмотрим её вызовы, которые происходят в поисках решения для числа 13.
 
 ----
 find(1, "1")
@@ -678,84 +424,55 @@ find(1, "1")
         found!
 ----
 
-The indentation suggests the depth of the call stack. The first time
-`find` is called it calls itself twice to explore the solutions that start with
-`(1 + 5)` and `(1 * 3)`. The first call tries to find a solution that
-starts with `(1 + 5)` and, using recursion, explores _every_ solution
-that yields a number less than or equal to the target number. Since
-it doesn't find a solution that hits the target, it returns `null`
-back to the first call. There the `||` operator causes the call that
-explores `(1 * 3)` to happen. This search has more luck because its
-first recursive call, through yet _another_ recursive call, hits upon
-the target number, 13. This innermost recursive call returns a string,
-and each of the `||` operators in the intermediate calls pass that
-string along, ultimately returning our solution.
+Отступ показывает глубину стека вызовов. В первый раз функция `find` вызывает сама себя дважды, чтобы проверить решения, начинающиеся с `(1 + 5)` и `(1 * 3)`. Первый вызов ищет решение, начинающееся с `(1 + 5)`, и при помощи рекурсии проверяет _все_ решения, выдающие число, меньшее или равное требуемому. Не находит, и возвращает `null`. Тогда-то оператор `||` и переходит к вызову функции, который исследует вариант `(1 * 3)`. Здесь нас ждёт удача, потому что в третьем рекурсивном вызове мы получаем 13. Этот вызов возвращает строку, и каждый из операторов `||` по пути передаёт эту строку выше, в результате возвращая решение.
 
-== Growing functions ==
+== Выращиваем функции ==
 
-(((function,definition)))There are two more or less natural ways for
-functions to be introduced into programs.
+(((function,definition)))Существует два более-менее естественных способа ввода функций в программу.
 
-(((repetition)))The first is that you find yourself writing very
-similar code multiple times. We want to avoid doing that since having
-more code means more space for mistakes to hide and more material to
-read for people trying to understand the program. So we take the
-repeated functionality, find a good name for it, and put it into a
-function.
+(((repetition)))Первый – вы пишете схожий код несколько раз. Этого нужно избегать – больше кода означает больше места для ошибок и больше материала для чтения тех, кто пытается понять программу. Так что мы берём повторяющуюся функциональность, подбираем ей хорошее имя и помещаем её в функцию.
 
-The second way is that you find you need some functionality that you
-haven't written yet and that sounds like it deserves its own function.
-You'll start by naming the function, and you'll then write its body.
-You might even start writing code that uses the function before you
-actually define the function itself.
+Второй способ – вы обнаруживаете потребность в некоей новой функциональности, которая достойна помещения в отдельную функцию. Вы начинаете с названия функции, и затем пишете её тело. Можно даже начинать с написания кода, использующего функцию, до того, как сама функция будет определена.
 
-(((function,naming)))(((variable,naming)))How difficult it is to find
+(((function,naming)))(((variable,naming)))То, насколько сложно вам подобрать имя для функции, показывает, как хорошо вы представляете себе её функциональность. Возьмём пример.
+How difficult it is to find
 a good name for a function is a good indication of how clear a concept
 it is that you're trying to wrap. Let's go through an example.
 
-(((farm example)))We want to write a program that prints two numbers,
-the numbers of cows and chickens on a farm, with the words `Cows` and
-`Chickens` after them, and zeros padded before both numbers so that
-they are always three digits long.
+(((farm example)))Нам нужно написать программу, выводящую два числа, количество коров и куриц на ферме, за которыми идут слова `Коров` и `Куриц`. К числам нужно спереди добавить нули так, чтобы каждое занимало ровно три позиции.
 
 ----
-007 Cows
-011 Chickens
+007 Коров
+011 Куриц
 ----
 
-That clearly asks for a function of two arguments. Let's get coding.
+Очевидно, что нам понадобится функция с двумя аргументами. Начинаем кодить.
 
 [source,javascript]
 ----
+// вывестиИнвентаризациюФермы
 function printFarmInventory(cows, chickens) {
   var cowString = String(cows);
   while (cowString.length < 3)
     cowString = "0" + cowString;
-  console.log(cowString + " Cows");
+  console.log(cowString + " Коров");
   var chickenString = String(chickens);
   while (chickenString.length < 3)
     chickenString = "0" + chickenString;
-  console.log(chickenString + " Chickens");
+  console.log(chickenString + " Куриц");
 }
 printFarmInventory(7, 11);
 ----
 
-(((length property,for string)))(((while loop)))Adding `.length`
-after a string value will give us the length of that string. Thus, the
-`while` loops keep adding zeros in front of the number strings until
-they are at least three characters long.
+(((length property,for string)))(((while loop)))Если мы добавим к строке `.length`, мы получим её длину. Получается, что циклы `while` добавляют нули спереди к числам, пока не получат строчку по меньшей мере в 3 символа.
 
-Mission accomplished! But just as we are about to send the farmer the
-code (along with a hefty invoice, of course), he calls and tells us
-he's also started keeping pigs, and couldn't we please extend the
-software to also print pigs?
+Готово! Но только мы собрались отправить фермеру код (вместе с изрядным чеком, разумеется), он звонит и говорит нам, что у него в хозяйстве появились свиньи, и не могли бы мы добавить в программу вывод количества свиней?
 
-(((copy-paste programming)))We sure can. But just as we're in the
-process of copying and pasting those four lines one more time, we stop
-and reconsider. There has to be a better way. Here's a first attempt:
+(((copy-paste programming)))Можно, конечно. Но когда мы начинаем копировать и вставлять код из этих четырёх строчек, мы понимаем, что надо остановиться и подумать. Должен быть способ лучше. Пытаемся улучшить программу:
 
 [source,javascript]
 ----
+// выводСДобавлениемНулейИМеткой
 function printZeroPaddedWithLabel(number, label) {
   var numberString = String(number);
   while (numberString.length < 3)
@@ -772,16 +489,13 @@ function printFarmInventory(cows, chickens, pigs) {
 printFarmInventory(7, 11, 3);
 ----
 
-(((function,naming)))It works! But that name,
-`printZeroPaddedWithLabel`, is a little awkward. It conflates three
-things—printing, zero-padding, and adding a label—into a single
-function.
+(((function,naming)))Работает! Но название `printZeroPaddedWithLabel` немного странное. Оно объединяет три вещи – вывод, добавление нулей и метку – в одну функцию.
 
-(((zeroPad function)))Instead of lifting out the repeated part of our
-program wholesale, let's try to pick out a single _concept_.
+(((zeroPad function)))Вместо того, чтобы вставлять в функцию весь повторяющийся фрагмент, давайте выделим одну _концепцию_.
 
 [source,javascript]
 ----
+// добавитьНулей
 function zeroPad(number, width) {
   var string = String(number);
   while (string.length < width)
@@ -789,114 +503,59 @@ function zeroPad(number, width) {
   return string;
 }
 
+// вывестиИнвентаризациюФермы
 function printFarmInventory(cows, chickens, pigs) {
-  console.log(zeroPad(cows, 3) + " Cows");
-  console.log(zeroPad(chickens, 3) + " Chickens");
-  console.log(zeroPad(pigs, 3) + " Pigs");
+  console.log(zeroPad(cows, 3) + " Коров");
+  console.log(zeroPad(chickens, 3) + " Куриц");
+  console.log(zeroPad(pigs, 3) + " Свиней");
 }
 
 printFarmInventory(7, 16, 3);
 ----
 
-(((readability)))(((pure function)))A function with a nice, obvious
-name like `zeroPad` makes it easier for someone who reads the code to
-figure out what it does. And it is useful in more situations than just
-this specific program. For example, you could use it to help print
-nicely aligned tables of numbers.
+(((readability)))(((pure function)))Функция с хорошим, понятным именем `zeroPad` облегчает понимание кода. И её можно использовать во многих ситуациях, не только в нашем случае. К примеру, для вывода отформатированных таблиц с числами.
 
-(((interface,design)))How smart and versatile should our function be?
-We could write anything from a terribly simple function that simply
-pads a number so that it's three characters wide to a complicated
-generalized number-formatting system that handles fractional numbers,
-negative numbers, alignment of dots, padding with different
-characters, and so on.
+(((interface,design)))Насколько умными и универсальными должны быть функции? Мы можем написать как простейшую функцию, которая дополняет число нулями до трёх позиций, так и навороченную функцию общего назначения для форматирования номеров, поддерживающую дроби, отрицательные числа, выравнивание по точкам, дополнение разными символами, и т.п.
 
-A useful principle is not to add cleverness unless you are absolutely
-sure you're going to need it. It can be tempting to write general
-“((framework))s” for every little bit of functionality you come
-across. Resist that urge. You won't get any real work done, and you'll
-end up writing a lot of code that no one will ever use.
+Хорошее правило – добавляйте только ту функциональность, которая вам точно пригодится. Иногда появляется искушение создавать “((фреймворк))и” общего назначения для каждой небольшой потребности. Сопротивляйтесь ему. Вы никогда не закончите работу, а просто напишете кучу кода, который никто не будет использовать.
 
 [[pure]]
-== Functions and side effects ==
+== Функции и побочные эффекты ==
 
-(((side effect)))(((pure function)))(((function,purity)))Functions can
-be roughly divided into those that are called for their side effects
-and those that are called for their return value. (Though it is
-definitely also possible to have both side effects and return a
-value.)
+(((side effect)))(((pure function)))(((function,purity)))Функции можно грубо разделить на те, что вызываются из-за своих побочных эффектов, и те, что вызываются для получения некоторого значения. Конечно, возможно и объединение этих свойств в одной функции.
 
-(((reuse)))The first helper function in the ((farm example)),
-`printZeroPaddedWithLabel`, is called for its side effect: it prints a
-line. The second version, `zeroPad`, is called for its return value.
-It is no coincidence that the second is useful in more situations than
-the first. Functions that create values are easier to combine in new
-ways than functions that directly perform side effects.
+(((reuse)))Первая вспомогательная функция в ((примере с фермой)), `printZeroPaddedWithLabel`, вызывается из-за побочного эффекта: она выводит строку. Вторая, `zeroPad`, из-за возвращаемого значения. И это не совпадение, что вторая функция пригождается чаще первой. Функции, возвращающие значения, легче комбинировать друг с другом, чем функции, создающие побочные эффекты.
 
-(((substitution)))A _pure_ function is a specific kind of
-value-producing function that not only has no side effects but also
-doesn't rely on side effects from other code—for example, it doesn't
-read global variables that are occasionally changed by other code. A
-pure function has the pleasant property that, when called with the
-same arguments, it always produces the same value (and doesn't do
-anything else). This makes it easy to reason about. A call to such a
-function can be mentally substituted by its result, without changing
-the meaning of the code. When you are not sure that a pure function is
-working correctly, you can test it by simply calling it, and know that
-if it works in that context, it will work in any context. Nonpure
-functions might return different values based on all kinds of factors
-and have side effects that might be hard to test and think about.
+(((substitution)))_Чистая_ функция – особый вид функции, возвращающей значения, которая не только не имеет побочных эффектов, но и не зависит от побочных эффектов остального кода – к примеру, не работает с глобальными переменными, которые могут быть случайно изменены где-то ещё. Чистая функция, будучи вызванной с одними и теми же аргументами, возвращает один и тот же результат (и больше ничего не делает) – что довольно приятно. С ней просто работать. Вызов такой функции можно мысленно заменять результатом её работы, без изменения смысла кода. Когда вы хотите проверить такую функцию, вы можете просто вызвать её, и быть уверенным, что если она работает в данном контексте, она будет работать в любом. Не такие чистые функции могут возвращать разные результаты в зависимости от многих факторов, и иметь побочные эффекты, которые сложно проверять и учитывать.
 
-(((optimization)))(((console.log)))Still, there's no need to feel bad
-when writing functions that are not pure or to wage a holy war to
-purge them from your code. Side effects are often useful. There'd be
-no way to write a pure version of `console.log`, for example, and
-`console.log` is certainly useful. Some operations are also easier to
-express in an efficient way when we use side effects, so computing
-speed can be a reason to avoid purity.
+(((optimization)))(((console.log)))Однако, не надо стесняться писать не совсем чистые функции, или начинать священную чистку кода от таких функций. Побочные эффекты часто полезны. Нет способа написать чистую версию функции `console.log`, и эта функция весьма полезна. Некоторые операции легче выразить, используя побочные эффекты.
 
-== Summary ==
+== Итог ==
 
-This chapter taught you how to write your own functions. The
-`function` keyword, when used as an expression, can create a function
-value. When used as a statement, it can be used to declare a variable
-and give it a function as its value.
+Эта глава показала вам, как писать собственные функции. Когда ключевое слово `function` используется в виде выражения, можно создавать функцию. Когда оно используется как инструкция, вы можете объявлять переменную, назначая ей функцию.
 
 [source,javascript]
 ----
-// Create a function value f
+// Создаём f и присваиваем ей функцию
 var f = function(a) {
   console.log(a + 2);
 };
 
-// Declare g to be a function
+// Объявляем функцию g
 function g(a, b) {
   return a * b * 3.5;
 }
 ----
 
-A key aspect in understanding functions is understanding local scopes.
-Parameters and variables declared inside a function are local to the
-function, re-created every time the function is called, and not visible
-from the outside. Functions declared inside another function have
-access to the outer function's local scope.
+Ключевой момент в понимании функций – локальные области видимости. Параметры и переменные, объявленные внутри функции, локальны для неё, пересоздаются каждый раз при её вызове, и не видны снаружи. Функции, объявленные внутри другой функции, имеют доступ к её области видимости.
 
-Separating the tasks your program performs into different
-functions is helpful. You won't have to repeat yourself as much, and
-functions can make a program more readable by grouping code into
-conceptual chunks, in the same way that chapters and sections help
-organize regular text.
+Очень полезно разделять разные задачи, выполняемые программой, на функции. Вам не придётся повторяться, функции делают код более читаемым, разделяя его на смысловые части, так же, как главы и секции книги помогают в организации обычного текста.
 
-== Exercises ==
+== Упражнения ==
 
-=== Minimum ===
+=== Минимум ===
 
-(((Math object)))(((minimum (exercise))))(((Math.min
-function)))(((minimum)))The
-link:02_program_structure.html#return_values[previous chapter]
-introduced the standard function `Math.min` that returns its smallest
-argument. We can do that ourselves now. Write a function `min` that
-takes two arguments and returns their minimum.
+(((Math object)))(((minimum (exercise))))(((Math.min function)))(((minimum)))В link:02_program_structure.html#return_values[предыдущей главе] была упомянута функция `Math.min`, возвращающая самый маленький из аргументов. Теперь мы можем написать такую функцию сами. Напишите функцию `min`, принимающую два аргумента, и возвращающую минимальный из них.
 
 ifdef::interactive_target[]
 
@@ -924,26 +583,19 @@ statements.
 
 !!hint!!
 
-=== Recursion ===
+=== Рекурсия ===
 
-(((recursion)))(((isEven (exercise))))(((even number)))We've seen
-that `%` (the remainder operator) can be used to test whether a number
-is even or odd by using `% 2` to check whether it's divisible by two.
-Here's another way to define whether a positive whole number is even
-or odd:
+(((recursion)))(((isEven (exercise))))(((even number)))Мы видели, что оператор `%` (остаток от деления) может использоваться для определения того, чётное ли число (`% 2`). А вот ещё один способ определения:
 
-- Zero is even.
+- Ноль чётный.
 
-- One is odd.
+- Единица нечётная.
 
-- For any other number _N_, its evenness is the same as _N_ - 2.
+- У любого числа _N_ чётность такая же, как у _N_ - 2.
 
-Define a recursive function `isEven` corresponding to this
-description. The function should accept a `number` parameter and
-return a Boolean.
+Напишите рекурсивную функцию `isEven` согласно этим правилам. Она должна принимать параметр `number` и возвращать булевское значение.
 
-(((stack overflow)))Test it on 50 and 75. See how it behaves on -1.
-Why? Can you think of a way to fix this?
+(((stack overflow)))Потестируйте её на 50 и 75. Попробуйте задать ей -1. Почему она ведёт себя таким образом? Можно ли её как-то исправить?
 
 ifdef::interactive_target[]
 
@@ -981,26 +633,13 @@ eventually run out of stack space and abort.
 
 !!hint!!
 
-=== Bean counting ===
+=== Считаем бобы ===
 
-(((bean counting (exercise))))(((charAt
-method)))(((string,indexing)))(((zero-based counting)))You can get the
-Nth character, or letter, from a string by writing
-`"string".charAt(N)`, similar to how you get its length with
-`"s".length`. The returned value will be a string containing only one
-character (for example, `"b"`). The first character has position zero,
-which causes the last one to be found at position `string.length - 1`.
-In other words, a two-character string has length 2, and its
-characters have positions 0 and 1.
+(((bean counting (exercise))))(((charAt method)))(((string,indexing)))(((zero-based counting)))Символ номер `N` строки можно получить, добавив к ней `.charAt(N)` (`"строка".charAt(N)`) – схожим образом с получением длины строки при помощи `.length`. Возвращаемое значение будет строковым, состоящим из одного символа (к примеру, `"к"`). У первого символа строки позиция 0, что означает, что у последнего символа позиция будет `string.length – 1`. Другими словами, у строки из двух символов длина 2, а позиции её символов будут 0 и 1.
 
-Write a function `countBs` that takes a string as its only argument
-and returns a number that indicates how many uppercase “B” characters
-are in the string.
+Напишите функцию `countBs`, которая принимает строку в качестве аргумента, и возвращает количество символов “B”, содержащихся в строке.
 
-Next, write a function called `countChar` that behaves like `countBs`,
-except it takes a second argument that indicates the character that is
-to be counted (rather than counting only uppercase “B” characters).
-Rewrite `countBs` to make use of this new function.
+Затем напишите функцию `countChar`, которая работает примерно как `countBs`, только принимает второй параметр — символ, который мы будем искать в строке (вместо того, чтобы просто считать количество символов “B”). Перепишите `countBs`, чтобы использовать новую функцию.
 
 ifdef::interactive_target[]
 
