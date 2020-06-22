@@ -4,42 +4,27 @@
 :load_files: ["code/ancestry.js", "code/chapter/05_higher_order.js", "code/intro.js"]
 :zip: node/html
 
-= Higher-Order Functions =
+= Функции высшего порядка =
 
 ifdef::interactive_target[]
 
 [chapterquote="true"]
-[quote, Master Yuan-Ma, The Book of Programming]
+[quote, Мастер Юнь-Ма, Книга программирования]
 ____
-Tzu-li and Tzu-ssu were
-boasting about the size of their latest programs. ‘Two-hundred
-thousand lines,’ said Tzu-li, ‘not counting comments!’ Tzu-ssu
-responded, ‘Pssh, mine is almost a *million* lines already.’ Master
-Yuan-Ma said, ‘My best program has five hundred lines.’ Hearing this,
-Tzu-li and Tzu-ssu were enlightened.
+Цу-ли и Цу-су похвалялись размерами своих новых программ. «Двести тысяч строк»,- сказал Цу-ли,- «не считая комментариев!» Цу-су ответил: «Пф-ф, моя – почти *миллион* строк». Мастер Юнь-Ма сказал: «Моя лучшая программа занимает пятьсот строк». Услышав это, Цу-ли и Цу-су испытали просветление.
 ____
 
 endif::interactive_target[]
 
 [chapterquote="true"]
-[quote, C.A.R. Hoare, 1980 ACM Turing Award Lecture]
+[quote, Энтони Хоар, 1980 лекция на вручении премии Тьюринга]
 ____
-(((Hoare+++,+++ C.A.R.)))There are two ways of constructing a software
-design: One way is to make it so simple that there are obviously no
-deficiencies, and the other way is to make it so complicated that
-there are no obvious deficiencies.
+(((Hoare+++,+++ C.A.R.)))Есть два способа построения программ: сделать их настолько простыми, что там очевидно не будет ошибок, или же настолько сложными, что там не будет очевидных ошибок.
 ____
 
-(((program size)))A large program is a costly program, and not just
-because of the time it takes to build. Size almost always involves
-((complexity)), and complexity confuses programmers. Confused
-programmers, in turn, tend to introduce mistakes (_((bug))s_) into
-programs. A large program also provides a lot of space for these bugs
-to hide, making them hard to find.
+(((program size)))Большая программа – затратная программа, и не только из-за времени её написания. Большой размер обычно означает ((сложность)), а сложность сбивает с толку программистов. Сбитые с толку программисты делают ошибки (_((баги))_) в программах. Большая программа означает, что багам есть где спрятаться и их получается труднее отыскать.
 
-(((summing example)))Let's briefly go back to the final two example
-programs in the introduction. The first is self-contained and six
-lines long.
+(((summing example)))Вернёмся ненадолго к двум примерам из введения. Первый самодостаточен, и занимает шесть строк.
 
 [source,javascript]
 ----
@@ -51,78 +36,49 @@ while (count <= 10) {
 console.log(total);
 ----
 
-The second relies on two external functions and is one line long.
+Второй основан на двух внешних функциях и занимает одну строку.
 
 [source,javascript]
 ----
 console.log(sum(range(1, 10)));
 ----
 
-Which one is more likely to contain a bug?
+В каком из них скорее встретится ошибка?
 
-(((program size)))If we count the size of the definitions of `sum` and
-`range`, the second program is also big—even bigger than the first.
-But still, I'd argue that it is more likely to be correct.
+(((program size)))Если мы добавим размер определений `sum` и `range`, вторая программа тоже получится большой – больше первой. Но я всё равно утверждаю, что она скорее всего будет правильной.
 
-(((abstraction)))(((domain-specific language)))It is more likely to
-be correct because the solution is expressed in a ((vocabulary)) that
-corresponds to the problem being solved. Summing a range of
-numbers isn't about loops and counters. It is about ranges and sums.
+(((abstraction)))(((domain-specific language)))Это будет потому, что решение выражено в терминах, относящихся непосредственно к решаемой задаче. Суммирование числового промежутка – это не циклы и счётчики. Это суммы и промежутки.
 
-The definitions of this vocabulary (the functions `sum` and `range`)
-will still involve loops, counters, and other incidental details. But
-because they are expressing simpler concepts than the program as a
-whole, they are easier to get right.
+Определения этого ((словаря)) (функции `sum` и `range`) будут включать циклы, счётчики и другие случайные детали. Но потому, что они выражают более простые концепции, чем вся программа, их проще сделать правильно.
 
-== Abstraction ==
+== Абстракции ==
 
-In the context of programming, these kinds of vocabularies are usually
-called _((abstraction))s_. Abstractions hide details and give us the
-ability to talk about problems at a higher (or more abstract) level.
+В контексте программирования эти “словарные” определения часто называют _((абстракция))ми_. Абстракции прячут детали и дают нам возможность разговаривать о задачах на высоком, или более абстрактном, уровне.
 
-(((recipe analogy)))(((pea soup)))As an analogy, compare these two
-recipes for pea soup:
+(((recipe analogy)))(((pea soup)))Сравните два рецепта горохового супа:
 
 ____
-Put 1 cup of dried peas per person into a container. Add water until
-the peas are well covered. Leave the peas in water for at least 12 hours.
-Take the peas out of the water and put them in a cooking pan. Add 4
-cups of water per person. Cover the pan and keep the peas
-simmering for two hours. Take half an onion per person. Cut it into
-pieces with a knife. Add it to the peas. Take a stalk of celery per
-person. Cut it into pieces with a knife. Add it to the peas. Take a
-carrot per person. Cut it into pieces. With a knife! Add it to the
-peas. Cook for 10 more minutes.
+Добавьте в ёмкость по одной чашке сухого гороха на порцию. Добавьте воды так, чтобы она покрыла горох. Оставьте его так минимум на 12 часов. Выньте горох из воды и поместите его на сковороду. Добавьте 4 чашки воды на порцию. Закройте сковороду и тушите горох два часа. Возьмите по половине луковицы на порцию. Порежьте на куски ножом, добавьте к гороху. Возьмите по одному стеблю сельдерея на порцию. Порежьте на куски ножом, добавьте к гороху. Возьмите по морковке на порцию. Порежьте на куски. Ножом! Добавьте к гороху. Готовьте ещё 10 минут.
 ____
 
-And the second recipe:
+Второй рецепт:
 ____
-Per person: 1 cup dried split peas, half a chopped onion, a stalk of
-celery, and a carrot.
+На порцию: 1 чашка сухого гороха, половина луковицы, стебель сельдерея, морковка.
 
-Soak peas for 12 hours. Simmer for 2 hours in 4 cups of water
-(per person). Chop and add vegetables. Cook for 10 more minutes.
+Вымачивайте горох 12 часов. Тушите 2 часа в 4 чашках воды на порцию. Порежьте и добавьте овощи. Готовьте ещё 10 минут.
 ____
 
-(((vocabulary)))The second is shorter and easier to interpret. But
-you do need to understand a few more cooking-related words—__soak__,
-_simmer_, _chop_, and, I guess, _vegetable_.
+(((vocabulary)))Второй – короче и проще. Но вам нужно знать чуть больше понятий, связанных с готовкой – _вымачивание_, _тушение_, _резка_ (и _овощи_).
 
-When programming, we can't rely on all the words we need to be waiting
-for us in the dictionary. Thus, you might fall into the pattern of the
-first recipe—work out the precise steps the computer has to perform,
-one by one, blind to the higher-level concepts that they express.
+Программируя, мы не можем рассчитывать на то, что все необходимые слова будут в нашем словаре. Из-за этого вы можете скатиться до шаблона первого рецепта: диктовать компьютеру все мелкие шажки друг за другом, не замечая понятий более высокого уровня, которые они выражают.
 
-(((abstraction)))It has to become second nature, for a programmer, to
-notice when a concept is begging to be abstracted into a new word.
+(((abstraction)))Второй натурой программиста должно стать умение замечать, когда понятие умоляет придумать для него новое слово и вынести в абстракцию.
 
-== Abstracting array traversal ==
+== Абстрагируем обход массива ==
 
-(((array)))Plain functions, as we've seen them so far, are a good
-way to build abstractions. But sometimes they fall short.
+(((array)))Простые функции, которые мы использовали раньше, хороши для построения абстракций. Но иногда их бывает недостаточно.
 
-(((for loop)))In the link:04_data.html#data[previous chapter], this
-type of `for` ((loop)) made several appearances:
+(((for loop)))В link:04_data.html#data[предыдущей главе] мы несколько раз встречали такой цикл:
 
 [source,javascript]
 ----
@@ -133,20 +89,11 @@ for (var i = 0; i < array.length; i++) {
 }
 ----
 
-(((length property,for
-array)))(((array,indexing)))(((readability)))It's trying to say, “For
-each element in the array, log it to the console”. But it uses a
-roundabout way that involves a counter variable `i`, a check against
-the array's length, and an extra variable declaration to pick out the
-current element. Apart from being a bit of an eyesore, this provides a
-lot of space for potential mistakes. We might accidentally reuse the
-`i` variable, misspell `length` as `lenght`, confuse the `i` and `current`
-variables, and so on.
+(((length property,for array)))(((array,indexing)))(((readability)))Код пытается сказать: “для каждого элемента в массиве – вывести его в консоль”. Но он использует обходной путь – с переменной для подсчёта `i`, проверкой длины массива, и объявлением дополнительной переменной `current`. Мало того, что он не очень красив, он ещё и является почвой для потенциальных ошибок. Мы можем случайно повторно использовать переменную `i`, вместо `length` написать `lenght`, перепутать переменные `i` и `current`, и т.п.
 
-So let's try to abstract this into a function. Can you think of a way?
+Давайте абстрагируем его в функцию. Можете придумать способ сделать это?
 
-Well, it's easy to write a function that goes over an array and calls
-`console.log` on every element.
+Довольно просто написать функцию, обходящую массив и вызывающую для каждого элемента `console.log`.
 
 [source,javascript]
 ----
@@ -157,10 +104,7 @@ function logEach(array) {
 ----
 
 [[forEach]]
-indexsee:[higher-order function,function+++,+++ higher-order](((function,higher-order)))(((loop)))(((array,traversal)))(((function,as value)))(((forEach method)))But what
-if we want to do something other than logging the elements? Since
-“doing something” can be represented as a function and functions are
-just values, we can pass our action as a function value.
+indexsee:[higher-order function,function+++,+++ higher-order](((function,higher-order)))(((loop)))(((array,traversal)))(((function,as value)))(((forEach method)))Но что, если нам надо делать что-то другое, нежели выводить элементы в консоль? Поскольку “делать что-то” можно представить как функцию, а функции – это просто переменные, мы можем передать это действие как аргумент.
 
 [source,javascript]
 ----
@@ -169,18 +113,17 @@ function forEach(array, action) {
     action(array[i]);
 }
 
-forEach(["Wampeter", "Foma", "Granfalloon"], console.log);
-// → Wampeter
-// → Foma
-// → Granfalloon
+forEach(["Тили", "Мили", "Трямдия"], console.log);
+// → Тили
+// → Мили
+// → Трямдия
 ----
 
 (In some browsers, calling `console.log` in this way does not work.
 You can use `alert` instead of `console.log` if this example fails to
 work.)
 
-Often, you don't pass a predefined function to `forEach` but create
-a function value on the spot instead.
+Часто можно не передавать заранее определённую функцию в `forEach`, а создавать функцию прямо на месте.
 
 [source,javascript]
 ----
@@ -192,26 +135,13 @@ console.log(sum);
 // → 15
 ----
 
-(((loop body)))(((curly braces)))This looks quite a lot like the
-classical `for` loop, with its body written as a block below it.
-However, now the body is inside the function value, as well as
-inside the ((parentheses)) of the call to `forEach`. This is why it
-has to be closed with the closing brace _and_ closing parenthesis.
+(((loop body)))(((curly braces)))Выглядит похоже на классический цикл `for`, с телом цикла, записанным в блоке. Однако, теперь тело находится внутри функции, и также внутри ((скобок)) вызова `forEach`. Поэтому его нужно закрыть как фигурной, _так и_ круглой скобкой.
 
-(((local variable)))(((parameter)))Using this pattern, we can
-specify a variable name for the current element (`number`), rather
-than having to pick it out of the array manually.
+(((local variable)))(((parameter)))Используя этот шаблон, мы можем задать имя переменной для текущего элемента массива (`number`), без необходимости выбирать его из массива вручную.
 
-(((array,methods)))(((function,higher-order)))(((forEach
-method)))(((array)))In fact, we don't need to write `forEach`
-ourselves. It is available as a standard method on arrays. Since the
-array is already provided as the thing the method acts on, `forEach`
-takes only one required argument: the function to be executed for each
-element.
+(((array,methods)))(((function,higher-order)))(((forEach method)))(((array)))Вообще, нам даже не нужно писать самим `forEach`. Это стандартный метод массивов. Так как массив уже передан в качестве переменной, над которой мы работаем, `forEach` принимает только один аргумент – функцию, которую нужно выполнить для каждого элемента.
 
-To illustrate how helpful this is, let's look back at a function
-from link:04_data.html#analysis[the previous chapter]. It contains two
-array-traversing ((loop))s.
+Для демонстрации удобства этого подхода вернёмся к функции из link:04_data.html#analysis[предыдущей главы]. Она содержит два ((цикл))а, проходящих по массивам.
 
 [source,javascript]
 ----
@@ -229,8 +159,7 @@ function gatherCorrelations(journal) {
 }
 ----
 
-(((forEach method)))Working with `forEach` makes it slightly shorter
-and quite a bit cleaner.
+(((forEach method)))Используя `forEach` мы делаем запись чуть короче и гораздо чище.
 
 [source,javascript]
 ----
@@ -246,19 +175,11 @@ function gatherCorrelations(journal) {
 }
 ----
 
-== Higher-order functions ==
+== Функции высшего порядка ==
 
-(((function,higher-order)))(((function,as value)))Functions that
-operate on other functions, either by taking them as arguments or by
-returning them, are called _higher-order functions_. If you have
-already accepted the fact that functions are regular values, there is
-nothing particularly remarkable about the fact that such functions
-exist. The term comes from ((mathematics)), where the distinction
-between functions and other values is taken more seriously.
+(((function,higher-order)))(((function,as value)))Функции, оперирующие другими функциями — либо принимая их в качестве аргументов, либо возвращая их, называются _функциями высшего порядка_. Если вы уже поняли, что функции – это всего лишь переменные, ничего особенного в существовании таких функций нет. Термин происходит из ((математики)), где различия между функциями и другими значениями воспринимаются более строго.
 
-(((abstraction)))Higher-order functions allow us to abstract over
-_actions_, not just values. They come in several forms. For example,
-you can have functions that create new functions.
+(((abstraction)))Функции высшего порядка позволяют нас абстрагировать _действия_, а не только значения. Они бывают разными. Например, можно сделать функцию, создающую новые функции.
 
 [source,javascript]
 ----
@@ -270,7 +191,7 @@ console.log(greaterThan10(11));
 // → true
 ----
 
-And you can have functions that change other functions.
+Можно сделать функцию, меняющую другие функции.
 
 [source,javascript]
 ----
@@ -287,7 +208,7 @@ noisy(Boolean)(0);
 // → called with 0 - got false
 ----
 
-You can even write functions that provide new types of ((control flow)).
+Можно даже делать функции, создающие новые типы ((управления потоком)) выполнения программы.
 
 [source,javascript]
 ----
@@ -307,23 +228,11 @@ repeat(3, function(n) {
 // → 2 is even
 ----
 
-(((inner function)))(((nesting,of functions)))((({}
-(block))))(((local variable)))(((closure)))The ((lexical scoping))
-rules that we discussed in link:03_functions.html#scoping[Chapter 3]
-work to our advantage when using functions in this way. In the previous example, the `n` variable is a ((parameter)) to the outer function.
-Because the inner function lives inside the environment of the outer
-one, it can use `n`. The bodies of such inner functions can access the
-variables around them. They can play a role similar to the `{}` blocks
-used in regular loops and conditional statements. An important
-difference is that variables declared inside inner functions do not
-end up in the environment of the outer function. And that is usually a
-good thing.
+(((inner function)))(((nesting,of functions)))((({} (block))))(((local variable)))(((closure)))Правила ((лексических областей)) видимости, которые мы обсуждали в link:03_functions.html#scoping[Главе 3], работают нам на пользу в таких случаях. В последнем примере переменная `n` – это ((аргумент)) внешней функции. Поскольку внутренняя функция живёт в окружении внешней, она может использовать `n`. Тела таких внутренних функций имеют доступ к переменным, окружающим их. Они могут играть роль блоков `{}`, используемых в обычных циклах и условных выражениях. Важное отличие в том, что переменные, объявленные внутри внутренних функций, не попадают в окружение внешней. И обычно это только к лучшему.
 
-== Passing along arguments ==
+== Передача аргументов ==
 
-(((function,wrapping)))(((arguments object)))The `noisy` function
-defined earlier, which wraps its argument in another function, has a rather
-serious deficit.
+(((function,wrapping)))(((arguments object)))Функция `noisy`, объявленная ранее, которая передаёт свой аргумент в другую функцию, не совсем удобна.
 
 [source,javascript]
 ----
@@ -337,18 +246,9 @@ function noisy(f) {
 }
 ----
 
-If `f` takes more than one ((parameter)), it gets only the first one.
-We could add a bunch of arguments to the inner function (`arg1`,
-`arg2`, and so on) and pass them all to `f`, but it is not clear how many
-would be enough. This solution would also deprive `f` of the
-information in `arguments.length`. Since we'd always pass the same
-number of arguments, it wouldn't know how many arguments were
-originally given.
+Если `f` принимает больше одного ((параметр))а, она получит только первый. Можно было бы добавить кучу аргументов к внутренней функции (`arg1`, `arg2` и т.д.) и передать всех их в `f`, но ведь неизвестно, какого количества нам хватит. Кроме того, функция `f` не могла бы корректно работать с `arguments.length`. Так как мы всё время передавали бы одинаковое число аргументов, было бы неизвестно, сколько аргументов нам было задано изначально.
 
-(((apply method)))(((array-like object)))(((function,application)))For
-these kinds of situations, JavaScript functions have an `apply`
-method. You pass it an array (or array-like object) of arguments, and
-it will call the function with those arguments.
+(((apply method)))(((array-like object)))(((function,application)))Для таких случаев у функций в JavaScript есть метод `apply`. Ему передают массив (или объект в виде массива) из аргументов, а он вызывает функцию с этими аргументами.
 
 [source,javascript]
 ----
@@ -359,33 +259,15 @@ function transparentWrapping(f) {
 }
 ----
 
-(((null)))That's a useless function, but it shows the pattern we are
-interested in—the function it returns passes all of the given
-arguments, and only those arguments, to `f`. It does this by passing
-its own `arguments` object to `apply`. The first argument to `apply`,
-for which we are passing `null` here, can be used to simulate a
-((method)) call. We will come back to that in the
-link:06_object.html#call_method[next chapter].
+(((null)))Данная функция бесполезна, но она демонстрирует интересующий нас шаблон – возвращаемая ею функция передаёт в `f` все полученные ею аргументы, но не более того. Происходит это при помощи передачи её собственных аргументов, хранящихся в объекте `arguments`, в метод `apply`. Первый аргумент метода `apply`, которому мы в данном случае присваиваем `null`, можно использовать для эмуляции вызова ((метод))а. Мы вернёмся к этому вопросу в link:06_object.html#call_method[следующей главе].
 
 == JSON ==
 
-(((array)))(((function,higher-order)))(((forEach method)))(((data
-set)))Higher-order functions that somehow apply a function to the
-elements of an array are widely used in JavaScript. The `forEach`
-method is the most primitive such function. There are a number of
-other variants available as methods on arrays. To familiarize
-ourselves with them, let's play around with another data set.
+(((array)))(((function,higher-order)))(((forEach method)))(((data set)))Функции высшего порядка, которые каким-то образом применяют функцию к элементам массива, широко распространены в JavaScript. Метод `forEach` – одна из самых примитивных подобных функций. В качестве методов массивов нам доступно много других вариантов функций. Для знакомства с ними давайте поиграем с другим набором данных.
 
-(((ancestry example)))A few years ago, someone crawled through a lot
-of archives and put together a book on the history of my family name
-(Haverbeke—meaning Oatbrook). I opened it hoping to find
-knights, pirates, and alchemists ... but the book turns out to be
-mostly full of Flemish ((farmer))s. For my amusement, I extracted the
-information on my direct ancestors and put it into a
-computer-readable format.
+(((ancestry example)))Несколько лет назад кто-то обследовал много архивов и сделал целую книгу по истории моей фамилии. Я открыл её, надеясь найти там рыцарей, пиратов и алхимиков… Но оказалось, что она заполнена в основном фламандскими ((фермер))ами. Для развлечения я извлёк информацию по моим непосредственным предкам и оформил в формате, пригодном для чтения компьютером.
 
-(((data format)))(((JSON)))The file I created looks something like
-this:
+(((data format)))(((JSON)))Файл выглядит примерно так:
 
 [source,application/json]
 ----
@@ -398,27 +280,15 @@ this:
    "born": 1832, "died": 1905,
    "father": "Carel Haverbeke",
    "mother": "Maria van Brussel"},
-  … and so on
+  … и так далее
 ]
 ----
 
-indexsee:[JavaScript Object Notation,JSON](((World Wide Web)))This format is called JSON (pronounced “Jason”),
-which stands for JavaScript Object Notation. It is widely used as a
-data storage and communication format on the Web.
+indexsee:[JavaScript Object Notation,JSON](((World Wide Web)))Этот формат называется JSON, что означает JavaScript Object Notation (разметка объектов JavaScript). Он широко используется в хранении данных и сетевых коммуникациях.
 
-(((array)))(((object)))(((quoting,in JSON)))(((comment)))JSON is similar to
-JavaScript's way of writing arrays and objects, with a few
-restrictions. All property names have to be surrounded by double quotes, and
-only simple data expressions are allowed—no function calls, 
-variables, or anything that involves actual computation. Comments are not
-allowed in JSON.
+(((array)))(((object)))(((quoting,in JSON)))(((comment)))JSON похож на JavaScript по способу записи массивов и объектов – с некоторыми ограничениями. Все имена свойств должны быть заключены в двойные кавычки, а также допускаются только простые величины – никаких вызовов функций, переменных, ничего что включало бы вычисления. Также не допускаются комментарии.
 
-(((JSON.stringify function)))(((JSON.parse
-function)))(((serialization)))(((deserialization)))(((parsing)))JavaScript
-gives us functions, `JSON.stringify` and `JSON.parse`, that convert
-data to and from this format. The first takes a JavaScript value and
-returns a JSON-encoded string. The second takes such a string and
-converts it to the value it encodes.
+(((JSON.stringify function)))(((JSON.parse function)))(((serialization)))(((deserialization)))(((parsing)))JavaScript предоставляет функции `JSON.stringify` и `JSON.parse`, которые преобразовывают данные из этого формата и в этот формат. Первая принимает значение и возвращает строчку с JSON. Вторая принимает такую строчку и возвращает значение.
 
 [source,javascript]
 ----
@@ -429,12 +299,7 @@ console.log(JSON.parse(string).born);
 // → 1980
 ----
 
-(((ANCESTRY_FILE data set)))The variable `ANCESTRY_FILE`, available in
-the ((sandbox)) for this chapter and in
-http://eloquentjavascript.net/2nd_edition/code/ancestry.js[a downloadable file] on
-the website(!book (http://eloquentjavascript.net/2nd_edition/code#5[_eloquentjavascript.net/2nd_edition/code#5_])!), contains the
-content of my ((JSON)) file as a string. Let's decode it and see how
-many people it contains.
+(((ANCESTRY_FILE data set)))Переменная `ANCESTRY_FILE` доступна в ((песочнице)) к этой главе и в http://eloquentjavascript.net/2nd_edition/code/ancestry.js[скачиваемом файле] на сайте(!book (http://eloquentjavascript.net/2nd_edition/code#5[_eloquentjavascript.net/2nd_edition/code#5_])!). Она содержит ((JSON)) файл в виде строки. Давайте её раскодируем и посчитаем количество упомянутых людей.
 
 // include_code strip_log
 
@@ -445,13 +310,9 @@ console.log(ancestry.length);
 // → 39
 ----
 
-== Filtering an array ==
+== Фильтруем массив ==
 
-(((array,methods)))(((array,filtering)))(((filter
-method)))(((function,higher-order)))(((predicate function)))To find
-the people in the ancestry data set who were young in 1924, the
-following function might be helpful. It filters out the elements in an
-array that don't pass a test.
+(((array,methods)))(((array,filtering)))(((filter method)))(((function,higher-order)))(((predicate function)))Чтобы найти людей, которые были молоды в 1924 году, может пригодиться следующая функция. Она отфильтровывает элементы массива, которые не проходят проверку.
 
 [source,javascript]
 ----
@@ -470,24 +331,13 @@ console.log(filter(ancestry, function(person) {
 // → [{name: "Philibert Haverbeke", …}, …]
 ----
 
-(((function,as value)))(((function,application)))This uses the
-argument named `test`, a function value, to fill in a “gap” in the
-computation. The `test` function is called for each element, and its
-return value determines whether an element is included in the returned
-array.
+(((function,as value)))(((function,application)))Используется аргумент с именем `test` – это функция, которая производит вычисления для проверки. Она вызывается для каждого элемента, а возвращаемое ею значение определяет, попадает ли этот элемент в возвращаемый массив.
 
-(((ancestry example)))Three people in the file were alive and young in
-1924: my grandfather, grandmother, and great-aunt.
+(((ancestry example)))В файле оказалось три человека, которые были молоды в 1924 – дедушка, бабушка и двоюродная бабушка.
 
-(((filter method)))(((pure function)))(((side effect)))Note how the
-`filter` function, rather than deleting elements from the existing
-array, builds up a new array with only the elements that pass the
-test. This function is _pure_. It does not modify the array it is
-given.
+(((filter method)))(((pure function)))(((side effect)))Обратите внимание — функция `filter` не удаляет элементы из существующего массива, а строит новый, содержащий только прошедшие проверку элементы. Это _чистая_ функция, потому что она не портит переданный ей массив.
 
-Like `forEach`, `filter` is also a ((standard)) method on arrays. The
-example defined the function only in order to show what it does
-internally. From now on, we'll use it like this instead:
+Как и `forEach`, `filter` – это один из ((стандарт))ных методов массива. В примере мы описали такую функцию, только чтобы показать, что она делает внутри. Отныне мы будем использовать её просто:
 
 [source,javascript]
 ----
@@ -497,18 +347,11 @@ console.log(ancestry.filter(function(person) {
 // → [{name: "Carolus Haverbeke", …}]
 ----
 
-== Transforming with map ==
+== Преобразования при помощи map ==
 
-(((array,methods)))(((map method)))(((ancestry example)))Say we
-have an array of objects representing people, produced by filtering
-the `ancestry` array somehow. But we want an array of names, which is
-easier to read.
+(((array,methods)))(((map method)))(((ancestry example)))Допустим, есть у нас архив объектов, представляющих людей, который был получен фильтрацией массива предков. Но нам нужен массив имён, который было бы проще прочесть.
 
-(((function,higher-order)))The `map` method transforms an array by
-applying a function to all of its elements and building a new array
-from the returned values. The new array will have the same length as
-the input array, but its content will have been “mapped” to a new form
-by the function.
+(((function,higher-order)))Метод `map` преобразовывает массив, применяя функцию ко всем его элементам и строя новый массив из возвращаемых значений. У нового массива будет та же длина, что у входного, но его содержимое будет преобразовано в новый формат.
 
 // test: join
 
@@ -531,32 +374,17 @@ console.log(map(overNinety, function(person) {
 //    "Maria Haverbeke"]
 ----
 
-Interestingly, the people who lived to at least 90 years of age are the
-same three people who we saw before—the people who were young in the
-1920s, which happens to be the most recent generation in my data set.
-I guess ((medicine)) has come a long way.
+Что интересно, люди, которые прожили хотя бы до 90 лет – это те самые, что мы видели ранее, которые были молоды в 1920-х годах. Это как раз самое новое поколение в моих записях. Видимо, ((медицина)) серьёзно улучшилась.
 
-Like `forEach` and `filter`, `map` is also a standard method on
-arrays.
+Как и `forEach` и `filter`, `map` также является стандартным методом у массивов.
 
-== Summarizing with reduce ==
+== Суммирование с reduce ==
 
-(((array,methods)))(((summing example)))(((reduce method)))(((ancestry
-example)))Another common pattern of computation on arrays is computing
-a single value from them. Our recurring example, summing a collection
-of numbers, is an instance of this. Another example would be finding
-the person with the earliest year of birth in the data set.
+(((array,methods)))(((summing example)))(((reduce method)))(((ancestry example)))Другой популярный пример работы с массивами – получение одиночного значения на основе данных в массиве. Один пример – уже знакомое нам суммирование списка номеров. Другой – поиск человека, родившегося раньше всех.
 
-(((function,higher-order)))(((fold function)))The higher-order
-operation that represents this pattern is called _reduce_ (or
-sometimes _fold_). You can think of it as folding up the array, one
-element at a time. When summing numbers, you'd start with the number
-zero and, for each element, combine it with the current sum by adding
-the two.
+(((function,higher-order)))(((fold function)))Операция высшего порядка такого типа называется _уменьшение_ (_reduce_) или иногда _свёртывание_ (_fold_). Можно представить её в виде складывания массива, по одному элементу за раз. При суммировании чисел мы начинали с нуля, и для каждого элемента комбинировали его с текущей суммой при помощи сложения.
 
-The parameters to the `reduce` function are, apart from the array, a
-combining function and a start value. This function is a little less
-straightforward than `filter` and `map`, so pay close attention.
+Параметры функции `reduce`, кроме массива – комбинирующая функция и начальное значение. Эта функция чуть менее понятная, чем `filter` или `map`, поэтому обратите на неё пристальное внимание.
 
 [source,javascript]
 ----
@@ -573,14 +401,9 @@ console.log(reduce([1, 2, 3, 4], function(a, b) {
 // → 10
 ----
 
-(((reduce method)))The standard array method `reduce`, which of course
-corresponds to this function, has an added convenience. If your array
-contains at least one element, you are allowed to leave off the
-`start` argument. The method will take the first element of the array
-as its start value and start reducing at the second element.
+(((reduce method)))Стандартный метод массивов `reduce`, который, конечно, работает так же, ещё более удобен. Если массив содержит хотя бы один элемент, вы можете не указывать аргумент `start`. Метод возьмёт в качестве стартового значения первый элемент массива и начнёт работу со второго.
 
-(((ancestry example)))(((minimum)))To use `reduce` to find my most
-ancient known ancestor, we can write something like this:
+(((ancestry example)))(((minimum)))Чтобы при помощи `reduce` найти самого древнего из известных моих предков, мы можем написать нечто вроде:
 
 // test: no
 
@@ -593,12 +416,9 @@ console.log(ancestry.reduce(function(min, cur) {
 // → {name: "Pauwels van Haverbeke", born: 1535, …}
 ----
 
-== Composability ==
+== Компонуемость ==
 
-(((loop)))(((minimum)))(((ancestry example)))Consider how we would
-have written the previous example (finding the person with the
-earliest year of birth) without higher-order functions. The code is
-not that much worse.
+(((loop)))(((minimum)))(((ancestry example)))Как бы мы могли написать предыдущий пример (поиск человека с самой ранней датой рождения) без функций высшего порядка? На самом деле, код не такой уж и ужасный.
 
 // test: no
 
@@ -614,15 +434,10 @@ console.log(min);
 // → {name: "Pauwels van Haverbeke", born: 1535, …}
 ----
 
-There are a few more ((variable))s, and the program is two lines
-longer but still quite easy to understand.
+Чуть больше ((переменных)), на две строчки длиннее – но пока достаточно понятный код.
 
 [[average_function]]
-(((average
-function)))(((composability)))(((function,higher-order)))Higher-order
-functions start to shine when you need to _compose_ functions. As an
-example, let's write code that finds the average age for men and for
-women in the data set.
+(((average function)))(((composability)))(((function,higher-order)))Функции высшего порядка раскрывают свои возможности по-настоящему, когда вам приходится _комбинировать_ функции. К примеру, напишем код, находящий средний возраст мужчин и женщин в наборе.
 
 // test: clip
 
@@ -642,77 +457,31 @@ console.log(average(ancestry.filter(female).map(age)));
 // → 54.56
 ----
 
-(((plus function)))(((+ operator)))(((function,as value)))(It's a bit
-silly that we have to define `plus` as a function, but operators in
-JavaScript, unlike functions, are not values, so you can't pass them
-as arguments.)
+(((plus function)))(((+ operator)))(((function,as value)))(Глупо, что нам приходится определять сложение как функцию `plus`, но операторы в JavaScript не являются значениями, поэтому их не передашь в качестве аргументов.)
 
-(((abstraction)))(((vocabulary)))Instead of tangling the logic into a
-big ((loop)), it is neatly composed into the concepts we are
-interested in—determining sex, computing age, and averaging numbers. We
-can apply these one by one to get the result we are looking for.
+(((abstraction)))(((vocabulary)))Вместо того чтобы впутывать алгоритм в большой ((цикл)), всё распределено по концепциям, которые нас интересуют – определение пола, подсчёт возраста и усреднение чисел. Мы применяем их по очереди для получения результата.
 
-This is _fabulous_ for writing clear code. Unfortunately, this clarity
-comes at a cost.
+Для написания понятного кода это прямо-таки _сказочная_ возможность. Конечно, ясность не достаётся бесплатно.
 
-== The cost ==
+== Цена ==
 
-(((efficiency)))(((optimization)))In the happy land of elegant code
-and pretty rainbows, there lives a spoil-sport monster called
-_inefficiency_.
+(((efficiency)))(((optimization)))В счастливом краю элегантного кода и красивых радуг живёт гадское чудище по имени _Неэффективность_.
 
-(((elegance)))(((array,creation)))(((pure
-function)))(((composability)))A program that processes an array is most
-elegantly expressed as a sequence of cleanly separated steps that each
-do something with the array and produce a new array. But building up
-all those intermediate arrays is somewhat expensive.
+(((elegance)))(((array,creation)))(((pure function)))(((composability)))Программа, обрабатывающая массив, красивее всего представляется в виде последовательности явно разделённых шагов, каждый из которых что-то делает с массивом и возвращает новый массив. Но наслоение всех этих промежуточных массивов стоит дорого.
 
-(((readability)))(((function,application)))(((forEach
-method)))(((function,as value)))Likewise, passing a function to
-`forEach` and letting that method handle the array iteration for us is
-convenient and easy to read. But function calls in JavaScript are
-costly compared to simple loop bodies.
+(((readability)))(((function,application)))(((forEach method)))(((function,as value)))Точно так же, передача функции в `forEach`, чтобы та прошлась по массиву за нас, удобна и проста в понимании. Но вызов функций в JavaScript обходится дороже по сравнению с циклами.
 
-(((abstraction)))And so it goes with a lot of techniques that help
-improve the clarity of a program. Abstractions add layers between the
-raw things the computer is doing and the concepts we are working with
-and thus cause the machine to perform more work. This is not an iron
-law—there are programming languages that have better support for
-building abstractions without adding inefficiencies, and even in
-JavaScript, an experienced programmer can find ways to write abstract
-code that is still fast. But it is a problem that comes up a lot.
+(((abstraction)))Так же обстоят дела со многими техниками, улучшающими читаемость программ. Абстракции добавляют слои между чистой работой компьютера и теми концепциями, с которыми мы работаем – и в результате компьютер делает больше работы. Это не железное правило – есть языки, которые позволяют добавлять абстракции без ухудшения эффективности, и даже в JavaScript опытный программист может найти способы писать абстрактный и быстрый код. Но эта проблема встречается часто.
 
-(((profiling)))Fortunately, most computers are insanely fast. If you
-are processing a modest set of data or doing something that has
-to happen only on a human time scale (say, every time the user clicks a
-button), then it _does not matter_ whether you wrote a pretty solution
-that takes half a millisecond or a super-optimized solution that takes
-a tenth of a millisecond.
+(((profiling)))К счастью, большинство компьютеров безумно быстрые. Если ваш набор данных не слишком велик, или время работы должно быть всего лишь достаточно быстрым с точки зрения человека (например, делать что-то каждый раз, когда пользователь жмёт на кнопку) — тогда _не имеет значения_, написали вы красивое решение, которое работает половину миллисекунды, или очень оптимизированное, которое работает одну десятую миллисекунды.
 
-(((nesting,of loops)))(((inner loop)))(((complexity)))It is helpful to
-roughly keep track of how often a piece of your program is going to
-run. If you have a ((loop)) inside a loop (either directly or through
-the outer loop calling a function that ends up performing the inner
-loop), the code inside the inner loop will end up running __N__×__M__
-times, where _N_ is the number of times the outer loop repeats and
-_M_ is the number of times the inner loop repeats within each iteration
-of the outer loop. If that inner loop contains another loop that makes
-_P_ rounds, its body will run __M__×__N__×__P__ times, and so on. This
-can add up to large numbers, and when a program is slow, the problem
-can often be traced to only a small part of the code, which sits inside an inner loop.
+(((nesting,of loops)))(((inner loop)))(((complexity)))Удобно примерно подсчитывать, как часто будет вызываться данный кусочек кода. Если у вас есть ((цикл)) в цикле (напрямую, или же через вызов в цикле функции, которая внутри также работает с циклом), то код будет выполнен __N__×__M__ раз, где _N_ – количество повторений внешнего цикла, а _M_ – внутреннего. Если во внутреннем цикле есть ещё один цикл, повторяющийся _P_ раз, тогда мы уже получим __M__×__N__×__P__ – и так далее. Это может приводить к большим числам, и когда программа тормозит, проблему часто можно свести к небольшому кусочку кода, находящемуся внутри самого внутреннего цикла.
 
-== Great-great-great-great-... ==
+== Пра-пра-пра-пра-пра-… ==
 
-(((ancestry example)))My ((grandfather)), Philibert Haverbeke, is
-included in the data file. By starting with him, I can trace my
-lineage to find out whether the most ancient person in the data,
-Pauwels van Haverbeke, is my direct ancestor. And if he is, I would
-like to know how much ((DNA)) I theoretically share with him.
+(((ancestry example)))Мой ((дед)), Филиберт Хавербеке, упомянут в файле с данными. Начиная с него, я могу отследить свой род в поисках самого древнего из предков, Паувелса ван Хавербеке, моего прямого предка. Теперь я хочу подсчитать, какой процент ((ДНК)) у меня от него (в теории).
 
-(((byName object)))(((map)))(((data structure)))(((object,as
-map)))To be able to go from a parent's name to the actual object that
-represents this person, we first build up an object that associates
-names with people.
+(((byName object)))(((map)))(((data structure)))(((object,as map)))Чтобы пройти от имени предка до объекта, представляющего его, мы строим объект, который сопоставляет имена и людей.
 
 // include_code strip_log
 
@@ -727,39 +496,13 @@ console.log(byName["Philibert Haverbeke"]);
 // → {name: "Philibert Haverbeke", …}
 ----
 
-Now, the problem is not entirely as simple as following the `father`
-properties and counting how many we need to reach Pauwels. There are
-several cases in the family ((tree)) where people married their second
-cousins (tiny villages and all that). This causes the branches of the
-family tree to rejoin in a few places, which means I share more than
-1/2^_G_^ of my genes with this person, where _G_ for the number of
-generations between Pauwels and me. This formula comes from the idea
-that each generation splits the gene pool in two.
+Задача – не просто найти у каждой из записей отца и посчитать, сколько шагов получается до Паувелса. В истории семьи было несколько браков между двоюродными родственниками (ну, маленькие деревни и т.д.). В связи с этим ветви семейного ((дерева)) в некоторых местах соединяются с другими, поэтому генов у меня получается больше, чем 1/2^_G_^ (_G_ – количество поколений между Паувелсом и мною). Эта формула исходит из предположения, что каждое поколение расщепляет генетический фонд надвое.
 
-(((reduce method)))(((data structure)))A reasonable way to think about
-this problem is to look at it as being analogous to `reduce`, which
-condenses an array to a single value by repeatedly combining
-values, left to right. In this case, we also want to condense our data
-structure to a single value but in a way that follows family
-lines. The _shape_ of the data is that of a family tree, rather than a
-flat list.
+(((reduce method)))(((data structure)))Разумно будет провести аналогию с `reduce`, где массив низводится до единственного значения путём последовательного комбинирования данных слева направо. Здесь нам тоже надо получить единственное число, но при этом нужно следовать линиям наследственности. А они _формируют_ не простой список, а дерево.
 
-The way we want to reduce this shape is by computing a value for a
-given person by combining values from their ancestors. This can be
-done recursively: if we are interested in person _A_, we have to
-compute the values for __A__’s parents, which in turn requires us to
-compute the value for __A__’s grandparents, and so on. In principle,
-that'd require us to look at an infinite number of people, but since
-our data set is finite, we have to stop somewhere. We'll allow a
-((default value)) to be given to our reduction function, which will be
-used for people who are not in the data. In our case, that value is
-simply zero, on the assumption that people not in the list don't share
-DNA with the ancestor we are looking at.
+Мы считаем это значение для конкретного человека, комбинируя эти значения его предков. Это можно сделать рекурсивно. Если нам нужен какой-то человек, нам надо подсчитать нужную величину для его родителей, что в свою очередь требует подсчёта её для его прародителей, и т.п. По идее нам придётся обойти бесконечное множество узлов дерева, но так как наш набор данных конечен, нам надо будет где-то остановиться. Мы просто назначим ((значение по умолчанию)) для всех людей, которых нет в нашем списке. Логично будет назначить им нулевое значение – люди, которых нет в списке, не несут в себе ДНК нужного нам предка.
 
-(((recursion)))(((reduceAncestors function)))Given a person, a
-function to combine values from the two parents of a given person, and
-a default value, `reduceAncestors` condenses a value from a family
-tree.
+(((recursion)))(((reduceAncestors function)))Принимая человека, функцию для комбинирования значений от двух предков и значение по умолчанию, функция `reduceAncestors` “конденсирует” значение из семейного древа.
 
 // include_code
 
@@ -777,15 +520,9 @@ function reduceAncestors(person, f, defaultValue) {
 }
 ----
 
-(((function,higher-order)))The inner function (`valueFor`) handles a
-single person. Through the ((magic)) of recursion, it can simply call
-itself to handle the father and the mother of this person. The
-results, along with the person object itself, are passed to `f`, which
-returns the actual value for this person.
+(((function,higher-order)))Внутренняя функция `valueFor` работает с одним человеком. Благодаря рекурсивной ((магии)) она может вызвать себя для обработки отца и матери этого человека. Результаты вместе с объектом `person` передаются в `f`, которая и вычисляет нужное значение для этого человека.
 
-We can then use this to compute the amount of ((DNA)) my
-((grandfather)) shared with Pauwels van Haverbeke and divide that by
-four.
+Теперь мы можем использовать это для подсчёта процента ((ДНК)), которое мой ((дедушка)) разделил с Паувелсом ванн Хавербеке, и поделить это на четыре.
 
 // start_code bottom_lines: 2
 // test: clip
@@ -804,26 +541,11 @@ console.log(reduceAncestors(ph, sharedDNA, 0) / 4);
 // → 0.00049
 ----
 
-The person with the name Pauwels van Haverbeke obviously shared 100 percent
-of his DNA with Pauwels van Haverbeke (there are no people who share
-names in the data set), so the function returns 1 for him. All other
-people share the average of the amounts that their parents share.
+Человек по имени Паувелс ванн Хавербеке, очевидно, делит 100% ДНК с Паувелсом ванн Хавербеке (полных тёзок в списке данных нет), поэтому для него функция возвращает 1. Все остальные делят средний процент их родителей.
 
-So, statistically speaking, I share about 0.05 percent of my ((DNA)) with
-this 16th-century person. It should be noted that this is only a
-statistical approximation, not an exact amount. It is a rather small
-number, but given how much genetic material we carry (about 3 billion
-base pairs), there's still probably some aspect in the biological
-machine that is me that originates with Pauwels.
+Статистически у меня примерно 0.05% ((ДНК)) совпадает с моим предком из 16 века. Это, конечно, приблизительное число. Это довольно мало, но так как наш генетический материал составляет примерно 3 миллиарда базовых пар, во мне есть что-то от моего предка.
 
-(((ancestry example)))(((reduceAncestors
-function)))(((abstraction)))We could also have computed this number
-without relying on `reduceAncestors`. But separating the general
-approach (condensing a family tree) from the specific case (computing
-shared DNA) can improve the clarity of the code and allows us to reuse
-the abstract part of the program for other cases. For example, the
-following code finds the percentage of a person's known ancestors who
-lived past 70 (by lineage, so people may be counted multiple times):
+(((ancestry example)))(((reduceAncestors function)))(((abstraction)))Можно было бы подсчитать это число и без использования `reduceAncestors`. Но разделение общего подхода (обход древа) и конкретного случая (подсчёт ДНК) позволяет нам писать более понятный код и использовать вновь части кода для других задач. Например, следующий код выясняет процент известных предков данного человека, доживших до 70 лет:
 
 // test: clip
 
@@ -849,26 +571,13 @@ console.log(longLivingPercentage(byName["Emile Haverbeke"]));
 // → 0.129
 ----
 
-Such numbers are not to be taken too seriously, given that
-our data set contains a rather arbitrary collection of people. But the
-code illustrates the fact that `reduceAncestors` gives us a useful
-piece of ((vocabulary)) for working with the family tree data
-structure.
+Не нужно относиться к таким расчётам слишком серьёзно, так как наш набор содержит произвольную выборку людей. Но код демонстрирует, что `reduceAncestors` – полезная часть общего ((словаря)) для работы со структурой данных типа фамильного древа.
 
-== Binding ==
+== Связывание ==
 
-(((bind method)))(((partial
-application)))(((function,application)))The `bind` method, which all
-functions have, creates a new function that will call the original
-function but with some of the arguments already fixed.
+(((bind method)))(((partial application)))(((function,application)))Метод `bind`, который есть у всех функций, создаёт новую функцию, которая вызовет оригинальную, но с некоторыми фиксированными аргументами.
 
-(((filter method)))(((function,as value)))The following code shows an
-example of `bind` in use. It defines a function `isInSet` that
-tells us whether a person is in a given set of strings. To call
-`filter` in order to collect those person objects whose names are in a
-specific set, we can either write a function expression that makes a
-call to `isInSet` with our set as its first argument or _partially
-apply_ the `isInSet` function.
+(((filter method)))(((function,as value)))Следующий пример показывает, как это работает. В нём мы определяем функцию `isInSet`, которая говорит, есть ли имя человека в заданном наборе. Для вызова `filter` мы можем либо написать выражение с функцией, которое вызывает `isInSet`, передавая ей набор строк в качестве первого аргумента, или применить функцию `isInSet` _частично_.
 
 [source,javascript]
 ----
@@ -887,41 +596,23 @@ console.log(ancestry.filter(isInSet.bind(null, theSet)));
 // → … same result
 ----
 
-The call to `bind` returns a function that will call `isInSet` with
-`theSet` as first argument, followed by any remaining arguments given
-to the bound function.
+Вызов `bind` возвращает функцию, которая вызовет `isInSet` с первым аргументом `theSet`, и последующими аргументами такими же, какие были переданы в связанную функцию.
 
-(((null)))The first argument, where the example passes `null`, is used
-for ((method call))s, similar to the first argument to `apply`. I'll
-describe this in more detail in the
-link:06_object.html#call_method[next chapter].
+(((null)))Первый аргумент, который сейчас установлен в `null`, используется для ((вызовов методов)) – так же, как было в `apply`. Мы поговорим об этом в link:06_object.html#call_method[следующей главе].
 
-== Summary ==
+== Итог ==
 
-Being able to pass function values to other functions is not just a
-gimmick but a deeply useful aspect of JavaScript. It allows us to
-write computations with “gaps” in them as functions and have the code
-that calls these functions fill in those gaps by providing function
-values that describe the missing computations.
+Возможность передавать вызов функции другим функциям – не просто игрушка, но очень полезное свойство JavaScript. Мы можем писать выражения “с пробелами” в них, которые затем будут заполнены при помощи функций, описывающих пропущенные вычисления.
 
-Arrays provide a number of useful higher-order methods—`forEach`
-to do something with each element in an array, `filter` to build a new
-array with some elements filtered out, `map` to build a new array
-where each element has been put through a function, and `reduce` to
-combine all an array's elements into a single value.
+У массивов есть несколько полезных методов высшего порядка – `forEach`, чтобы сделать что-то с каждым элементом, `filter` – чтобы построить новый массив, где некоторые значения отфильтрованы, `map` – чтобы построить новый массив, каждый элемент которого пропущен через функцию, `reduce` – для комбинации всех элементов массива в одно значение.
 
-Functions have an `apply` method that can be used to call them with an
-array specifying their arguments. They also have a `bind` method,
-which is used to create a partially applied version of the function.
+У функций есть метод `apply`, для передачи им аргументов в виде массива. Также у них есть метод `bind` для создания копии функции с частично заданными аргументами.
 
-== Exercises ==
+== Упражнения ==
 
-=== Flattening ===
+=== Свёртка ===
 
-(((flattening (exercise))))(((reduce method)))(((concat
-method)))(((array)))Use the `reduce` method in combination with
-the `concat` method to “flatten” an array of arrays into a single
-array that has all the elements of the input arrays.
+(((flattening (exercise))))(((reduce method)))(((concat method)))(((array)))Используйте метод `reduce` в комбинации с `concat` для “свёртки” массива массивов в один массив, у которого есть все элементы входных массивов.
 
 ifdef::interactive_target[]
 
@@ -930,24 +621,16 @@ ifdef::interactive_target[]
 [source,javascript]
 ----
 var arrays = [[1, 2, 3], [4, 5], [6]];
-// Your code here.
+// Ваш код тут.
 // → [1, 2, 3, 4, 5, 6]
 ----
 endif::interactive_target[]
 
-=== Mother-child age difference ===
+=== Разница в возрасте матерей и их детей ===
 
-(((ancestry example)))(((age difference (exercise))))(((average
-function)))Using the example data set from this chapter, compute the
-average age difference between mothers and children (the age of the
-mother when the child is born). You can use the `average` function
-defined link:05_higher_order.html#average_function[earlier] in this
-chapter.
+(((ancestry example)))(((age difference (exercise))))(((average function)))Используя набор данных из примера, подсчитайте среднюю разницу в возрасте между матерями и их детьми (это возраст матери во время появления ребёнка). Можно использовать функцию `average`, приведённую link:05_higher_order.html#average_function[ранее] в главе.
 
-(((byName object)))Note that not all the mothers mentioned in the data
-are themselves present in the array. The `byName` object, which makes
-it easy to find a person's object from their name, might be useful
-here.
+(((byName object)))Обратите внимание – не все матери, упомянутые в наборе, присутствуют в нём. Здесь может пригодиться объект `byName`, который упрощает процедуру поиска объекта человека по имени.
 
 ifdef::interactive_target[]
 
@@ -966,7 +649,7 @@ ancestry.forEach(function(person) {
   byName[person.name] = person;
 });
 
-// Your code here.
+// Ваш код тут.
 
 // → 31.2
 ----
@@ -987,17 +670,11 @@ the `null` elements before passing the array to `average`.
 
 !!hint!!
 
-=== Historical life expectancy ===
+=== Историческая ожидаемая продолжительность жизни ===
 
-(((life expectancy (exercise))))When we looked up all the people in
-our data set that lived more than 90 years, only the latest
-generation in the data came out. Let's take a closer look at that
-phenomenon.
+(((life expectancy (exercise))))Мы считали, что только последнее поколение людей дожило до 90 лет. Давайте рассмотрим этот феномен поподробнее.
 
-(((average function)))Compute and output the average age of the people
-in the ancestry data set per century. A person is assigned to a
-((century)) by taking their year of death, dividing it by 100,
-and rounding it up, as in `Math.ceil(person.died / 100)`.
+(((average function)))Подсчитайте средний возраст людей для каждого из столетий. Назначаем ((столетию)) людей, беря их год смерти, деля его на 100 и округляя: `Math.ceil(person.died / 100)`.
 
 ifdef::interactive_target[]
 
@@ -1041,30 +718,13 @@ be used to print the average ages for the individual centuries.
 
 !!hint!!
 
-(((grouping)))(((map)))(((object,as map)))(((groupBy function)))For
-bonus points, write a function `groupBy` that abstracts the grouping
-operation. It should accept as arguments an array and a function that
-computes the group for an element in the array and returns an object
-that maps group names to arrays of group members.
+(((grouping)))(((map)))(((object,as map)))(((groupBy function)))В качестве призовой игры напишите функцию `groupBy`, абстрагирующую операцию группировки. Она должна принимать массив и функцию, которая подсчитывает группу для элементов массива, и возвращать объект, который сопоставляет названия групп массивам членов этих групп.
 
-=== Every and then some ===
+=== Every и some ===
 
-(((predicate function)))(((every and some (exercise))))(((every
-method)))(((some method)))(((array,methods)))(((&& operator)))(((||
-operator)))Arrays also come with the standard methods `every` and
-`some`. Both take a predicate function that, when called with an array
-element as argument, returns true or false. Just like `&&` 
-returns a true value only when the expressions on both sides are true,
-`every` returns true only when the predicate returns true for _all_
-elements of the array. Similarly, `some` returns true as soon as the
-predicate returns true for _any_ of the elements. They do not process
-more elements than necessary—for example, if `some` finds that the
-predicate holds for the first element of the array, it will not look
-at the values after that.
+(((predicate function)))(((every and some (exercise))))(((every method)))(((some method)))(((array,methods)))(((&& operator)))(((|| operator)))У массивов есть ещё стандартные методы `every` и `some`. Они принимают как аргумент некую функцию, которая, будучи вызванной с элементом массива в качестве аргумента, возвращает true или false. Так же, как `&&` возвращает true, только если выражения с обеих сторон оператора возвращают true, метод `every` возвращает true, когда функция возвращает true для _всех_ элементов массива. Соответственно, `some` возвращает true, когда заданная функция возвращает true при работе с _любым_ из элементов массива. Они не обрабатывают больше элементов, чем необходимо – например, если `some` получает true для первого элемента, он не обрабатывает оставшиеся.
 
-Write two functions, `every` and `some`, that behave like these
-methods, except that they take the array as their first argument
-rather than being a method.
+Напишите функции `every` и `some`, которые работают так же, как эти методы, только принимают массив в качестве аргумента.
 
 ifdef::interactive_target[]
 
