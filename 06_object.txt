@@ -4,93 +4,54 @@
 :load_files: ["code/mountains.js", "code/chapter/06_object.js"]
 :zip: node/html
 
-= The Secret Life of Objects =
+= Тайная жизнь объектов =
 
 [chapterquote="true"]
-[quote, Joe Armstrong, interviewed in Coders at Work]
+[quote, Джо Армстронг, в интервью Coders at Work]
 ____
-The problem with object-oriented languages
-is they’ve got all this implicit environment that they carry around
-with them. You wanted a banana but what you got was a gorilla holding
-the banana and the entire jungle.
+Проблема объектно-ориентированных языков в том, что они тащат с собой всё своё неявное окружение. Вам нужен был банан – а вы получаете гориллу с бананом, и целые джунгли впридачу.
 ____
 
-(((Armstrong+++,+++ Joe)))(((object)))(((holy war)))When a programmer
-says “object”, this is a loaded term. In my profession, objects are a
-way of life, the subject of holy wars, and a beloved buzzword that
-still hasn't quite lost its power.
+(((Armstrong+++,+++ Joe)))(((object)))(((holy war)))Термин “объект” в программировании сильно перегружен значениями. В моей профессии объекты – стиль жизни, тема священных войн и любимое заклинание, не теряющий своей магической силы.
 
-To an outsider, this is probably a little confusing. Let's start with
-a brief ((history)) of objects as a programming construct.
+Стороннему человеку всё это непонятно. Начнём же с краткой ((истории)) объектов как концепции в программировании.
 
-== History ==
+== История ==
 
-(((isolation)))(((history)))(((object-oriented programming)))(((object)))This story, like most programming stories, starts with the
-problem of ((complexity)). One philosophy is that complexity can be
-made manageable by separating it into small compartments that are
-isolated from each other. These compartments have ended up with the
-name _objects_.
+(((isolation)))(((history)))(((object-oriented programming)))(((object)))Эта история, как большинство историй о программировании, начинается с проблемы ((сложности)). Одна из идей говорит, что сложность можно сделать управляемой, разделив её не небольшие части, изолированные друг от друга. Эти части стали называть _объектами_.
 
 [[interface]]
-(((complexity)))(((encapsulation)))(((method)))(((interface)))An
-object is a hard shell that hides the gooey complexity inside it
-and instead offers us a few knobs and connectors (such as ((method))s)
-that present an _interface_ through which the object is to be used.
-The idea is that the interface is relatively simple and all the
-complex things going on _inside_ the object can be ignored when
-working with it.
+(((complexity)))(((encapsulation)))(((method)))(((interface)))Объект – твёрдая скорлупа, скрывающая липкую сложность внутри, и вместо неё предлагающая нам несколько ручек настройки и контактов (вроде ((метод))ов), представляющих _интерфейс_, посредством которого объект нужно использовать. Идея в том, что интерфейс относительно прост, и при работе с ним позволяет игнорировать все сложные процессы, происходящие _внутри_ объекта.
 
 image::img/object.jpg[alt="A simple interface can hide a lot of complexity.",width="6cm"]
 
-As an example, you can imagine an object that provides an interface to
-an area on your screen. It provides a way to draw shapes or text onto
-this area but hides all the details of how these shapes are converted
-to the actual pixels that make up the screen. You'd have a set of
-methods—for example, ++drawCircle++—and those are the only things you
-need to know in order to use such an object.
+Для примера представьте объект, обеспечивающий интерфейс к участку экрана. С его помощью можно рисовать фигуры или выводить текст на этот участок, но при этом все детали, касающиеся превращения текста или фигур в пиксели, скрыты. У вас есть набор методов, к примеру ++drawCircle++, и это всё, что вам нужно знать для использования такого объекта.
 
-(((object-oriented programming)))These ideas were initially worked out
-in the 1970s and 1980s and, in the 1990s, were carried up by a huge wave
-of ((hype))—the object-oriented programming revolution. Suddenly,
-there was a large tribe of people declaring that objects were the
-_right_ way to program—and that anything that did not involve objects
-was outdated nonsense.
+(((object-oriented programming)))Такие идеи получили развитие в 70-80 годах, а в 90-х их вынесла на поверхность рекламная волна – революция объектно-ориентированного программирования. Внезапно большой клан людей объявил, что объекты – это _правильный_ способ программирования. А всё, что не имеет объектов, является устаревшей ерундой.
 
-That kind of zealotry always produces a lot of impractical silliness,
-and there has been a sort of counter-revolution since then. In some
-circles, objects have a rather bad reputation nowadays.
+Такой фанатизм всегда приводит к куче бесполезной чуши, и с тех пор идёт что-то вроде контрреволюции. В некоторых кругах объекты вообще имеют крайне плохую репутацию.
 
-I prefer to look at the issue from a practical, rather than
-ideological, angle. There are several useful concepts, most
-importantly that of _((encapsulation))_ (distinguishing between
-internal complexity and external interface), that the object-oriented
-culture has popularized. These are worth studying.
+Я предпочитаю рассматривать их с практической, а не идеологической точки зрения. Есть несколько полезных идей, в частности _((инкапсуляция))_ (различие между внутренней сложностью и внешней простотой), которые были популяризованы объектно-ориентированной культурой. Их стоит изучать.
 
-This chapter describes JavaScript's rather eccentric take on objects
-and the way they relate to some classical object-oriented techniques.
+Эта глава описывает довольно эксцентричный подход JavaScript к объектам, и то, как они соотносятся с классическими объектно-ориентированными техниками.
 
 [[obj_methods]]
-== Methods ==
+== Методы ==
 
-(((rabbit example)))(((method)))(((property)))Methods are simply
-properties that hold function values. This is a simple method:
+(((rabbit example)))(((method)))(((property)))Методы – свойства, содержащие функции. Простой метод:
 
 [source,javascript]
 ----
 var rabbit = {};
 rabbit.speak = function(line) {
-  console.log("The rabbit says '" + line + "'");
+  console.log("Кролик говорит '" + line + "'");
 };
 
-rabbit.speak("I'm alive.");
-// → The rabbit says 'I'm alive.'
+rabbit.speak("Я живой.");
+// → Кролик говорит 'Я живой.'
 ----
 
-(((this)))(((method call)))Usually a method needs to do something with
-the object it was called on. When a function is called as a
-method—looked up as a property and immediately called, as in
-++object.method()++—the special variable `this` in its body will point
-to the object that it was called on.
+(((this)))(((method call)))Обычно метод должен что-то сделать с объектом, через который он был вызван. Когда функцию вызывают в виде метода – как свойство объекта, например ++object.method()++ – специальная переменная `this` в её теле будет указывать на вызвавший её объект.
 
 // test: join
 // include_code top_lines:6
@@ -98,45 +59,36 @@ to the object that it was called on.
 [source,javascript]
 ----
 function speak(line) {
-  console.log("The " + this.type + " rabbit says '" +
+  console.log("А " + this.type + " кролик говорит '" +
               line + "'");
 }
-var whiteRabbit = {type: "white", speak: speak};
-var fatRabbit = {type: "fat", speak: speak};
+var whiteRabbit = {type: "белый", speak: speak};
+var fatRabbit = {type: "толстый", speak: speak};
 
-whiteRabbit.speak("Oh my ears and whiskers, " +
-                  "how late it's getting!");
-// → The white rabbit says 'Oh my ears and whiskers, how
-//   late it's getting!'
-fatRabbit.speak("I could sure use a carrot right now.");
-// → The fat rabbit says 'I could sure use a carrot
-//   right now.'
+whiteRabbit.speak("Ушки мои и усики, " +
+                  "я же наверняка опаздываю!");
+// → А белый кролик говорит 'Ушки мои и усики, я же наверняка опаздываю!'
+fatRabbit.speak("Мне бы сейчас морковочки.");
+// → А толстый кролик говорит 'Мне бы сейчас морковочки.'
 ----
 
-(((apply method)))(((bind method)))(((this)))(((rabbit example)))The
-code uses the `this` keyword to output the type of rabbit that is
-speaking. Recall that the `apply` and `bind` methods both take a first
-argument that can be used to simulate method calls. This first
-argument is in fact used to give a value to `this`.
+(((apply method)))(((bind method)))(((this)))(((rabbit example)))Код использует ключевое слово `this` для вывода типа говорящего кролика. Вспомните, что методы `apply` и `bind` принимают первый аргумент, который можно использовать для эмуляции вызова методов. Этот первый аргумент как раз даёт значение переменной `this`.
 
 [[call_method]]
-(((call method)))There is a method similar to `apply`, called `call`.
-It also calls the function it is a method of but takes its arguments
-normally, rather than as an array. Like `apply` and `bind`, `call` can
-be passed a specific `this` value.
+(((call method)))Есть метод, похожий на `apply`, под названием `call`. Он тоже вызывает функцию, методом которой является, только принимает аргументы как обычно, а не в виде массива. Как `apply` и `bind`, в `call` можно передать значение `this`.
 
 [source,javascript]
 ----
-speak.apply(fatRabbit, ["Burp!"]);
-// → The fat rabbit says 'Burp!'
-speak.call({type: "old"}, "Oh my.");
-// → The old rabbit says 'Oh my.'
+speak.apply(fatRabbit, ["Отрыжка!"]);
+// → А толстый кролик говорит 'Отрыжка!'
+speak.call({type: "старый"}, "О, господи.");
+// → А старый кролик говорит 'О, господи.'
 ----
 
 [[prototypes]]
-== Prototypes ==
+== Прототипы ==
 
-(((toString method)))Watch closely.
+(((toString method)))Следите за руками.
 
 [source,javascript]
 ----
@@ -147,19 +99,11 @@ console.log(empty.toString());
 // → [object Object]
 ----
 
-(((magic)))I just pulled a property out of an empty object. Magic!
+(((magic)))Я достал свойство пустого объекта. Магия!
 
-(((property)))(((object)))Well, not really. I have simply been
-withholding information about the way JavaScript objects work. In
-addition to their set of properties, almost all objects also have a
-_prototype_. A ((prototype)) is another object that is used as a
-fallback source of properties. When an object gets a request for a
-property that it does not have, its prototype will be searched for the
-property, then the prototype's prototype, and so on.
+(((property)))(((object)))Ну, не магия, конечно. Я просто не всё рассказал про то, как работают объекты в JavaScript. В дополнение к набору свойств, почти у всех также есть _прототип_. ((Прототип)) – это ещё один объект, который используется как запасной источник свойств. Когда объект получает запрос на свойство, которого у него нет, это свойство ищется у его прототипа, затем у прототипа прототипа, и т.д.
 
-(((Object prototype)))So who is the ((prototype)) of that empty
-object? It is the great ancestral prototype, the entity behind almost
-all objects, `Object.prototype`.
+(((Object prototype)))Ну а кто же ((прототип)) пустого объекта? Это великий предок всех объектов, `Object.prototype`.
 
 [source,javascript]
 ----
@@ -170,20 +114,11 @@ console.log(Object.getPrototypeOf(Object.prototype));
 // → null
 ----
 
-(((getPrototypeOf function)))As you might expect, the
-`Object.getPrototypeOf` function returns the prototype of an object.
+(((getPrototypeOf function)))Как и следовало ожидать, функция `Object.getPrototypeOf` возвращает прототип объекта.
 
-(((toString method)))The prototype relations of JavaScript objects
-form a ((tree))-shaped structure, and at the root of this structure
-sits `Object.prototype`. It provides a few ((method))s that show up in
-all objects, such as `toString`, which converts an object to a string
-representation.
+(((toString method)))Прототипические отношения в JavaScript выглядят как ((дерево)), а в его корне находится `Object.prototype`. Он предоставляет несколько ((метод))ов, которые появляются у всех объектов, типа `toString`, который преобразует объект в строковый вид.
 
-(((inheritance)))(((Function prototype)))(((Array
-prototype)))(((Object prototype)))Many objects don't directly have
-`Object.prototype` as their ((prototype)), but instead have another
-object, which provides its own default properties. Functions derive
-from `Function.prototype`, and arrays derive from `Array.prototype`.
+(((inheritance)))(((Function prototype)))(((Array prototype)))(((Object prototype)))((Прототип))ом многих объектов служит не непосредственно `Object.prototype`, а какой-то другой объект, который предоставляет свои свойства по умолчанию. Функции происходят от `Function.prototype`, массивы – от `Array.prototype`.
 
 [source,javascript]
 ----
@@ -195,53 +130,35 @@ console.log(Object.getPrototypeOf([]) ==
 // → true
 ----
 
-(((Object prototype)))Such a prototype object will itself have a
-prototype, often `Object.prototype`, so that it still indirectly
-provides methods like `toString`.
+(((Object prototype)))У таких прототипов будет свой прототип – часто `Object.prototype`, поэтому он всё равно, хоть и не напрямую, предоставляет им методы типа `toString`.
 
 (((getPrototypeOf function)))(((rabbit example)))(((Object.create
-function)))The `Object.getPrototypeOf` function obviously returns the
-prototype of an object. You can use `Object.create` to create an
-object with a specific ((prototype)).
+function)))Функция `Object.getPrototypeOf` возвращает прототип объекта. Можно использовать `Object.create` для создания объектов с заданным ((прототип))ом.
 
 [source,javascript]
 ----
 var protoRabbit = {
   speak: function(line) {
-    console.log("The " + this.type + " rabbit says '" +
+    console.log("А " + this.type + " кролик говорит '" +
                 line + "'");
   }
 };
 var killerRabbit = Object.create(protoRabbit);
-killerRabbit.type = "killer";
-killerRabbit.speak("SKREEEE!");
-// → The killer rabbit says 'SKREEEE!'
+killerRabbit.type = "убийственный";
+killerRabbit.speak("ХРЯЯЯСЬ!");
+// → А убийственный кролик говорит 'ХРЯЯЯСЬ!'
 ----
 
-(((shared property)))The “proto” rabbit acts as a container for the
-properties that are shared by all rabbits. An individual rabbit
-object, like the killer rabbit, contains properties that apply only to
-itself—in this case its type—and derives shared properties from its
-prototype.
+(((shared property)))“Прото”-кролик работает в качестве контейнера свойств, которые есть у всех кроликов. Конкретный объект-кролик, например убийственный, содержит свойства, применимые только к нему,- например, свой тип,- и наследует разделяемые с другими свойства от прототипа.
 
 [[constructors]]
-== Constructors ==
+== Конструкторы ==
 
-(((new operator)))(((this)))(((return keyword)))(((object,creation)))A more convenient way to create objects that derive
-from some shared prototype is to use a _((constructor))_. In
-JavaScript, calling a function with the `new` keyword in front of it
-causes it to be treated as a constructor. The constructor will have
-its `this` variable bound to a fresh object, and unless it explicitly
-returns another object value, this new object will be returned from
-the call.
+(((new operator)))(((this)))(((return keyword)))(((object,creation)))Более удобный способ создания объектов, наследуемых от некоего прототипа – _((конструктор))_. В JavaScript вызов функции с предшествующим ключевым словом `new` приводит к тому, что функция работает как конструктор. У конструктора будет в распоряжении переменная `this`, привязанная к свежесозданному объекту, и если она не вернёт непосредственно другое значение, содержащее объект, этот новый объект будет возвращён вместо него.
 
-An object created with `new` is said to be an _((instance))_ of its
-constructor.
+Говорят, что объект, созданный при помощи `new`, является _((экземпляр))ом_ конструктора.
 
-(((rabbit example)))(((capitalization)))Here is a simple constructor
-for rabbits. It is a convention to capitalize the names of
-constructors so that they are easily distinguished from other
-functions.
+(((rabbit example)))(((capitalization)))Вот простой конструктор кроликов. Имена конструкторов принято начинать с заглавной буквы, чтобы отличать их от других функций.
 
 // include_code top_lines:6
 
@@ -251,79 +168,53 @@ function Rabbit(type) {
   this.type = type;
 }
 
-var killerRabbit = new Rabbit("killer");
-var blackRabbit = new Rabbit("black");
+var killerRabbit = new Rabbit("убийственный");
+var blackRabbit = new Rabbit("чёрный");
 console.log(blackRabbit.type);
-// → black
+// → чёрный
 ----
 
-(((prototype property)))(((constructor)))Constructors (in fact, all
-functions) automatically get a property named `prototype`, which by
-default holds a plain, empty object that derives from
-`Object.prototype`. Every instance created with this constructor will
-have this object as its ((prototype)). So to add a `speak` method to
-rabbits created with the `Rabbit` constructor, we can simply do this:
+(((prototype property)))(((constructor)))Конструкторы (а вообще-то, и все функции) автоматически получают свойство под именем `prototype`, которое по умолчанию содержит простой и пустой объект, происходящий от `Object.prototype`. Каждый экземпляр, созданный этим конструктором, будет иметь этот объект в качестве ((прототип))а. Поэтому, чтобы добавить кроликам, созданным конструктором `Rabbit`, метод `speak`, мы просто можем сделать так:
 
 // include_code top_lines:4
 
 [source,javascript]
 ----
 Rabbit.prototype.speak = function(line) {
-  console.log("The " + this.type + " rabbit says '" +
+  console.log("А " + this.type + " кролик говорит '" +
               line + "'");
 };
-blackRabbit.speak("Doom...");
-// → The black rabbit says 'Doom...'
+blackRabbit.speak("Всем капец...");
+// → А чёрный кролик говорит 'Всем капец...'
 ----
 
-(((prototype property)))(((getPrototypeOf function)))It is important
-to note the distinction between the way a prototype is associated with
-a constructor (through its `prototype` property) and the way objects
-_have_ a prototype (which can be retrieved with
-`Object.getPrototypeOf`). The actual prototype of a constructor is
-`Function.prototype` since constructors are functions. Its
-`prototype` _property_ will be the prototype of instances created
-through it but is not its _own_ prototype.
+(((prototype property)))(((getPrototypeOf function)))Важно отметить разницу между тем, как прототип связан с конструктором (через свойство `prototype`) и тем, как у объектов _есть_ прототип (который можно получить через `Object.getPrototypeOf`). На самом деле прототип конструктора — `Function.prototype`, поскольку конструкторы – это функции. Его _свойство_ `prototype` будет прототипом экземпляров, созданных им, но не _его_ прототипом.
 
-== Overriding derived properties ==
+== Перезагрузка унаследованных свойств ==
 
-(((shared property)))(((overriding)))When you add a ((property)) to an
-object, whether it is present in the prototype or not, the property is
-added to the object _itself_, which will henceforth have it as its own
-property. If there _is_ a property by the same name in the prototype,
-this property will no longer affect the object. The prototype itself
-is not changed.
+(((shared property)))(((overriding)))Когда вы добавляете ((свойство)) объекту, есть оно в прототипе или нет, оно добавляется непосредственно к _самому_ объекту. Теперь это его свойство. Если в прототипе _есть_ одноимённое свойство, оно больше не влияет на объект. Сам прототип не меняется.
 
 [source,javascript]
 ----
-Rabbit.prototype.teeth = "small";
+Rabbit.prototype.teeth = "мелкие";
 console.log(killerRabbit.teeth);
-// → small
-killerRabbit.teeth = "long, sharp, and bloody";
+// → мелкие
+killerRabbit.teeth = "длинные, острые и окровавленные";
 console.log(killerRabbit.teeth);
-// → long, sharp, and bloody
+// → длинные, острые и окровавленные
 console.log(blackRabbit.teeth);
-// → small
+// → мелкие
 console.log(Rabbit.prototype.teeth);
-// → small
+// → мелкие
 ----
 
-(((prototype,diagram)))The following diagram sketches the situation
-after this code has run. The `Rabbit` and `Object` ((prototype))s lie
-behind `killerRabbit` as a kind of backdrop, where properties that are
-not found in the object itself can be looked up.
+(((prototype,diagram)))На диаграмме нарисована ситуация после прогона кода. ((Прототип))ы `Rabbit` и `Object` находятся за `killerRabbit` на манер фона, и у них можно запрашивать свойства, которых нет у самого объекта.
 
 image::img/rabbits.svg[alt="Rabbit object prototype schema",width="8cm"]
 
-(((shared property)))Overriding properties that exist in a prototype
-is often a useful thing to do. As the rabbit teeth example shows, it
-can be used to express exceptional properties in instances of a more
-generic class of objects, while letting the nonexceptional objects
-simply take a standard value from their prototype.
+(((shared property)))Перезагрузка свойств, существующих в прототипе, часто приносит пользу. Как в примере с зубами кролика её можно использовать для выражения каких-то исключительных характеристик у более общих свойств, в то время как обычные объекты просто используют стандартные значения, взятые у прототипов.
 
-(((toString method)))(((Array prototype)))(((Function prototype)))It
-is also used to give the standard function and array prototypes a
-different `toString` method than the basic object prototype.
+(((toString method)))(((Array prototype)))(((Function prototype)))Также она используется для назначения функциям и массивам разных методов `toString`.
 
 [source,javascript]
 ----
@@ -334,12 +225,7 @@ console.log([1, 2].toString());
 // → 1,2
 ----
 
-(((toString method)))(((join method)))(((call method)))Calling
-`toString` on an array gives a result similar to calling `.join(",")`
-on it—it puts commas between the values in the array. Directly calling
-`Object.prototype.toString` with an array produces a different string.
-That function doesn't know about arrays, so it simply puts the word
-“object” and the name of the type between square brackets.
+(((toString method)))(((join method)))(((call method)))Вызов `toString` массива выводит результат, похожий на `.join(",")` – получается список, разделённый запятыми. Вызов `Object.prototype.toString` напрямую для массива приводит к другому результату. Эта функция не знает ничего о массивах, и просто помещает слово “object” с имененм типа между квадратными скобками.
 
 [source,javascript]
 ----
@@ -347,27 +233,20 @@ console.log(Object.prototype.toString.call([1, 2]));
 // → [object Array]
 ----
 
-== Prototype interference ==
+== Нежелательное взаимодействие прототипов ==
 
-(((prototype,interference)))(((rabbit example)))(((mutability)))A
-((prototype)) can be used at any time to add new properties and
-methods to all objects based on it. For example, it might become
-necessary for our rabbits to dance.
+(((prototype,interference)))(((rabbit example)))(((mutability)))((Прототип)) помогает в любое время добавлять новые свойства и методы всем объектам, которые основаны на нём. К примеру, нашим кроликам может понадобиться танец.
 
 [source,javascript]
 ----
 Rabbit.prototype.dance = function() {
-  console.log("The " + this.type + " rabbit dances a jig.");
+  console.log("А " + this.type + " кролик танцует джигу.");
 };
 killerRabbit.dance();
-// → The killer rabbit dances a jig.
+// → А убийственный кролик танцует джигу.
 ----
 
-(((map)))(((object,as map)))That's convenient. But there are
-situations where it causes problems. In previous chapters, we used an
-object as a way to associate values with names by creating properties
-for the names and giving them the corresponding value as their value.
-Here's an example from link:04_data.html#object_map[Chapter 4]:
+(((map)))(((object,as map)))Это удобно. Но в некоторых случаях это приводит к проблемам. В предыдущих главах мы использовали объект как способ связать значения с именами – мы создавали свойства для этих имён, и давали им соответствующие значения. Вот пример из link:04_data.html#object_map[Главы 4]:
 
 // include_code
 
@@ -378,68 +257,50 @@ function storePhi(event, phi) {
   map[event] = phi;
 }
 
-storePhi("pizza", 0.069);
-storePhi("touched tree", -0.081);
+storePhi("пицца", 0.069);
+storePhi("тронул дерево", -0.081);
 ----
 
-(((for/in loop)))(((in operator)))We can iterate over all phi values
-in the object using a `for`/`in` loop and test whether a name is in
-there using the regular `in` operator. But unfortunately, the object's
-prototype gets in the way.
+(((for/in loop)))(((in operator)))Мы можем перебрать все значения фи в объекте через цикл `for`/`in`, и проверить наличие в нём имени через оператор `in`. К сожалению, нам мешается прототип объекта.
 
 [source,javascript]
 ----
-Object.prototype.nonsense = "hi";
+Object.prototype.nonsense = "ку";
 for (var name in map)
   console.log(name);
-// → pizza
-// → touched tree
+// → пицца
+// → тронул дерево
 // → nonsense
 console.log("nonsense" in map);
 // → true
 console.log("toString" in map);
 // → true
 
-// Delete the problematic property again
+// Удалить проблемное свойство
 delete Object.prototype.nonsense;
 ----
 
-(((prototype,pollution)))(((toString method)))That's all wrong. There
-is no event called “nonsense” in our data set. And there _definitely_
-is no event called “toString”.
+(((prototype,pollution)))(((toString method)))Это же неправильно. Нет события под названием “nonsense”. И _тем более_ нет события под названием “toString”.
 
-(((enumerability)))(((for/in loop)))(((property)))Oddly, `toString`
-did not show up in the `for`/`in` loop, but the `in` operator did
-return true for it. This is because JavaScript distinguishes between
-_enumerable_ and _nonenumerable_ properties.
+(((enumerability)))(((for/in loop)))(((property)))Занятно, что `toString` не вылезло в цикле `for`/`in`, хотя оператор `in` возвращает true на его счёт. Это потому, что JavaScript различает _счётные_ и _несчётные_ свойства.
 
-(((Object prototype)))All properties that we create by simply
-assigning to them are enumerable. The standard properties in
-`Object.prototype` are all nonenumerable, which is why they do not
-show up in such a `for`/`in` loop.
+(((Object prototype)))Все свойства, которые мы создаём, назначая им значение – счётные. Все стандартные свойства в `Object.prototype` – несчётные, поэтому они не вылезают в циклах `for`/`in`.
 
-(((defineProperty function)))It is possible to define our own
-nonenumerable properties by using the `Object.defineProperty`
-function, which allows us to control the type of property we are
-creating.
+(((defineProperty function)))Мы можем объявить свои несчётные свойства через функцию `Object.defineProperty`, которая позволяет указывать тип создаваемого свойства.
 
 [source,javascript]
 ----
 Object.defineProperty(Object.prototype, "hiddenNonsense",
-                      {enumerable: false, value: "hi"});
+                      {enumerable: false, value: "ку"});
 for (var name in map)
   console.log(name);
-// → pizza
-// → touched tree
+// → пицца
+// → тронул дерево
 console.log(map.hiddenNonsense);
-// → hi
+// → ку
 ----
 
-(((in operator)))(((map)))(((object,as map)))(((hasOwnProperty
-method)))So now the property is there, but it won't show up in a loop.
-That's good. But we still have the problem with the regular `in`
-operator claiming that the `Object.prototype` properties exist in our
-object. For that, we can use the object's `hasOwnProperty` method.
+(((in operator)))(((map)))(((object,as map)))(((hasOwnProperty method)))Теперь свойство есть, а в цикле оно не вылезает. Хорошо. Но нам всё ещё мешает проблема с оператором `in`, который утверждает, что свойства `Object.prototype` присутствуют в нашем объекте. Для этого нам понадобится метод `hasOwnProperty`.
 
 [source,javascript]
 ----
@@ -447,87 +308,49 @@ console.log(map.hasOwnProperty("toString"));
 // → false
 ----
 
-(((property,own)))This method tells us whether the object _itself_ has
-the property, without looking at its prototypes. This is often a more
-useful piece of information than what the `in` operator gives us.
+(((property,own)))Он говорит, является ли свойство свойством объекта, без оглядки на прототипы. Часто это более полезная информация, чем выдаёт оператор `in`.
 
-(((prototype,pollution)))(((for/in loop)))When you are worried that
-someone (some other code you loaded into your program) might have
-messed with the base object prototype, I recommend you write your
-`for`/`in` loops like this:
+(((prototype,pollution)))(((for/in loop)))Если вы волнуетесь, что кто-то другой, чей код вы загрузили в свою программу, испортил основной прототип объектов, я рекомендую писать циклы `for`/`in` так:
 
 [source,javascript]
 ----
 for (var name in map) {
   if (map.hasOwnProperty(name)) {
-    // ... this is an own property
+    // ... это наше личное свойство
   }
 }
 ----
 
-== Prototype-less objects ==
+== Объекты без прототипов ==
 
-(((map)))(((object,as map)))(((hasOwnProperty method)))But the
-rabbit hole doesn't end there. What if someone registered the name
-`hasOwnProperty` in our `map` object and set it to the value 42? Now
-the call to `map.hasOwnProperty` will try to call the local property,
-which holds a number, not a function.
+(((map)))(((object,as map)))(((hasOwnProperty method)))Но кроличья нора на этом не заканчивается. А если кто-то зарегистрировал имя `hasOwnProperty` в объекте `map` и назначил ему значение 42? Теперь вызов `map.hasOwnProperty` обращается к локальному свойству, в котором содержится номер, а не функция.
 
-(((Object.create function)))(((prototype,avoidance)))In such a case,
-prototypes just get in the way, and we would actually prefer to have
-objects without prototypes. We saw the `Object.create` function, which
-allows us to create an object with a specific prototype. You are
-allowed to pass `null` as the prototype to create a fresh object with
-no prototype. For objects like `map`, where the properties could be
-anything, this is exactly what we want.
+(((Object.create function)))(((prototype,avoidance)))В таком случае прототипы только мешаются, и нам бы хотелось иметь объекты вообще без прототипов. Мы видели функцию `Object.create`, что позволяет создавать объект с заданным прототипом. Мы можем передать `null` для прототипа, чтобы создать свеженький объект без прототипа. Это то, что нам нужно для объектов типа `map`, где могут быть любые свойства.
 
 [source,javascript]
 ----
 var map = Object.create(null);
-map["pizza"] = 0.069;
+map["пицца"] = 0.069;
 console.log("toString" in map);
 // → false
-console.log("pizza" in map);
+console.log("пицца" in map);
 // → true
 ----
 
-(((in operator)))(((for/in loop)))(((Object prototype)))Much
-better! We no longer need the `hasOwnProperty` kludge because all the
-properties the object has are its own properties. Now we can safely
-use `for`/`in` loops, no matter what people have been doing to
-`Object.prototype`.
+(((in operator)))(((for/in loop)))(((Object prototype)))Так-то лучше! Нам уже не нужна приблуда `hasOwnProperty`, потому что все свойства объекта заданы лично нами. Мы спокойно используем циклы `for`/`in` без оглядки на то, что люди творили с `Object.prototype`.
 
-== Polymorphism ==
+== Полиморфизм ==
 
-(((toString method)))(((String
-function)))(((polymorphism)))(((overriding)))When you call the
-`String` function, which converts a value to a string, on an object,
-it will call the `toString` method on that object to try to create a
-meaningful string to return. I mentioned that some of the standard
-prototypes define their own version of `toString` so they can
-create a string that contains more useful information than
-`"[object Object]"`.
+(((toString method)))(((String function)))(((polymorphism)))(((overriding)))Когда вы вызываете функцию `String`, преобразующую значение в строку, для объекта – он вызовет метод `toString`, чтобы создать осмысленную строчку. Я упомянул, что некоторые стандартные прототипы объявляют свои версии `toString` для создания строк, более полезных, чем просто `"[object Object]"`.
 
-(((object-oriented programming)))This is a simple instance of a 
-powerful idea. When a piece of code is written to work with objects
-that have a certain ((interface))—in this case, a `toString`
-method—any kind of object that happens to support this interface can
-be plugged into the code, and it will just work.
+(((object-oriented programming)))Это простой пример мощной идеи. Когда кусок кода написан так, чтобы работать с объектами через определённый интерфейс,– в нашем случае через метод `toString`,- любой объект, поддерживающий этот ((интерфейс)), можно подключить к коду – и всё будет просто работать.
 
-This technique is called __polymorphism__—though no actual
-shape-shifting is involved. Polymorphic code can work with values of
-different shapes, as long as they support the interface it expects.
+Такая техника называется __полиморфизм__ – хотя никто и не меняет своей формы. Полиморфный код может работать со значениями самых разных форм, пока они поддерживают одинаковый интерфейс.
 
 [[tables]]
-== Laying out a table ==
+== Форматируем таблицу ==
 
-(((MOUNTAINS data set)))(((table example)))I am going to work through
-a slightly more involved example in an attempt to give you a better
-idea what ((polymorphism)), as well as ((object-oriented programming))
-in general, looks like. The project is this: we will write a program
-that, given an array of arrays of ((table)) cells, builds up a string
-that contains a nicely laid out table—meaning that the columns are
-straight and the rows are aligned. Something like this:
+(((MOUNTAINS data set)))(((table example)))Давайте рассмотрим пример, чтобы понять, как выглядит ((полиморфизм)), да и вообще ((объектно-ориентированное программирование)). Проект следующий: мы напишем программу, которая получает массив массивов из ячеек ((таблицы)), и строит строку, содержащую красиво отформатированную таблицу. То есть, колонки и ряды выровнены. Типа вот этого:
 
 [source,text/plain]
 ----
@@ -542,42 +365,23 @@ Denali         6168 United States
 Popocatepetl   5465 Mexico
 ----
 
-The way our table-building system will work is that the builder
-function will ask each cell how wide and high it wants to be and then
-use this information to determine the width of the columns and the
-height of the rows. The builder function will then ask the cells to
-draw themselves at the correct size and assemble the results into a
-single string.
+Работать она будет так: основная функция будет спрашивать каждую ячейку, какой она ширины и высоты, и потом использует эту информацию для определения ширины колонок и высоты рядов. Затем она попросит ячейки нарисовать себя, и соберёт результаты в одну строку.
 
 [[table_interface]]
-(((table example)))The layout program will communicate with the cell
-objects through a well-defined ((interface)). That way, the types of
-cells that the program supports is not fixed in advance. We can add
-new cell styles later—for example, underlined cells for table
-headers—and if they support our interface, they will just work,
-without requiring changes to the layout program.
+(((table example)))Программа будет общаться с объектами ячеек через хорошо определённый ((интерфейс)). Типы ячеек не будут заданы жёстко. Мы сможем добавлять новые стили ячеек – к примеру, подчёркнутые ячейки у заголовка. И если они будут поддерживать наш интерфейс, они просто заработают, без изменений в программе.
 
-This is the interface:
+Интерфейс:
 
-* `minHeight()` returns a number indicating the minimum height this
-  cell requires (in lines).
+* `minHeight()` возвращает число, показывающее минимальную высоту, которую требует ячейка (выраженную в строчках).
 
-* `minWidth()` returns a number indicating this cell's minimum width (in
-  characters).
+* `minWidth()` возвращает число, показывающее минимальную ширину, которую требует ячейка (выраженную в символах).
 
-* `draw(width, height)` returns an array of length
-  `height`, which contains a series of strings that are each `width` characters wide.
-  This represents the content of the cell.
+* `draw(width, height)` возвращает массив длины `height`, содержащий наборы строк, каждая из которых шириной в `width` символов.
+  Это содержимое ячейки.
 
-(((function,higher-order)))I'm going to make heavy use of higher-order
-array methods in this example since it lends itself well to that
-approach.
+(((function,higher-order)))Я буду использовать функции высшего порядка, поскольку они здесь очень уместны.
 
-(((rowHeights function)))(((colWidths function)))(((maximum)))(((map
-method)))(((reduce method)))The first part of the program computes
-arrays of minimum column widths and row heights for a grid of cells.
-The `rows` variable will hold an array of arrays, with each inner array
-representing a row of cells.
+(((rowHeights function)))(((colWidths function)))(((maximum)))(((map method)))(((reduce method)))Первая часть программы вычисляет массивы минимальных ширин колонок и высот строк для матрицы ячеек. Переменная `rows` будет содержать массив массивов, где каждый внутренний массив – это строка ячеек.
 
 // include_code
 
@@ -600,29 +404,13 @@ function colWidths(rows) {
 }
 ----
 
-(((underscore character)))(((programming style)))Using a variable name
-starting with an underscore (_) or consisting entirely of a single
-underscore is a way to indicate (to human readers) that this argument
-is not going to be used.
+(((underscore character)))(((programming style)))Используя переменную, у которой имя начинается с (или полностью состоит из) подчёркивания (_), мы показываем тому, кто будет читать код, что этот аргумент не будет использоваться.
 
-The `rowHeights` function shouldn't be too hard to follow. It uses
-`reduce` to compute the maximum height of an array of cells and wraps
-that in `map` in order to do it for all rows in the `rows` array.
+Функция `rowHeights` не должна вызвать затруднений. Она использует `reduce` для подсчёта максимальной высоты массива ячеек, и заворачивает это в `map`, чтобы пройти все строки в массиве `rows`.
 
-(((map method)))(((filter method)))(((forEach
-method)))(((array,indexing)))(((reduce method)))Things are slightly
-harder for the `colWidths` function because the outer array is an
-array of rows, not of columns. I have failed to mention so far that
-`map` (as well as `forEach`, `filter`, and similar array methods)
-passes a second argument to the function it is given: the ((index)) of
-the current element. By mapping over the elements of the first row and
-only using the mapping function's second argument, `colWidths` builds
-up an array with one element for every column index. The call to
-`reduce` runs over the outer `rows` array for each index and picks
-out the width of the widest cell at that index.
+(((map method)))(((filter method)))(((forEach method)))(((array,indexing)))(((reduce method)))Ситуация с `colWidths` посложнее, потому что внешний массив – это массив строк, а не столбцов. Я забыл упомянуть, что `map` (как и `forEach`, `filter` и похожие методы массивов) передаёт в заданную функцию второй аргумент – ((индекс)) текущего элемента. Проходя при помощи `map` элементы первой строки и используя только второй аргумент функции, `colWidths` строит массив с одним элементом для каждого индекса столбца. Вызов `reduce` проходит по внешнему массиву `rows` для каждого индекса, и выбирает ширину широчайшей ячейки в этом индексе.
 
-(((table example)))(((drawTable function)))Here's the code to draw a
-table:
+(((table example)))(((drawTable function)))Код для вывода таблицы:
 
 // include_code
 
@@ -651,37 +439,16 @@ function drawTable(rows) {
 }
 ----
 
-(((inner function)))(((nesting,of functions)))The `drawTable` function
-uses the internal helper function `drawRow` to draw all rows and then
-joins them together with newline characters.
+(((inner function)))(((nesting,of functions)))Функциия `drawTable` использует внутреннюю функцию `drawRow` для рисования всех строк, и соединяет их месте через символы новой строки.
 
-(((table example)))The `drawRow` function itself first converts the
-cell objects in the row to _blocks_, which are arrays of strings
-representing the content of the cells, split by line. A single cell
-containing simply the number 3776 might be represented by a
-single-element array like `["3776"]`, whereas an underlined cell might
-take up two lines and be represented by the array `["name", "----"]`.
+(((table example)))Функция `drawRow` сперва превращает объекты ячеек строки в _блоки_, которые являются массивами строк, представляющими содержимое ячеек, разделённые линиями. Одна ячейка, содержащая число 3776, может быть представлена массивом из одного элемента `["3776"]`, а подчёркнутая ячейка может занять две строки и выглядеть как массив `["name", "----"]`.
 
-(((map method)))(((join method)))The blocks for a row, which all have
-the same height, should appear next to each other in the final output.
-The second call to `map` in `drawRow` builds up this output line by
-line by mapping over the lines in the leftmost block and, for each of
-those, collecting a line that spans the full width of the table. These
-lines are then joined with newline characters to provide the whole row
-as `drawRow`’s return value.
+(((map method)))(((join method)))Блоки для строки, у которых одинаковая высота, должны выводиться рядом друг с другом. Второй вызов `map` в `drawRow` строит эту строку вывода линия за линией, начиная с линий самого левого блока, и затем для каждой из них дополняя строку до полной ширины таблицы. Эти линии затем соединяются через символ новой строки, создавая целый ряд, который возвращает `drawRow`.
 
-The function `drawLine` extracts lines that should appear next
-to each other from an array of blocks and joins them with a space
-character to create a one-character gap between the table's columns.
+Функция `drawLine` выцепляет строки, которые должны появляться рядом друг с другом из массива блоков, и соединяет их через пробел, чтобы создать промежуток в один символ между столбцами таблицы.
 
 [[split]]
-(((split method)))(((string,methods)))(((table example)))Now
-let's write a constructor for cells that contain text, which
-implements the ((interface)) for table cells. The constructor splits a
-string into an array of lines using the string method `split`, which
-cuts up a string at every occurrence of its argument and returns an
-array of the pieces. The `minWidth` method finds the maximum line
-width in this array.
+(((split method)))(((string,methods)))(((table example)))Давайте напишем конструктор для ячеек, содержащих текст, который предоставляет ((интерфейс)) для ячеек. Он разбивает строчку в массив строк при помощи метода `split`, который режет строчку каждый раз, когда в ней встречается его аргумент, и возвращает массив этих кусочков. Метод `minWidth` находит максимальную ширину линии в массиве.
 
 // include_code
 
@@ -715,13 +482,9 @@ TextCell.prototype.draw = function(width, height) {
 };
 ----
 
-(((TextCell type)))The code uses a helper function called `repeat`,
-which builds a string whose value is the `string` argument repeated
-`times` number of times. The `draw` method uses it to add “padding” to
-lines so that they all have the required length.
+(((TextCell type)))Используется вспомогательная функция `repeat`, которая строит строчку с заданным значением, повторённым необходимое количество раз. Метод `draw` использует её для создания “отступов” в строках, чтобы они все были необходимой длины.
 
-Let's try everything we've written so far by building up a 5 × 5
-checkerboard.
+Давайте нарисуем для опыта шахматную доску 5х5.
 
 [source,javascript]
 ----
@@ -744,20 +507,12 @@ console.log(drawTable(rows));
 //   ##    ##    ##
 ----
 
-It works! But since all cells have the same size, the table-layout
-code doesn't really do anything interesting.
+Работает! Но так как у всех ячеек один размер, код форматирования таблицы не делает ничего интересного.
 
 [[mountains]]
-(((data set)))(((MOUNTAINS data set)))The source data for the table of
-mountains that we are trying to build is available in the `MOUNTAINS`
-variable in the ((sandbox)) and also
-http://eloquentjavascript.net/2nd_edition/code/mountains.js[downloadable] from the
-website(!book (http://eloquentjavascript.net/2nd_edition/code#6[_eloquentjavascript.net/2nd_edition/code#6_])!).
+(((data set)))(((MOUNTAINS data set)))Исходные данные для таблицы гор, которую мы строим, доступна в переменной `MOUNTAINS` ((песочницы)) и для http://eloquentjavascript.net/2nd_edition/code/mountains.js[скачивания] на сайте(!book (http://eloquentjavascript.net/2nd_edition/code#6[_eloquentjavascript.net/2nd_edition/code#6_])!).
 
-(((table example)))We will want to highlight the top row, which
-contains the column names, by underlining the cells with a series of
-dash characters. No problem—we simply write a cell type that handles
-underlining.
+(((table example)))Нам нужно выделить верхнюю строку, содержащую названия столбцов, при помощи подчёркивания. Никаких проблем – мы просто задаём тип ячейки, который этим занимается.
 
 // include_code
 
@@ -778,18 +533,11 @@ UnderlinedCell.prototype.draw = function(width, height) {
 };
 ----
 
-(((UnterlinedCell type)))An underlined cell _contains_ another cell.
-It reports its minimum size as being the same as that of its inner
-cell (by calling through to that cell's `minWidth` and `minHeight`
-methods) but adds one to the height to account for the space taken
-up by the underline.
+(((UnterlinedCell type)))Подчёркнутая ячейка _содержит_ другую ячейку. Она возвращает такие же размеры, как и у ячейки `inner` (через вызовы её методов `minWidth` и `minHeight`), но добавляет единичку к высоте из-за места, занятого чёрточками.
 
-(((concat method)))(((concatenation)))Drawing such a cell is quite
-simple—we take the content of the inner cell and concatenate a single
-line full of dashes to it.
+(((concat method)))(((concatenation)))Рисовать её просто – мы берём содержимое ячейки `inner` и добавляем одну строку, заполненную чёрточками.
 
-(((dataTable function)))Having an underlining mechanism, we can now
-write a function that builds up a grid of cells from our data set.
+(((dataTable function)))Теперь, имея основной движок, мы можем написать функцию, строящую сетку ячеек из нашего набора данных.
 
 // test: wrap, trailing
 
@@ -812,70 +560,41 @@ console.log(drawTable(dataTable(MOUNTAINS)));
 // → name         height country
 //   ------------ ------ -------------
 //   Kilimanjaro  5895   Tanzania
-//   … etcetera
+//   … и так далее
 ----
 
 [[keys]]
-(((Object.keys function)))(((property)))(((for/in loop)))The standard
-`Object.keys` function returns an array of property names in an
-object. The top row of the table must contain underlined cells that
-give the names of the columns. Below that, the values of all the
-objects in the data set appear as normal cells—we extract them by
-mapping over the `keys` array so that we are sure that the order of
-the cells is the same in every row.
+(((Object.keys function)))(((property)))(((for/in loop)))Стандартная функция `Object.keys` возвращает массив имён свойств объекта. Верхняя строка таблицы должна содержать подчёркнутые ячейки с названиями столбцов. Значения всех объектов из набора данных выглядят под заголовком как нормальные ячейки – мы извлекаем их проходом функции `map` по массиву `keys`, чтобы быть уверенным в сохранении одного порядка ячеек в каждой строке.
 
-(((right-aligning)))The resulting table resembles the example shown
-before, except that it does not right-align the numbers in the
-`height` column. We will get to that in a moment.
+(((right-aligning)))Итоговая таблица напоминает таблицу из примера, только вот числа в столбце `height` не выровнены по правому краю. Мы займёмся этим чуть позже.
 
-== Getters and setters ==
+== Геттеры и сеттеры ==
 
-(((getter)))(((setter)))(((property)))When specifying an interface, it
-is possible to include properties that are not methods. We could have
-defined `minHeight` and `minWidth` to simply hold numbers. But that'd
-have required us to compute them in the ((constructor)), which adds
-code there that isn't strictly relevant to _constructing_ the object.
-It would cause problems if, for example, the inner cell of an
-underlined cell was changed, at which point the size of the underlined
-cell should also change.
+(((getter)))(((setter)))(((property)))При создании интерфейса можно ввести свойства, не являющиеся методами. Мы могли просто определить `minHeight` и `minWidth` как переменные для хранения номеров. Но это потребовало бы от нас писать код вычисления их значений в ((конструктор))е – а это плохо, поскольку _конструирование_ объекта не связано с ними напрямую. Могли возникнуть проблемы, когда например внутренняя ячейка или подчёркнутая ячейка изменяются – и тогда их размер тоже должен меняться.
 
-(((programming style)))This has led some people to adopt a principle
-of never including nonmethod properties in interfaces. Rather than
-directly access a simple value property, they'd use `getSomething` and
-`setSomething` methods to read and write the property. This approach
-has the downside that you will end up writing—and reading—a lot of
-additional methods.
+(((programming style)))Эти соображения привели к тому, что свойства, не являющиеся методами, многие не включают в интерфейс. Вместо прямого доступа к свойствам-значениям, используются методы типа `getSomething` и `setSomething` для чтения и записи значений свойств. Но есть и минус – приходится писать (и читать) много дополнительных методов.
 
-Fortunately, JavaScript provides a technique that gets us the best of
-both worlds. We can specify properties that, from the outside, look
-like normal properties but secretly have ((method))s associated with
-them.
+К счастью, JavaScript даёт нам технику, использующую лучшее из обоих подходов. Мы можем задать свойства, которые снаружи выглядят обыкновенными, но втайне имеют связанные с ними ((метод))ы.
 
 [source,javascript]
 ----
 var pile = {
-  elements: ["eggshell", "orange peel", "worm"],
+  elements: ["скорлупа", "кожура", "червяк"],
   get height() {
     return this.elements.length;
   },
   set height(value) {
-    console.log("Ignoring attempt to set height to", value);
+    console.log("Игнорируем попытку задать высоту", value);
   }
 };
 
 console.log(pile.height);
 // → 3
 pile.height = 100;
-// → Ignoring attempt to set height to 100
+// → Игнорируем попытку задать высоту 100
 ----
 
-(((defineProperty function)))((({}
-(object))))(((getter)))(((setter)))In an object literal, the `get` or
-`set` notation for properties allows you to specify a function to be
-run when the property is read or written. You can also add such a
-property to an existing object, for example a prototype, using the
-`Object.defineProperty` function (which we previously used to create
-nonenumerable properties).
+(((defineProperty function)))((({} (object))))(((getter)))(((setter)))В объявлении объекта записи `get` или `set` позволяют задать функцию, которая будет вызвана при чтении или записи свойства. Можно также добавить такое свойство в существующий объект, к примеру, в `prototype`, используя функцию `Object.defineProperty` (раньше мы её уже использовали, создавая несчётные свойства).
 
 [source,javascript]
 ----
@@ -883,7 +602,7 @@ Object.defineProperty(TextCell.prototype, "heightProp", {
   get: function() { return this.text.length; }
 });
 
-var cell = new TextCell("no\nway");
+var cell = new TextCell("да\nну");
 console.log(cell.heightProp);
 // → 2
 cell.heightProp = 100;
@@ -891,22 +610,13 @@ console.log(cell.heightProp);
 // → 2
 ----
 
-You can use a similar `set` property, in the object passed to
-`defineProperty`, to specify a setter method. When a getter but no
-setter is defined, writing to the property is simply ignored.
+Так же можно задавать свойство `set` в объекте, передаваемом в `defineProperty`, для задания метода-сеттера. Когда геттер есть, а сеттера нет – попытка записи в свойство просто игнорируется.
 
-== Inheritance ==
+== Наследование ==
 
-(((inheritance)))(((table example)))(((alignment)))(((TextCell
-type)))We are not quite done yet with our table layout exercise. It
-helps readability to right-align columns of numbers. We should create
-another cell type that is like `TextCell`, but rather than padding the
-lines on the right side, it pads them on the left side so that they
-align to the right.
+(((inheritance)))(((table example)))(((alignment)))(((TextCell type)))Но мы ещё не закончили с нашим упражнением по форматированию таблицы. Читать её было бы удобнее, если б числовой столбец был выровнен по правому краю. Нам нужно создать ещё один тип ячеек вроде `TextCell`, но вместо дополнения текста пробелами справа, он дополняет его слева, чтобы выровнять его по правому краю.
 
-(((RTextCell type)))We could simply write a whole new ((constructor))
-with all three methods in its prototype. But prototypes may themselves
-have prototypes, and this allows us to do something clever.
+(((RTextCell type)))Мы могли бы написать новый ((конструктор)) со всеми тремя методами в прототипе. Но прототипы могут сами иметь прототипы, и поэтому мы можем поступить умнее.
 
 // include_code
 
@@ -926,27 +636,11 @@ RTextCell.prototype.draw = function(width, height) {
 };
 ----
 
-(((shared property)))(((overriding)))(((interface)))We reuse the
-constructor and the `minHeight` and `minWidth` methods from the
-regular `TextCell`. An `RTextCell` is now basically equivalent to a
-`TextCell`, except that its `draw` method contains a different
-function.
+(((shared property)))(((overriding)))(((interface)))Мы повторно использовали конструктор и методы `minHeight` и `minWidth` из обычного `TextCell`. И `RTextCell` теперь в общем эквивалентен `TextCell`, за исключением того, что в методе `draw` находится другая функция.
 
-(((call method)))This pattern is called _((inheritance))_. It allows
-us to build slightly different data types from existing data types with
-relatively little work. Typically, the new constructor will call the
-old ((constructor)) (using the `call` method in order to be able to
-give it the new object as its `this` value). Once this constructor has
-been called, we can assume that all the fields that the old object
-type is supposed to contain have been added. We arrange for the
-constructor's ((prototype)) to derive from the old prototype so that
-instances of this type will also have access to the properties in that
-prototype. Finally, we can override some of these properties by adding
-them to our new prototype.
+(((call method)))Такая схема называется _((наследование))м_. Мы можем строить в чем-то отличные типы данных на основе существующих, не тратя много сил. Обычно новый конструктор вызывает старый (через метод `call`, чтобы передать ему новый объект и его значение). После этого мы можем предположить, что все поля, которые должны быть в старом объекте, добавлены. Мы наследуем ((прототип)) конструктора от старого так, что экземпляры этого типа будут иметь доступ к свойствам старого прототипа. И наконец, мы можем переопределить некоторые свойства, добавляя их к новому прототипу.
 
-(((dataTable function)))Now, if we slightly adjust the `dataTable`
-function to use ++RTextCell++s for cells whose value is a number, we
-get the table we were aiming for.
+(((dataTable function)))Если мы чуть отредактируем функцию `dataTable`, чтобы она использовала для числовых ячеек ++RTextCells++, мы получим нужную нам таблицу.
 
 // start_code bottom_lines: 1
 // include_code strip_log
@@ -961,7 +655,7 @@ function dataTable(data) {
   var body = data.map(function(row) {
     return keys.map(function(name) {
       var value = row[name];
-      // This was changed:
+      // Тут поменяли:
       if (typeof value == "number")
         return new RTextCell(String(value));
       else
@@ -972,37 +666,18 @@ function dataTable(data) {
 }
 
 console.log(drawTable(dataTable(MOUNTAINS)));
-// → … beautifully aligned table
+// → … красиво отформатированная таблица
 ----
 
-(((object-oriented programming)))Inheritance is a fundamental part of
-the object-oriented tradition, alongside encapsulation and
-polymorphism. But while the latter two are now generally regarded as
-wonderful ideas, inheritance is somewhat controversial.
+(((object-oriented programming)))Наследование – основная часть объектно-ориентированной традиции, вместе с инкапсуляцией и полиморфизмом. Но, в то время как последние две воспринимают как отличные идеи, первая вызывает споры.
 
-(((complexity)))The main reason for this is that it is often confused
-with ((polymorphism)), sold as a more powerful tool than it really
-is, and subsequently overused in all kinds of ugly ways. Whereas
-((encapsulation)) and polymorphism can be used to _separate_ pieces of
-code from each other, reducing the tangledness of the overall program,
-((inheritance)) fundamentally ties types together, creating _more_
-tangle.
+(((complexity)))В основном потому, что её обычно путают с ((полиморфизм))ом, представляют более мощным инструментом, чем она на самом деле является, и используют не по назначению. Тогда как ((инкапсуляция)) и полиморфизм используются для _разделения_ частей кода и уменьшения связанности программы, ((наследование)) связывает типы вместе и создаёт _большую_ связанность.
 
-(((code structure)))(((programming style)))You can have
-polymorphism without inheritance, as we saw. I am not going to tell
-you to avoid inheritance entirely—I use it regularly in my own
-programs. But you should see it as a slightly dodgy trick that can help you
-define new types with little code, not as a grand principle of code
-organization. A preferable way to extend types is through
-((composition)), such as how `UnderlinedCell` builds on another cell
-object by simply storing it in a property and forwarding method calls
-to it in its own ((method))s.
+(((code structure)))(((programming style)))Мы можем использовать полиморфизм без наследования. Я не советую вам полностью избегать наследования – я его использую регулярно в своих программах. Но относитесь к нему как к более хитрому трюку, который позволяет определять новые типы с минимумом кода – а не как к основному принципу организации кода. Предпочтительно расширять типы при помощи ((композиции)) – как `UnderlinedCell` построен на использовании другого объекта ячейки. Он просто хранит его в свойстве и перенаправляет вызовы из своих в его ((метод))ы.
 
-== The instanceof operator ==
+== Оператор instanceof ==
 
-(((type)))(((instanceof operator)))(((constructor)))(((object)))It is occasionally useful to know whether an object was derived
-from a specific constructor. For this, JavaScript provides a binary
-operator called `instanceof`.
+(((type)))(((instanceof operator)))(((constructor)))(((object)))Иногда удобно знать, произошёл ли объект от конкретного конструктора. Для этого JavaScript даёт нам бинарный оператор `instanceof`.
 
 [source,javascript]
 ----
@@ -1016,64 +691,30 @@ console.log([1] instanceof Array);
 // → true
 ----
 
-(((inheritance)))The operator will see through inherited types.
-An `RTextCell` is an instance of `TextCell` because
-`RTextCell.prototype` derives from `TextCell.prototype`. The operator
-can be applied to standard constructors like `Array`. Almost every
-object is an instance of `Object`.
+(((inheritance)))Оператор проходит и через наследованные типы. `RTextCell` является экземпляром `TextCell`, поскольку `RTextCell.prototype` происходит от `TextCell.prototype`. Оператор также можно применять к стандартным конструкторам типа `Array`. Практически все объекты – экземпляры `Object`.
 
-== Summary ==
+== Итог ==
 
-So objects are more complicated than I initially portrayed them. They
-have prototypes, which are other objects, and will act as if they have
-properties they don't have as long as the prototype has that property.
-Simple objects have `Object.prototype` as their prototype.
+Получается, что объекты чуть более сложны, чем я их подавал сначала. У них есть прототипы – это другие объекты, и они ведут себя так, как будто у них есть свойство, которого на самом деле нет, если это свойство есть у прототипа. Прототипом простых объектов является `Object.prototype`.
 
-Constructors, which are functions whose names usually start with a
-capital letter, can be used with the `new` operator to create new
-objects. The new object's prototype will be the object found in the
-`prototype` property of the constructor function. You can make good
-use of this by putting the properties that all values of a given type
-share into their prototype. The `instanceof` operator can, given an
-object and a constructor, tell you whether that object is an instance
-of that constructor.
+Конструкторы,– функции, имена которых обычно начинаются с заглавной буквы,- можно использовать с оператором `new` для создания объектов. Прототипом нового объекта будет объект, содержащийся в свойстве `prototype` конструктора. Это можно использовать, помещая свойства, которые делят между собой все величины данного типа, в их прототип. Оператор `instanceof`, если ему дать объект и конструктор, может сказать, является ли объект экземпляром этого конструктора.
 
-One useful thing to do with objects is to specify an interface for
-them and tell everybody that they are supposed to talk to your
-object only through that interface. The rest of the details that make up
-your object are now _encapsulated_, hidden behind the interface.
+Для объектов можно сделать интерфейс и сказать всем, чтобы они общались с объектом только через этот интерфейс. Остальные детали реализации объекта теперь _инкапсулированы_, скрыты за интерфейсом.
 
-Once you are talking in terms of interfaces, who says that only one
-kind of object may implement this interface? Having different objects
-expose the same interface and then writing code that works on any
-object with the interface is called _polymorphism_. It is very
-useful.
+А после этого никто не запрещал использовать разные объекты при помощи одинаковых интерфейсов. Если разные объекты имеют одинаковые интерфейсы, то и код, работающий с ними, может работать с разными объектами одинаково. Это называется _полиморфизмом_, и это очень полезная штука.
 
-When implementing multiple types that differ in only some details, it
-can be helpful to simply make the prototype of your new type derive
-from the prototype of your old type and have your new constructor
-call the old one. This gives you an object type similar to the
-old type but for which you can add and override properties as you see
-fit.
+Определяя несколько типов, различающихся только в мелких деталях, бывает удобно просто наследовать прототип нового типа от прототипа старого типа, чтобы новый конструктор вызывал старый. Это даёт вам тип объекта, сходный со старым, но при этом к нему можно добавлять свойства или переопределять старые.
 
-== Exercises ==
+== Упражнения ==
 
 [[exercise_vector]]
-=== A vector type ===
+=== Векторный тип ===
 
-(((dimensions)))(((Vector type)))(((coordinates)))(((vector (exercise))))Write a
-((constructor)) `Vector` that represents a vector in two-dimensional
-space. It takes `x` and `y` parameters (numbers), which it should save
-to properties of the same name.
+(((dimensions)))(((Vector type)))(((coordinates)))(((vector (exercise))))Напишите ((конструктор)) `Vector`, представляющий вектор в двумерном пространстве. Он принимает параметры `x` и `y` (числа), которые хранятся в одноимённых свойствах.
 
-(((addition)))(((subtraction)))Give the `Vector` prototype two
-methods, `plus` and `minus`, that take another vector as a parameter
-and return a new vector that has the sum or difference of the two
-vectors’ (the one in `this` and the parameter) _x_ and _y_ values.
+(((addition)))(((subtraction)))Дайте прототипу `Vector` два метода, `plus` и `minus`, которые принимают другой вектор в качестве параметра, и возвращают новый вектор, который хранит в _x_ и _y_ сумму или разность двух (один `this`, второй — аргумент).
 
-Add a ((getter)) property `length` to the prototype that computes the
-length of the vector—that is, the distance of the point (_x_, _y_) from
-the origin (0, 0).
+Добавьте ((геттер)) `length` в прототип, подсчитывающий длину вектора – расстояние от (0, 0) до (_x_, _y_).
 
 ifdef::interactive_target[]
 
@@ -1081,7 +722,7 @@ ifdef::interactive_target[]
 
 [source,javascript]
 ----
-// Your code here.
+// Ваш код.
 
 console.log(new Vector(1, 2).plus(new Vector(2, 3)));
 // → Vector{x: 3, y: 5}
@@ -1109,15 +750,9 @@ root in JavaScript.
 
 !!hint!!
 
-=== Another cell ===
+=== Ещё одна ячейка ===
 
-(((StretchCell (exercise))))(((interface)))Implement a cell type named
-`StretchCell(inner, width, height)` that conforms to the
-link:06_object.html#table_interface[table cell interface] described
-earlier in the chapter. It should wrap another cell (like
-`UnderlinedCell` does) and ensure that the resulting cell has at
-least the given `width` and `height`, even if the inner cell would
-naturally be smaller.
+(((StretchCell (exercise))))(((interface)))Создайте тип ячейки `StretchCell(inner, width, height)`, соответствующий link:06_object.html#table_interface[интерфейсу ячеек таблицы] из этой главы. Он должен оборачивать другую ячейку (как делает `UnderlinedCell`), и убеждаться, что результирующая ячейка имеет как минимум заданные ширину и высоту, даже если внутренняя ячейка была бы меньше.
 
 ifdef::interactive_target[]
 
@@ -1125,7 +760,7 @@ ifdef::interactive_target[]
 
 [source,javascript]
 ----
-// Your code here.
+// Ваш код.
 
 var sc = new StretchCell(new TextCell("abc"), 1, 2);
 console.log(sc.minWidth());
@@ -1151,25 +786,13 @@ the inner cell.
 
 !!hint!!
 
-=== Sequence interface ===
+=== Интерфейс к последовательностям ===
 
-(((sequence (exercise))))Design an _((interface))_ that abstracts
-((iteration)) over a ((collection)) of values. An object that provides
-this interface represents a sequence, and the interface must somehow
-make it possible for code that uses such an object to iterate over the
-sequence, looking at the element values it is made up of and having
-some way to find out when the end of the sequence is reached.
+(((sequence (exercise))))Разработайте _((интерфейс))_, абстрагирующий ((проход)) по ((набору)) значений. Объект с таким интерфейсом представляет собой последовательность, а интерфейс должен давать возможность в коде проходить по последовательности, работать со значениями, которые её составляют, и как-то сигнализировать о том, что мы достигли конца последовательности.
 
-When you have specified your interface, try to write a function
-`logFive` that takes a sequence object and calls `console.log` on its
-first five elements—or fewer, if the sequence has fewer than five
-elements.
+Задав интерфейс, попробуйте сделать функцию `logFive`, которая принимает объект-последовательность и вызывает `console.log` для первых её пяти элементов – или для меньшего количества, если их меньше пяти.
 
-Then implement an object type `ArraySeq` that wraps an array and
-allows iteration over the array using the interface you designed.
-Implement another object type `RangeSeq` that iterates over a range of
-integers (taking `from` and `to` arguments to its constructor)
-instead.
+Затем создайте тип объекта `ArraySeq`, оборачивающий массив, и позволяющий проход по массиву с использованием разработанного вами интерфейса. Создайте другой тип объекта, `RangeSeq`, который проходит по диапазону чисел (его конструктор должен принимать аргументы `from` и `to`).
 
 ifdef::interactive_target[]
 
@@ -1177,7 +800,7 @@ ifdef::interactive_target[]
 
 [source,javascript]
 ----
-// Your code here.
+// Ваш код.
 
 logFive(new ArraySeq([1, 2]));
 // → 1
