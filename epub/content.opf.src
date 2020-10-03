@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" xml:lang="en" unique-identifier="pub-id" prefix="cc: http://creativecommons.org/ns#">
   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <dc:title id="title">Eloquent JavaScript</dc:title>
+    <dc:title id="title">Выразительный JavaScript</dc:title>
     <meta refines="#title" property="title-type">main</meta>
-    <dc:creator id="creator">Marijn Haverbeke</dc:creator>
-    <meta refines="#creator" property="file-as">HAVERBEKE, MARIJN</meta>
+    <meta refines="#title" property="alternate-script" xml:lang="en">Eloquent JavaScript</meta>
+    <dc:creator id="creator">Марейн Хавербек</dc:creator>
+    <meta refines="#creator" property="file-as">ХАВЕРБЕК, МАРЕЙН</meta>
     <meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
     <dc:identifier id="pub-id">net.eloquentjavascript</dc:identifier>
-    <dc:language>en-US</dc:language>
+    <dc:language>ru-RU</dc:language>
     <dc:rights>This work is shared with the public using the Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0) license.</dc:rights>        
     <link rel="cc:license" href="http://creativecommons.org/licenses/by-nc/3.0/"/>
     <meta property="cc:attributionURL">http://eloquentjavascript.net/</meta>
