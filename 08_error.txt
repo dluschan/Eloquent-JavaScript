@@ -3,92 +3,46 @@
 :next_link: 09_regexp
 :load_files: ["code/chapter/08_error.js"]
 
-= Bugs and Error Handling =
+= Поиск и обработка ошибок =
 
 [chapterquote="true"]
-[quote, Brian Kernighan and P.J. Plauger, The Elements of Programming Style]
+[quote, Брайан Керниган и П.Ж. Плауэр, Основы программного стиля]
 ____
-Debugging is
-twice as hard as writing the code in the first place. Therefore, if
-you write the code as cleverly as possible, you are, by definition,
-not smart enough to debug it.
+Отладка изначально вдвое сложнее написания кода. Поэтому, если вы пишете код настолько заумный, насколько можете, то по определению вы не способны отлаживать его.
 ____
 
 ifdef::interactive_target[]
 
 [chapterquote="true"]
-[quote, Master Yuan-Ma, The Book of Programming]
+[quote, Мастер Юан-Ма, Книга программирования]
 ____
-Yuan-Ma had written a small program that used many global variables
-and shoddy shortcuts. Reading it, a student asked, ‘You warned us
-against these techniques, yet I find them in your program. How can
-this be?’ The master said, ‘There is no need to fetch a water hose
-when the house is not on fire.’
+Юан-Ма написал небольшую программу, использующую много глобальных переменных и ужасных хаков. Ученик, читая программу, спросил его: «Вы предупреждали нас о подобных техниках, но при этом я нахожу их в вашей же программе. Как это возможно?» Мастер ответил: «Не нужно бежать за поливальным шлангом, если дом не горит».
 ____
 
 endif::interactive_target[]
 
-(((Kernighan+++,+++ Brian)))(((Plaugher+++,+++ P.J.)))(((debugging)))(((error handling)))A program is crystallized thought.
-Sometimes those thoughts are confused. Other times, mistakes are
-introduced when converting thought into code. Either way, the result
-is a flawed program.
+(((Kernighan+++,+++ Brian)))(((Plaugher+++,+++ P.J.)))(((debugging)))(((error handling)))Программа – это кристаллизованная мысль. Иногда мысли путаются. Иногда при превращении мыслей в программу в код вкрадываются ошибки. В обоих случаях получается повреждённая программа.
 
-(((input)))(((output)))Flaws in a program are usually called ((bug))s.
-Bugs can be programmer errors or problems in other systems that the
-program interacts with. Some bugs are immediately apparent, while
-others are subtle and might remain hidden in a system for years.
+(((input)))(((output)))Недостатки в программах обычно называют ((баг))ами. Это могут быть ошибки программиста или проблемы в системах, с которыми программа взаимодействует. Некоторые ошибки очевидны, другие – трудноуловимы, и могут скрываться в системах годами.
 
-Often, problems surface only when a program encounters a situation
-that the programmer didn't originally consider. Sometimes such
-situations are unavoidable. When the user is asked to input their age
-and types _orange_, this puts our program in a difficult position. The
-situation has to be anticipated and handled somehow.
+Часто проблема возникает в тех ситуациях, возникновение которых программист изначально не предвидел. Иногда этих ситуаций нельзя избежать. Когда пользователя просят ввести его возраст, а он вводит _апельсин_, это ставит программу в непростую ситуацию. Эти ситуации необходимо предвидеть и как-то обрабатывать.
 
-== Programmer mistakes ==
+== Ошибки программистов ==
 
-(((parsing)))(((analysis)))When it comes to programmer mistakes, our
-aim is simple. We want to find them and fix them. Such mistakes can
-range from simple ((typo))s that cause the computer to complain as
-soon as it lays eyes on our program to subtle mistakes in our
-understanding of the way the program operates, causing incorrect
-outcomes only in specific situations. Bugs of the latter type can
-take weeks to diagnose.
+(((parsing)))(((analysis)))В случае ошибок программистов наша цель ясна. Нам надо найти их и исправить. Таковые ошибки варьируются от простых ((опечаток)), на которые компьютер пожалуется сразу же, как только увидит программу, до скрытых ошибок в нашем понимании того, как программа работает, которые приводят к неправильным результатам в особых случаях. Ошибки последнего рода можно искать неделями.
 
-(((programming language)))(((type)))(((static typing)))(((dynamic
-typing)))(((run-time error)))(((error)))The degree to which languages
-help you find such mistakes varies. Unsurprisingly, JavaScript is at
-the “hardly helps at all” end of that scale. Some languages want to
-know the types of all your variables and expressions before even
-running a program and will tell you right away when a type is used in
-an inconsistent way. JavaScript considers types only when actually
-running the program, and even then, it allows you to do some clearly
-nonsensical things without complaint, such as `x = true * "monkey"`.
+(((programming language)))(((type)))(((static typing)))(((dynamic typing)))(((run-time error)))(((error)))Разные языки по-разному могут помогать вам в поиске ошибок. К сожалению, JavaScript находится на конце этой шкалы, обозначенном как «вообще почти не помогает». Некоторым языкам надо точно знать типы всех переменных и выражений ещё до запуска программы, и они сразу сообщат вам, если типы использованы некорректно. JavaScript рассматривает типы только во время исполнения программ, и даже тогда он разрешает делать не очень осмысленные вещи без всяких жалоб, например `x = true * "monkey"`.
 
-(((syntax)))There are some things that JavaScript does complain about,
-though. Writing a program that is not syntactically valid will
-immediately trigger an error. Other things, such as calling something
-that's not a function or looking up a ((property)) on an ((undefined))
-value, will cause an error to be reported when the program is running
-and encounters the nonsensical action.
+(((syntax)))На некоторые вещи JavaScript всё-таки жалуется. Написание синтаксически неправильной программы сразу вызовет ошибку. Другие ошибки, например вызов чего-либо, не являющегося функцией, или обращение к ((свойству)) ((неопределённой)) переменной, возникнут при выполнении программы, когда она сталкивается с такой бессмысленной ситуацией.
 
-(((NaN)))(((error)))But often, your nonsense computation will simply
-produce a `NaN` (not a number) or undefined value. And the program
-happily continues, convinced that it's doing something meaningful. The
-mistake will manifest itself only later, after the bogus value has
-traveled through several functions. It might not trigger an error at
-all but silently cause the program's output to be wrong. Finding the
-source of such problems can be difficult.
+(((NaN)))(((error)))Но часто ваши бессмысленные вычисления просто породят `NaN` (not a number) или `undefined`. Программа радостно продолжит, будучи уверенной в том, что она делает что-то осмысленное. Ошибка проявит себя позже, когда такое фиктивное значение уже пройдёт через несколько функций. Она может вообще не вызвать сообщение об ошибке, а просто привести к неправильному результату выполнения. Поиск источника таких проблем – сложная задача.
 
-(((debugging)))The process of finding mistakes—bugs—in programs is
-called _debugging_.
+(((debugging)))Процесс поиска ошибок-багов (bugs) в программах называется _отладкой_ (_debugging_).
 
-== Strict mode ==
+== Строгий режим ==
 
 indexsee:[use strict,strict mode]
-(((strict mode)))(((syntax)))(((function)))JavaScript can be made a
-_little_ more strict by enabling _strict mode_. This is done by
-putting the string `"use strict"` at the top of a file or a function
-body. Here's an example:
+(((strict mode)))(((syntax)))(((function)))JavaScript можно заставить быть построже, переведя его в _строгий режим_ (_strict mode_). Для этого наверху файла или тела функции пишется `"use strict"`. Пример:
 
 // test: error "ReferenceError: counter is not defined"
 
@@ -97,45 +51,28 @@ body. Here's an example:
 function canYouSpotTheProblem() {
   "use strict";
   for (counter = 0; counter < 10; counter++)
-    console.log("Happy happy");
+    console.log("Всё будет офигенно");
 }
 
 canYouSpotTheProblem();
 // → ReferenceError: counter is not defined
 ----
 
-(((var keyword)))(((variable,global)))Normally, when you forget to put
-`var` in front of your variable, as with `counter` in the example,
-JavaScript quietly creates a global variable and uses that. In strict
-mode, however, an ((error)) is reported instead. This is very helpful.
-It should be noted, though, that this doesn't work when the variable
-in question already exists as a global variable, but only when
-assigning to it would have created it.
+(((var keyword)))(((variable,global)))Обычно, когда ты забываешь написать `var` перед переменной, как в примере перед `counter`, JavaScript по-тихому создаёт глобальную переменную и использует её. В строгом режиме выдаётся ((ошибка)). Это очень удобно. Однако, ошибка не выдаётся, когда глобальная переменная уже существует – только тогда, когда присваивание создаёт новую переменную.
 
-(((this)))(((global object)))(((undefined)))(((strict mode)))Another
-change in strict mode is that the `this` binding holds the value
-`undefined` in functions that are not called as ((method))s. When
-making such a call outside of strict mode, `this` refers to the global
-scope object. So if you accidentally call a method or constructor
-incorrectly in strict mode, JavaScript will produce an error as soon
-as it tries to read something from `this`, rather than happily working
-with the global object, creating and reading global variables.
+(((this)))(((global object)))(((undefined)))(((strict mode)))Ещё одно изменение – привязка `this` содержит `undefined` в тех функциях, которые вызывали не как ((метод))ы. Когда мы вызываем функцию не в строгом режиме, `this` ссылается на объект глобальной области видимости. Поэтому если вы случайно неправильно вызовете метод в строгом режиме, JavaScript выдаст ошибку, если попытается прочесть что-то из `this`, а не будет радостно работать с глобальным объектом.
 
-For example, consider the following code, which calls a
-((constructor)) without the `new` keyword so that its `this` will
-_not_ refer to a newly constructed object:
+К примеру, рассмотрим код, вызывающий ((конструктор)) без ключевого слова `new`, в случае чего `this` _не_ будет ссылаться на создаваемый объект:
 
 [source,javascript]
 ----
 function Person(name) { this.name = name; }
-var ferdinand = Person("Ferdinand"); // oops
+var ferdinand = Person("Евлампий"); // ой-вэй
 console.log(name);
-// → Ferdinand
+// → Евлампий
 ----
 
-(((error)))So the bogus call to `Person` succeeded but returned an
-undefined value and created the global variable `name`. In strict
-mode, the result is different.
+(((error)))Некорректный вызов `Person` успешно происходит, но возвращается как `undefined` и создаёт глобальную переменную `name`. В строгом режиме всё по-другому.
 
 // test: error "TypeError: Cannot set property 'name' of undefined"
 
@@ -143,33 +80,24 @@ mode, the result is different.
 ----
 "use strict";
 function Person(name) { this.name = name; }
-// Oops, forgot 'new'
-var ferdinand = Person("Ferdinand");
+// Опаньки, мы ж забыли 'new'
+var ferdinand = Person("Евлампий");
 // → TypeError: Cannot set property 'name' of undefined
 ----
 
-We are immediately told that something is wrong. This is helpful.
+Нам сразу сообщают об ошибке. Очень удобно.
 
-(((parameter)))(((variable,naming)))(((with statement)))Strict mode
-does a few more things. It disallows giving a function multiple
-parameters with the same name and removes certain problematic
-language features entirely (such as the `with` statement, which is so
-misguided it is not further discussed in this book).
+(((parameter)))(((variable,naming)))(((with statement)))Строгий режим умеет ещё кое-что. Он запрещает вызывать функцию с несколькими параметрами с одним и тем же именем, и удаляет некоторые потенциально проблемные свойства языка (например, инструкцию `with`, которая настолько ужасна, что даже не обсуждается в этой книге).
 
-(((debugging)))In short, putting a `"use strict"` at the top of your
-program rarely hurts and might help you spot a problem.
+(((debugging)))Короче говоря, надпись `"use strict"` перед текстом программы редко причиняет проблемы, зато помогает вам видеть их.
 
-== Testing ==
+== Тестирование ==
 
-(((test suite)))(((run-time error)))If the language is not going to do
-much to help us find mistakes, we'll have to find them the hard way:
-by running the program and seeing whether it does the right thing.
+(((test suite)))(((run-time error)))Если язык не собирается помогать нам в поиске ошибок, приходится искать их сложным способом: запуская программу и наблюдая, делает ли она что-то так, как надо.
 
-Doing this by hand, again and again, is a sure way to drive yourself
-insane. Fortunately, it is often possible to write a second program
-that automates testing your actual program.
+Делать это вручную, снова и снова – верный способ сойти с ума. К счастью, часто возможно написать другую программу, которая автоматизирует проверку вашей основной программы.
 
-(((Vector type)))As an example, we once again use the `Vector` type.
+(((Vector type)))Для примера вновь обратимся к типу `Vector`.
 
 // include_code
 
@@ -184,12 +112,7 @@ Vector.prototype.plus = function(other) {
 };
 ----
 
-We will write a program to check that our implementation of `Vector`
-works as intended. Then, every time we change the implementation, we
-follow up by running the test program so that we can be reasonably
-confident that we didn't break anything. When we add extra
-functionality (for example, a new method) to the `Vector` type, we also
-add tests for the new feature.
+Мы напишем программу, которая проверит, что наша реализация `Vector` работает, как нужно. Затем после каждого изменения реализации мы будем запускать проверочную программу, чтобы убедиться, что мы ничего не сломали. Когда мы добавим функциональности (к примеру, новый метод) к типу `Vector`, мы добавим проверки этой новой функциональности.
 
 [source,javascript]
 ----
@@ -198,47 +121,28 @@ function testVector() {
   var p2 = new Vector(-10, 5);
   var p3 = p1.plus(p2);
 
-  if (p1.x !== 10) return "fail: x property";
-  if (p1.y !== 20) return "fail: y property";
-  if (p2.x !== -10) return "fail: negative x property";
-  if (p3.x !== 0) return "fail: x from plus";
-  if (p3.y !== 25) return "fail: y from plus";
-  return "everything ok";
+  if (p1.x !== 10) return "облом: x property";
+  if (p1.y !== 20) return "облом: y property";
+  if (p2.x !== -10) return "облом: negative x property";
+  if (p3.x !== 0) return "облом: x from plus";
+  if (p3.y !== 25) return "облом: y from plus";
+  return "всё пучком";
 }
 console.log(testVector());
-// → everything ok
+// → всё пучком
 ----
 
-(((test suite)))(((testing framework)))(((domain-specific
-language)))Writing tests like this tends to produce rather repetitive,
-awkward code. Fortunately, there exist pieces of software that help
-you build and run collections of tests (_test suites_) by providing a
-language (in the form of functions and methods) suited to expressing
-tests and by outputting informative information when a test fails. These
-are called _testing frameworks_.
+(((test suite)))(((testing framework)))(((domain-specific language)))Написание таких проверок приводит к появлению повторяющегося кода. К счастью, есть программные продукты, помогающие писать наборы проверок при помощи специального языка, приспособленного именно для написания проверок. Их называют _testing frameworks_.
 
-== Debugging ==
+== Отладка ==
 
-(((debugging)))Once you notice that there is something wrong with your
-program because it misbehaves or produces errors, the next step is to
-figure out _what_ the problem is.
+(((debugging)))Когда вы заметили проблему в программе,– она ведёт себя неправильно и выдаёт ошибки,- самое время выяснить, в _чём_ проблема.
 
-Sometimes it is obvious. The ((error)) message will point at a
-specific line of your program, and if you look at the error
-description and that line of code, you can often see the problem.
+Иногда это очевидно. Сообщение об ((ошибке)) наводит вас на конкретную строку программы, и если вы прочтёте описание ошибки и эту строку, вы часто сможете найти проблему.
 
-(((run-time error)))But not always. Sometimes the line that triggered
-the problem is simply the first place where a bogus value produced
-elsewhere gets used in an invalid way. And sometimes there is no error
-message at all—just an invalid result. If you have been solving the
-((exercises)) in the earlier chapters, you will probably have already
-experienced such situations.
+(((run-time error)))Но не всегда. Иногда строчка, приводящая к ошибке, просто оказывается первым местом, где некорректное значение, полученное где-то ещё, используется неправильно. Иногда вообще нет сообщения об ошибке – есть просто неверный результат. Если вы делали ((упражнения)) из предыдущих глав, вы наверняка попадали в такие ситуации.
 
-(((decimal number)))(((binary number)))The following example program
-tries to convert a whole number to a string in any base (decimal,
-binary, and so on) by repeatedly picking out the last ((digit)) and then
-dividing the number to get rid of this digit. But the insane output
-that it currently produces suggests that it has a ((bug)).
+(((decimal number)))(((binary number)))Следующий пример пробует преобразовать целое число в строку в заданной системы счисления (десятичной, двоичной или другой), отнимая последнюю ((цифру)) и совершая деление, чтобы избавиться от этой цифры. Но дикий результат, выдаваемый программой, как бы намекает на присутствие в ней ((баг))а.
 
 [source,javascript]
 ----
@@ -258,22 +162,11 @@ console.log(numberToString(13, 10));
 // → 1.5e-3231.3e-3221.3e-3211.3e-3201.3e-3191.3e-3181.3…
 ----
 
-(((analysis)))Even if you see the problem already, pretend for a
-moment that you don't. We know that our program is malfunctioning, and
-we want to find out why.
+(((analysis)))Даже если вы нашли проблему – притворитесь, что ещё не нашли. Мы знаем, что программа сбоит, и нам нужно узнать, почему.
 
-(((trial and error)))This is where you must resist the urge to start
-making random changes to the code. Instead, _think_. Analyze what is
-happening and come up with a ((theory)) of why it might be happening.
-Then, make additional observations to test this theory—or, if you
-don't yet have a theory, make additional observations that might help
-you come up with one.
+(((trial and error)))Здесь вам надо преодолеть желание начать вносить случайные изменения в код. Вместо этого _подумайте_. Проанализируйте результат и придумайте ((теорию)), по которой это происходит. Проведите дополнительные наблюдения для проверки теории – а если теории нет, проведите наблюдения, которые бы помогли вам изобрести её.
 
-(((console.log)))(((output)))(((debugging)))(((logging)))Putting a few
-strategic `console.log` calls into the program is a good way to get
-additional information about what the program is doing. In this case,
-we want `n` to take the values `13`, `1`, and then `0`. Let's write
-out its value at the start of the loop.
+(((console.log)))(((output)))(((debugging)))(((logging)))Размещение нескольких вызовов `console.log` в стратегических местах – хороший способ получить дополнительную информацию о том, что программа делает. В нашем случае нам нужно, чтобы `n` принимала значения `13`, `1`, затем `0`. Давайте выведем значения в начале цикла:
 
 ----
 13
@@ -284,50 +177,19 @@ out its value at the start of the loop.
 1.5e-323
 ----
 
-(((rounding)))_Right_. Dividing 13 by 10 does not produce a whole
-number. Instead of `n /= base`, what we actually want is `n =
-Math.floor(n / base)` so that the number is properly “shifted” to the
-right.
+(((rounding)))_Н-да_. Деление 13 на 10 выдаёт не целое число. Вместо `n /= base` нам нужно `n = Math.floor(n / base)`, тогда число будет корректно “сдвинуто” вправо.
 
-(((JavaScript console)))(((breakpoint)))(((debugger statement)))An
-alternative to using `console.log` is to use the _debugger_
-capabilities of your browser. Modern browsers come with the ability to
-set a _breakpoint_ on a specific line of your code. This will cause
-the execution of the program to pause every time the line with the
-breakpoint is reached and allow you to inspect the values of
-variables at that point. I won't go into details here since debuggers
-differ from browser to browser, but look in your browser's developer
-tools and search the Web for more information. Another way to set a
-breakpoint is to include a `debugger` statement (consisting of simply
-that keyword) in your program. If the ((developer tools)) of your
-browser are active, the program will pause whenever it reaches that
-statement, and you will be able to inspect its state.
+(((JavaScript console)))(((breakpoint)))(((debugger statement)))Кроме `console.log` можно воспользоваться _отладчиком_ в браузере. Современные браузеры умеют ставить _точку остановки_ на выбранной строчке кода. Это приведёт к приостановке выполнения программы каждый раз, когда будет достигнута выбранная строчка, и тогда вы сможете просмотреть содержимое переменных. Не буду подробно расписывать процесс, поскольку у разных браузеров он организован по-разному – поищите в вашем браузере “developer tools” или “инструменты разработчика”. Ещё один способ установить точку остановки – включить в код инструкцию для отладчика, состоящую из ключевого слова `debugger`. Если ((инструменты разработчика)) активны, исполнение программы будет приостановлено на этой инструкции, и вы сможете изучить состояние программы.
 
-== Error propagation ==
+== Распространение ошибок ==
 
-(((input)))(((output)))(((run-time
-error)))(((error)))(((validation)))Not all problems can be prevented
-by the programmer, unfortunately. If your program communicates with
-the outside world in any way, there is a chance that the input it gets
-will be invalid or that other systems that it tries to talk to are
-broken or unreachable.
+(((input)))(((output)))(((run-time error)))(((error)))(((validation)))К сожалению, программист может предотвратить появление не всех проблем. Если ваша программа общается с внешним миром, она может получить неправильные входные данные, или же системы, с которыми она пытается взаимодействовать, окажутся сломанными или недоступными.
 
-(((error recovery)))Simple programs, or programs that run only under
-your supervision, can afford to just give up when such a problem
-occurs. You'll look into the problem and try again. “Real”
-applications, on the other hand, are expected to not simply crash.
-Sometimes the right thing to do is take the bad input in stride and
-continue running. In other cases, it is better to report to the user
-what went wrong and then give up. But in either situation, the program
-has to actively do something in response to the problem.
+(((error recovery)))Простые программы, или программы, работающие под вашим надзором, могут просто “сдаваться” в такой момент. Вы можете изучить проблему и попробовать снова. “Настоящие” приложения не должны просто “падать”. Иногда приходится принимать неправильные входные данные и как-то с ними работать. В других случаях, нужно сообщить пользователю, что что-то пошло не так – и потом уже сдаваться. В любом случае программа должна что-то сделать в ответ на возникновение проблемы.
 
-(((promptInteger function)))(((validation)))Say you have a function
-`promptInteger` that asks the user for a whole number and returns it.
-What should it return if the user inputs _orange_?
+(((promptInteger function)))(((validation)))Допустим, у вас есть функция `promptInteger`, которая запрашивает целое число и возвращает его. Что она должна сделать, если пользователь введёт _апельсин_?
 
-(((null)))(((undefined)))(((return value)))(((special return
-value)))One option is to make it return a special value. Common
-choices for such values are `null` and `undefined`.
+(((null)))(((undefined)))(((return value)))(((special return value)))Один из вариантов – вернуть особое значение. Обычно для этих целей используют `null` и `undefined`.
 
 // test: no
 
@@ -339,58 +201,24 @@ function promptNumber(question) {
   else return result;
 }
 
-console.log(promptNumber("How many trees do you see?"));
+console.log(promptNumber("Сколько пальцев видите?"));
 ----
 
-This is a sound strategy. Now any code that calls `promptNumber` must
-check whether an actual number was read and, failing that, must
-somehow recover—maybe by asking again or by filling in a default
-value. Or it could again return a special value to _its_ caller to
-indicate that it failed to do what it was asked.
+Это надёжная стратегия. Теперь любой код, вызывающий `promptNumber`, должен проверять, было ли возвращено число, и если нет, как-то выйти из ситуации – спросить снова, или задать значение по-умолчанию. Или вернуть специальное значение уже тому, кто _его_ вызвал, сообщая о неудаче.
 
-(((error handling)))In many situations, mostly when ((error))s are
-common and the caller should be explicitly taking them into account,
-returning a special value is a perfectly fine way to indicate an
-error. It does, however, have its downsides. First, what if the
-function can already return every possible kind of value? For such a
-function, it is hard to find a special value that can be distinguished
-from a valid result.
+(((error handling)))Во многих таких случаях, когда ((ошибки)) возникают часто и вызывающий функцию код должен принимать их во внимание, совершенно допустимо возвращать специальное значение как индикатор ошибки. Но есть и минусы. Во-первых, что, если функция и так может вернуть любой тип значения? Для неё сложно найти специальное значение, которое будет отличаться от допустимого результата.
 
-(((special return value)))(((readability)))The second issue with
-returning special values is that it can lead to some very cluttered
-code. If a piece of code calls `promptNumber` 10 times, it has to
-check 10 times whether `null` was returned. And if its response to
-finding `null` is to simply return `null` itself, the caller will in
-turn have to check for it, and so on.
+(((special return value)))(((readability)))Вторая проблема – работа со специальными значениями может замусорить код. Если функция `promptNumber` вызывается 10 раз, то надо 10 раз проверить, не вернула ли она `null`. Если реакция на `null` заключается в возврате `null` на уровень выше, тогда там, где вызывался этот код, тоже нужно встраивать проверку на `null`, и так далее.
 
-== Exceptions ==
+== Исключения ==
 
-(((error handling)))When a function cannot proceed normally, what we
-would _like_ to do is just stop what we are doing and immediately jump
-back to a place that knows how to handle the problem. This is what
-_((exception handling))_ does.
+(((error handling)))Когда функция не может работать нормально, мы бы _хотели_ остановить работу и перепрыгнуть туда, где такая ошибка может быть обработана. Этим занимается _((обработка исключений))_.
 
-(((control flow)))(((raising (exception))))(((throw keyword)))(((call
-stack)))Exceptions are a mechanism that make it possible for code that
-runs into a problem to _raise_ (or _throw_) an exception, which is
-simply a value. Raising an exception somewhat resembles a
-super-charged return from a function: it jumps out of not just the
-current function but also out of its callers, all the way down to the
-first call that started the current execution. This is called
-_((unwinding the stack))_. You may remember the stack of function
-calls that was mentioned in link:03_functions.html#stack[Chapter 3].
-An exception zooms down this stack, throwing away all the call
-contexts it encounters.
+(((control flow)))(((raising (exception))))(((throw keyword)))(((call stack)))Код, встретивший проблему в момент выполнения, может _поднять_ (или _выкинуть_) исключение (_raise_ exception, _throw_ exception), которое представляет из себя некое значение. Возврат исключения напоминает некий “прокачанный” возврат из функции – он выпрыгивает не только из самой функции, но и из всех вызывавших её функций, до того места, с которого началось выполнение. Это называется _((развёртыванием стека))_ (_((unwinding the stack))_). Может быть, вы помните стек функций из link:03_functions.html#stack[главы 3]. Исключение быстро проматывает стек вниз, выкидывая все контексты вызовов, которые встречает.
 
-(((error handling)))(((syntax)))(((catch keyword)))If exceptions
-always zoomed right down to the bottom of the stack, they would not be
-of much use. They would just provide a novel way to blow up your
-program. Their power lies in the fact that you can set “obstacles”
-along the stack to _catch_ the exception as it is zooming down. Then
-you can do something with it, after which the program continues
-running at the point where the exception was caught.
+(((error handling)))(((syntax)))(((catch keyword)))Если бы исключения сразу доходили до самого низа стека, пользы от них было бы немного. Они бы просто предоставляли интересный способ взорвать программу. Их сила в том, что на их пути в стеке можно поставить “препятствия”, которые будут _ловить_ исключения, мчащиеся по стеку. И тогда с этим можно сделать что-то полезное, после чего программа продолжает выполняться с той точки, где было поймано исключение.
 
-Here's an example:
+Пример:
 
 [[look]]
 [source,javascript]
@@ -399,59 +227,34 @@ function promptDirection(question) {
   var result = prompt(question, "");
   if (result.toLowerCase() == "left") return "L";
   if (result.toLowerCase() == "right") return "R";
-  throw new Error("Invalid direction: " + result);
+  throw new Error("Недопустимое направление: " + result);
 }
 
 function look() {
-  if (promptDirection("Which way?") == "L")
-    return "a house";
+  if (promptDirection("Куда?") == "L")
+    return "дом";
   else
-    return "two angry bears";
+    return "двоих разъярённых медведей";
 }
 
 try {
-  console.log("You see", look());
+  console.log("Вы видите", look());
 } catch (error) {
-  console.log("Something went wrong: " + error);
+  console.log("Что-то не так: " + error);
 }
 ----
 
-(((exception handling)))(((block)))(((throw keyword)))(((try
-keyword)))(((catch keyword)))The `throw` keyword is used to raise an
-exception. Catching one is done by wrapping a piece of code in a `try`
-block, followed by the keyword `catch`. When the code in the `try`
-block causes an exception to be raised, the `catch` block is
-evaluated. The variable name (in parentheses) after `catch` will be
-bound to the exception value. After the `catch` block finishes—or if
-the `try` block finishes without problems—control proceeds beneath the
-entire `try/catch` statement.
+(((exception handling)))(((block)))(((throw keyword)))(((try keyword)))(((catch keyword)))Ключевое слово `throw` используется для выбрасывания исключения. Ловлей занимается кусок кода, обёрнутый в блок `try`, за которым следует `catch`. Когда код в блоке `try` выкидывает исключение, выполняется блок `catch`. Переменная, указанная в скобках, будет привязана к значению исключения. После завершения выполнения блока `catch`, или же если блок `try` выполняется без проблем, выполнение переходит к коду, лежащему после инструкции `try/catch`.
 
-(((debugging)))(((call stack)))(((Error type)))(((stack
-trace)))In this case, we used the `Error` ((constructor)) to create
-our exception value. This is a ((standard)) JavaScript constructor
-that creates an object with a `message` property. In modern JavaScript
-environments, instances of this constructor also gather information
-about the call stack that existed when the exception was created, a
-so-called _stack trace_. This information is stored in the `stack`
-property and can be helpful when trying to debug a problem: it
-tells us the precise function where the problem occurred and which
-other functions led up to the call that failed.
+(((debugging)))(((call stack)))(((Error type)))(((stack trace)))В данном случае для создания исключения мы использовали ((конструктор)) `Error`. Это ((стандартный)) конструктор, создающий объект со свойством `message`. В современных окружениях JavaScript экземпляры этого конструктора также собирают информацию о стеке вызовов, который был накоплен в момент выкидывания исключения – так называемое _отслеживание стека_ (_stack trace_). Эта информация сохраняется в свойстве `stack`, и может помочь при разборе проблемы – она сообщает, в какой функции случилась проблема и какие другие функции привели к данному вызову.
 
-(((exception handling)))Note that the function `look` completely
-ignores the possibility that `promptDirection` might go wrong. This is
-the big advantage of exceptions—error-handling code is necessary only
-at the point where the error occurs and at the point where it is
-handled. The functions in between can forget all about it.
+(((exception handling)))Обратите внимание, что функция `look` полностью игнорирует возможность возникновения проблем в `promptDirection`. Это преимущество исключений – код, обрабатывающий ошибки, нужен только в том месте, где происходит ошибка, и там, где она обрабатывается. Промежуточные функции просто не обращают на это внимания.
 
-Well, almost...
+Ну, почти.
 
-== Cleaning up after exceptions ==
+== Подчищаем за исключениями ==
 
-(((exception handling)))(((cleaning up)))(((withContext
-function)))(((dynamic scope)))Consider the following situation: a
-function, `withContext`, wants to make sure that, during its
-execution, the top-level variable `context` holds a specific context
-value. After it finishes, it restores this variable to its old value.
+(((exception handling)))(((cleaning up)))(((withContext function)))(((dynamic scope)))Представьте следующую ситуацию: функция `withContext` желает удостовериться, что во время её выполнения переменная верхнего уровня `context` получит специальное значение контекста. После завершения выполнения, она восстанавливает её старое значение.
 
 // include_code
 
@@ -468,17 +271,9 @@ function withContext(newContext, body) {
 }
 ----
 
-What if `body` raises an exception? In that case, the call to
-`withContext` will be thrown off the stack by the exception, and
-`context` will never be set back to its old value.
+Что, если функция `body` выбросит исключение? В таком случае вызов `withContext` будет выброшен исключением из стека, и переменной `context` никогда не будет возвращено первоначальное значение.
 
-(((block)))(((try keyword)))(((finally keyword)))There is one more
-feature that `try` statements have. They may be followed by a
-`finally` block either instead of or in addition to a `catch`
-block. A `finally` block means “No matter _what_ happens, run this
-code after trying to run the code in the `try` block”. If a function
-has to clean something up, the cleanup code should usually be put into
-a `finally` block.
+(((block)))(((try keyword)))(((finally keyword)))Но у инструкции `try` есть ещё одна особенность. За ней может следовать блок `finally`, либо вместо `catch`, либо вместе с `catch`. Блок `finally` означает “_Что бы_ ни произошло, выполнить код в любом случае после выполнения блока `try`”. Если функции надо что-то подчистить, то подчищающий код нужно включать в блок `finally`.
 
 // include_code
 
@@ -495,10 +290,7 @@ function withContext(newContext, body) {
 }
 ----
 
-(((withContext function)))Note that we no longer have to store the
-result of `body` (which we want to return) in a variable. Even if we
-return directly from the `try` block, the `finally` block will be run.
-Now we can do this and be safe:
+(((withContext function)))Заметьте, что нам больше не нужно сохранять результат вызова `body` в отдельной переменной, чтобы вернуть его. Даже если мы возвращаемся из блока `try`, блок `finally` всё равно будет выполнен. Теперь мы можем безопасно сделать так:
 
 // test: no
 
@@ -507,62 +299,34 @@ Now we can do this and be safe:
 try {
   withContext(5, function() {
     if (context < 10)
-      throw new Error("Not enough context!");
+      throw new Error("Контекст слишком мал!");
   });
 } catch (e) {
-  console.log("Ignoring: " + e);
+  console.log("Игнорируем: " + e);
 }
-// → Ignoring: Error: Not enough context!
+// → Игнорируем: Error: Контекст слишком мал!
 
 console.log(context);
 // → null
 ----
 
-Even though the function called from `withContext` exploded,
-`withContext` itself still properly cleaned up the `context` variable.
+Несмотря на то, что вызываемая из `withContext` функция “сломалась”, сам по себе `withContext` по-прежнему подчищает значение переменной `context`.
 
-== Selective catching ==
+== Выборочный отлов исключений ==
 
-(((uncaught exception)))(((exception handling)))(((JavaScript
-console)))(((developer tools)))(((call stack)))(((error)))When an
-exception makes it all the way to the bottom of the stack without
-being caught, it gets handled by the environment. What this means
-differs between environments. In browsers, a description of the error
-typically gets written to the JavaScript console (reachable through
-the browser's Tools or Developer menu).
+(((uncaught exception)))(((exception handling)))(((JavaScript console)))(((developer tools)))(((call stack)))(((error)))Когда исключение доходит до низа стека и его никто не поймал — его обрабатывает окружение. Как именно – зависит от конкретного окружения. В браузерах описание ошибки выдаётся в консоль (она обычно доступна в меню “Инструменты” или “Разработка”).
 
-(((crash)))(((error handling)))For programmer mistakes or problems
-that the program cannot possibly handle, just letting the error go
-through is often okay. An unhandled exception is a reasonable way to
-signal a broken program, and the JavaScript console will, on modern
-browsers, provide you with some information about which function calls
-were on the stack when the problem occurred.
+(((crash)))(((error handling)))Если речь идёт об ошибках или проблемах, которые программа не может обработать в принципе, допустимо просто пропустить такую ошибку. Необработанное исключение – разумный способ сообщить о проблеме в программе, и консоль в современных браузерах выдаст вам необходимую информацию о том, какие вызовы функций были в стеке в момент возникновения проблемы.
 
-(((user interface)))For problems that are _expected_ to happen during
-routine use, crashing with an unhandled exception is not a very
-friendly response.
+(((user interface)))Если возникновение проблемы _предсказуемо_, программа не должна падать с необработанным исключением — это не очень дружественно по отношению к пользователю.
 
-(((syntax)))(((function,application)))(((exception handling)))(((Error
-type)))Invalid uses of the language, such as referencing a nonexistent
-((variable)), looking up a property on `null`, or calling something
-that's not a function, will also result in exceptions being raised.
-Such exceptions can be caught just like your own exceptions.
+(((syntax)))(((function,application)))(((exception handling)))(((Error type)))Недопустимое использование языка – ссылки на несуществующую ((переменную)), запрос свойств у переменной, равной `null`, или вызов чего-то, что не является функцией, тоже приводит к выбрасыванию исключений. Такие исключения можно отлавливать точно так же, как свои собственные.
 
-(((catch keyword)))When a `catch` body is entered, all we know is that
-_something_ in our `try` body caused an exception. But we don't know
-_what_, or _which_ exception it caused.
+(((catch keyword)))При входе в блок `catch` мы знаем только, что _что-то_ внутри блока `try` привело к исключению. Мы не знаем, _что_ именно, и _какое_ исключение произошло.
 
-(((exception handling)))JavaScript (in a rather glaring omission)
-doesn't provide direct support for selectively catching exceptions:
-either you catch them all or you don't catch any. This makes it very
-easy to _assume_ that the exception you get is the one you were
-thinking about when you wrote the `catch` block.
+(((exception handling)))JavaScript (что является вопиющим упущением) не предоставляет непосредственной поддержки выборочного отлова исключений: либо ловим все, либо никакие. Из-за этого люди часто _предполагают_, что случившееся исключение – именно то, ради которого и писался блок `catch`.
 
-(((promptDirection function)))But it might not be. Some other
-((assumption)) might be violated, or you might have introduced a bug
-somewhere that is causing an exception. Here is an example, which
-_attempts_ to keep on calling `promptDirection` until it gets a valid
-answer:
+(((promptDirection function)))Но может быть и по-другому. ((Нарушение)) произошло где-то ещё, или в программу вкралась ошибка. Вот пример, где мы _пробуем_ вызывать `promptDirection` до тех пор, пока не получим допустимый ответ:
 
 // test: no
 
@@ -570,44 +334,24 @@ answer:
 ----
 for (;;) {
   try {
-    var dir = promtDirection("Where?"); // ← typo!
-    console.log("You chose ", dir);
+    var dir = promtDirection("Куда?"); // ← typo!
+    console.log("Ваш выбор", dir);
     break;
   } catch (e) {
-    console.log("Not a valid direction. Try again.");
+    console.log("Недопустимое направление. Попробуйте ещё раз.");
   }
 }
 ----
 
-(((infinite loop)))(((for loop)))(((catch keyword)))(((debugging)))The
-`for (;;)` construct is a way to intentionally create a loop that
-doesn't terminate on its own. We break out of the loop only when a
-valid direction is given. _But_ we misspelled `promptDirection`,
-which will result in an “undefined variable” error. Because the
-`catch` block completely ignores its exception value (`e`), assuming
-it knows what the problem is, it wrongly treats the variable error as
-indicating bad input. Not only does this cause an infinite loop, but
-it also “buries” the useful error message about the misspelled
-variable.
+(((infinite loop)))(((for loop)))(((catch keyword)))(((debugging)))Конструкция `for (;;)` – способ устроить бесконечный цикл. Мы вываливаемся из него, только когда получаем допустимое направление. _Но_ мы неправильно написали название `promptDirection`, что приводит к ошибке “undefined variable”. А так как блок `catch` игнорирует значение исключения `e`, предполагая, что он разбирается с другой проблемой, он считает, что выброшенное исключение является результатом неправильных входных данных. Это приводит к бесконечному циклу и скрывает полезное сообщение об ошибке насчёт неправильного имени переменной.
 
-As a general rule, don't blanket-catch exceptions unless it is for the
-purpose of “routing” them somewhere—for example, over the network to
-tell another system that our program crashed. And even then, think
-carefully about how you might be hiding information.
+Как правило, не стоит так ловить исключения, если только у вас нет цели перенаправить их куда-либо – к примеру, по сети, чтобы сообщить другой системе о падении нашей программы. И даже тогда внимательно смотрите, не будет ли скрыта важная информация.
 
-(((exception handling)))So we want to catch a _specific_ kind of
-exception. We can do this by checking in the `catch` block whether the
-exception we got is the one we are interested in and by rethrowing it
-otherwise. But how do we recognize an exception?
+(((exception handling)))Значит, нам надо поймать _определённое_ исключение. Мы можем в блоке `catch` проверять, является ли случившееся исключение интересующим нас исключением, а в противном случае заново выбрасывать его. Но как нам распознать исключение?
 
-Of course, we could match its `message` property against the ((error))
-message we happen to expect. But that's a shaky way to write code—we'd
-be using information that's intended for human consumption (the
-message) to make a programmatic decision. As soon as someone changes
-(or translates) the message, the code will stop working.
+Конечно, мы могли бы сравнить свойство `message` с сообщением об ((ошибке)), которую мы ждём. Но это ненадёжный способ писать код – использовать информацию, предназначающуюся для человека (сообщение), чтобы принять программное решение. Как только кто-нибудь поменяет или переведёт это сообщение, код перестанет работать.
 
-(((Error type)))(((instanceof operator)))Rather, let's define a new
-type of error and use `instanceof` to identify it.
+(((Error type)))(((instanceof operator)))Давайте лучше определим новый тип ошибки и используем `instanceof` для его распознавания.
 
 // include_code
 
@@ -621,19 +365,11 @@ InputError.prototype = Object.create(Error.prototype);
 InputError.prototype.name = "InputError";
 ----
 
-(((throw keyword)))(((inheritance)))The prototype is made to derive
-from `Error.prototype` so that `instanceof Error` will also return
-true for `InputError` objects. It's also given a `name` property
-since the standard error types (`Error`, `SyntaxError`,
-`ReferenceError`, and so on) also have such a property.
+(((throw keyword)))(((inheritance)))Прототип наследуется от `Error.prototype`, поэтому `instanceof Error` тоже будет выполняться для объектов типа `InputError`. И ему назначено свойство `name`, как и другим стандартным типам ошибок (`Error`, `SyntaxError`, `ReferenceError`, и т.п.).
 
-(((call stack)))The assignment to the `stack` property tries to give
-this object a somewhat useful ((stack trace)), on platforms that
-support it, by creating a regular error object and then using that
-object's `stack` property as its own.
+(((call stack)))Присвоение свойству `stack` пытается передать этому объекту ((отслеживание стека)), на тех платформах, которые это поддерживают, путём создания объекта `Error` и использования его стека.
 
-(((promptDirection function)))Now `promptDirection` can throw such an
-error.
+(((promptDirection function)))Теперь `promptDirection` может сотворить такую ошибку.
 
 // include_code
 
@@ -647,7 +383,7 @@ function promptDirection(question) {
 }
 ----
 
-(((exception handling)))And the loop can catch it more carefully.
+(((exception handling)))А в цикле её будет ловить сподручнее.
 
 // test: no
 
@@ -655,27 +391,24 @@ function promptDirection(question) {
 ----
 for (;;) {
   try {
-    var dir = promptDirection("Where?");
-    console.log("You chose ", dir);
+    var dir = promptDirection("Куда?");
+    console.log("Ваш выбор", dir);
     break;
   } catch (e) {
     if (e instanceof InputError)
-      console.log("Not a valid direction. Try again.");
+      console.log("Недопустимое направление. Попробуйте ещё раз.");
     else
       throw e;
   }
 }
 ----
 
-(((debugging)))This will catch only instances of `InputError` and let
-unrelated exceptions through. If you reintroduce the typo, the
-undefined variable error will be properly reported.
+(((debugging)))Код отлавливает только экземпляры `InputError` и пропускает другие исключения. Если вы снова сделаете такую же опечатку, будет корректно выведено сообщение о неопределённой переменной.
 
-== Assertions ==
+== Утверждения ==
 
-(((assert function)))(((assertion)))(((debugging)))_Assertions_ are a
-tool to do basic sanity checking for programmer errors. Consider this
-helper function, `assert`:
+(((assert function)))(((assertion)))(((debugging)))_Утверждения_ – инструмент для простой проверки ошибок. Рассмотрим вспомогательную функцию `assert`:
+_Assertions_ are a tool to do basic sanity checking for programmer errors. Consider this helper function, `assert`:
 
 [source,javascript]
 ----
@@ -690,58 +423,35 @@ function assert(test, message) {
 }
 
 function lastElement(array) {
-  assert(array.length > 0, "empty array in lastElement");
+  assert(array.length > 0, "пустой массив в lastElement");
   return array[array.length - 1];
 }
 ----
 
-(((validation)))(((run-time
-error)))(((crash)))(((assumption)))(((array)))This provides a
-compact way to enforce expectations, helpfully blowing up the program
-if the stated condition does not hold. For instance, the `lastElement`
-function, which fetches the last element from an array, would return
-`undefined` on empty arrays if the assertion was omitted. Fetching the
-last element from an empty array does not make much sense, so it is
-almost certainly a programmer error to do so.
+(((validation)))(((run-time error)))(((crash)))(((assumption)))(((array)))Это – компактный способ ужесточения требований к значениям, который выбрасывает исключение в случае, когда заданное условие не выполняется. К примеру, функция `lastElement`, добывающая последний элемент массива, вернула бы `undefined` для пустых массивов, если б мы не использовали `assertion`. Извлечение последнего элемента пустого массива не имеет смысла, и это явно было бы ошибкой программиста.
 
-(((assertion)))(((debugging)))Assertions are a way to make sure
-mistakes cause failures at the point of the mistake, rather than
-silently producing nonsense values that may go on to cause trouble in
-an unrelated part of the system.
+(((assertion)))(((debugging)))Утверждения – способ убедиться в том, что ошибки провоцируют прерывание программы в том месте, где они совершены, а не просто выдают странные величины, которые передаются по системе и вызывают проблемы в каких-то других, не связанных с этим, местах.
 
-== Summary ==
+== Итог ==
 
-Mistakes and bad input are facts of life. Bugs in programs need to be
-found and fixed. They can become easier to notice by having automated
-test suites and adding assertions to your programs.
+Ошибки и недопустимые входные данные случаются в жизни. Баги в программах надо искать и исправлять. Их легче найти, используя автоматические системы проверок и добавляя утверждения в ваши программы.
 
-Problems caused by factors outside the program's control should
-usually be handled gracefully. Sometimes, when the problem can be
-handled locally, special return values are a sane way to track them.
-Otherwise, exceptions are preferable.
+Проблемы, вызванные чем-то, что неподвластно вашей программе, нужно обрабатывать достойно. Иногда, когда проблему можно решить локально, допустимо возвращать специальные значения для отслеживания таких случаев. В других случаях предпочтительно использовать исключения.
 
-Throwing an exception causes the call stack to be unwound until the
-next enclosing `try/catch` block or until the bottom of the stack.
-The exception value will be given to the `catch` block that catches
-it, which should verify that it is actually the expected kind of
-exception and then do something with it. To deal with the
-unpredictable control flow caused by exceptions, `finally` blocks can
-be used to ensure a piece of code is _always_ run when a block
-finishes.
+Выброс исключения приводит к разматыванию стека до тех пор, пока не будет встречен блок `try/catch` или пока мы не дойдём до дна стека. Значение исключения будет передано в блок `catch`, который сможет удостовериться в том, что это исключение действительно то, которое он ждёт, и обработать его. Для работы с непредсказуемыми событиями в потоке программы можно использовать блоки `finally`, чтобы определённые части кода были выполнены в _любом_ случае.
 
-== Exercises ==
+== Упражнения ==
 
-=== Retry ===
+=== Повтор ===
 
-(((primitiveMultiply (exercise))))(((exception handling)))(((throw
-keyword)))Say you have a function `primitiveMultiply` that, in 50 percent of
+(((primitiveMultiply (exercise))))(((exception handling)))(((throw keyword)))Допустим, у вас есть функция `primitiveMultiply`, которая в 50% случаев перемножает 2 числа, а в остальных случаях выбрасывает исключение типа `MultiplicatorUnitFailure`. Напишите функцию, обёртывающую эту, и просто вызывающую её до тех пор, пока не будет получен успешный результат.
+Say you have a function `primitiveMultiply` that, in 50 percent of
 cases, multiplies two numbers, and in the other 50 percent, raises an
 exception of type `MultiplicatorUnitFailure`. Write a function that
 wraps this clunky function and just keeps trying until a call
 succeeds, after which it returns the result.
 
-(((catch keyword)))Make sure you handle only  the exceptions you
-are trying to handle.
+(((catch keyword)))Убедитесь, что вы обрабатываете только нужные вам исключения.
 
 ifdef::interactive_target[]
 
@@ -759,7 +469,7 @@ function primitiveMultiply(a, b) {
 }
 
 function reliableMultiply(a, b) {
-  // Your code here.
+  // Ваш код.
 }
 
 console.log(reliableMultiply(8, 8));
@@ -783,10 +493,9 @@ pretty safe bet).
 
 !!hint!!
 
-=== The locked box ===
+=== Запёртая коробка ===
 
-(((locked box (exercise))))Consider the following (rather contrived)
-object:
+(((locked box (exercise))))Рассмотрим такой, достаточно надуманный, объект:
 
 // include_code
 
@@ -798,17 +507,16 @@ var box = {
   lock: function() { this.locked = true;  },
   _content: [],
   get content() {
-    if (this.locked) throw new Error("Locked!");
+    if (this.locked) throw new Error("Заперто!");
     return this._content;
   }
 };
 ----
 
-(((private property)))(((access control)))It is a ((box)) with a
-lock. Inside is an array, but you can get at it only  when the box is
-unlocked. Directly accessing the `_content` property is not allowed.
+(((private property)))(((access control)))Это ((коробочка)) с замком. Внутри лежит массив, но до него можно добраться только, когда коробка не заперта. Напрямую обращаться к свойству `_content` нельзя.
 
-(((finally keyword)))(((exception handling)))Write a function called
+(((finally keyword)))(((exception handling)))Напишите функцию `withBoxUnlocked`, принимающую в качестве аргумента функцию, которая отпирает коробку, выполняет функцию, и затем обязательно запирает коробку снова перед выходом – неважно, выполнилась ли переданная функция правильно, или она выбросила исключение.
+Write a function called
 `withBoxUnlocked` that takes a function value as argument, unlocks the
 box, runs the function, and then ensures that the box is locked again
 before returning, regardless of whether the argument function returned
@@ -819,26 +527,25 @@ ifdef::interactive_target[]
 [source,javascript]
 ----
 function withBoxUnlocked(body) {
-  // Your code here.
+  // Ваш код.
 }
 
 withBoxUnlocked(function() {
-  box.content.push("gold piece");
+  box.content.push("золотишко");
 });
 
 try {
   withBoxUnlocked(function() {
-    throw new Error("Pirates on the horizon! Abort!");
+    throw new Error("Пираты на горизонте! Отмена!");
   });
 } catch (e) {
-  console.log("Error raised:", e);
+  console.log("Произошла ошибка:", e);
 }
 console.log(box.locked);
 // → true
 ----
 
-For extra points, make sure that if you call `withBoxUnlocked` when
-the box is already unlocked, the box stays unlocked. 
+В качестве призовой игры убедитесь, что при вызове `withBoxUnlocked`, когда коробка не заперта, коробка остаётся незапертой.
 
 endif::interactive_target[]
 
