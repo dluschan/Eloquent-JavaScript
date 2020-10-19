@@ -2,55 +2,33 @@
 :prev_link: 08_error
 :next_link: 10_modules
 
-= Regular Expressions =
+= Регулярные выражения =
 
 [chapterquote="true"]
-[quote,Jamie Zawinski]
+[quote,Джейми Завински]
 ____
-Some people, when confronted with a
-problem, think ‘I know, I'll use regular expressions.’ Now they have
-two problems.
+Некоторые люди, столкнувшись с проблемой, думают: «О, а использую-ка я регулярные выражения». Теперь у них есть две проблемы.
 ____
 
 ifdef::interactive_target[]
 
 [chapterquote="true"]
-[quote, Master Yuan-Ma, The Book of Programming]
+[quote, Мастер Юан-Ма, Книга программирования]
 ____
-Yuan-Ma said, ‘When you cut against the grain of the wood, much
-strength is needed. When you program against the grain of a problem,
-much code is needed.’
+Юан-Ма сказал: «Требуется большая сила, чтобы резать дерево поперёк структуры древесины. Требуется много кода, чтобы программировать поперёк структуры проблемы.»
 ____
 
 endif::interactive_target[]
 
-(((Zawinski+++,+++
-Jamie)))(((evolution)))(((adoption)))(((integration)))Programming
-((tool))s and techniques survive and spread in a chaotic, evolutionary
-way. It's not always the pretty or brilliant ones that win but rather
-the ones that function well enough within the right niche—for example,
-by being integrated with another successful piece of technology.
+(((Zawinski+++,+++ Jamie)))(((evolution)))(((adoption)))(((integration)))((Инструмент))ы и техники программирования выживают и распространяются хаотично-эволюционным способом. Иногда выживают не красивые и гениальные, а просто такие, которые достаточно хорошо работают в своей области – к примеру, если их интегрируют в другую успешную технологию.
 
-(((domain-specific language)))In this chapter, I will discuss one such
-tool, _((regular expression))s_. Regular expressions are a way to
-describe ((pattern))s in string data. They form a small, separate
-language that is part of JavaScript and many other languages and
-tools.
+(((domain-specific language)))В этой главе мы обсудим такой инструмент – _((регулярные выражения))_. Это способ описывать ((шаблон))ы в строковых данных. Они создают небольшой отдельный язык, который входит в JavaScript и во множество других языков и инструментов.
 
-(((interface,design)))Regular expressions are both terribly awkward
-and extremely useful. Their syntax is cryptic, and the programming
-((interface)) JavaScript provides for them is clumsy. But they are a
-powerful ((tool)) for inspecting and processing strings. Properly
-understanding regular expressions will make you a more effective
-programmer.
+(((interface,design)))Регулярки одновременно очень странные и крайне полезные. Их синтаксис загадочен, а программный ((интерфейс)) в JavaScript для них неуклюж. Но это мощный ((инструмент)) для исследования и обработки строк. Разобравшись с ними, вы станете более эффективным программистом.
 
-== Creating a regular expression ==
+== Создаём регулярное выражение ==
 
-(((regular expression,creation)))(((RegExp constructor)))(((literal
-expression)))(((slash character)))A regular expression is a type of
-object. It can either be constructed with the `RegExp` constructor or
-written as a literal value by enclosing the pattern in forward slash
-(`/`) characters.
+(((regular expression,creation)))(((RegExp constructor)))(((literal expression)))(((slash character)))Регулярка – тип объекта. Её можно создать, вызвав конструктор `RegExp`, или написав нужный шаблон, окружённый слешами.
 
 [source,javascript]
 ----
@@ -58,43 +36,22 @@ var re1 = new RegExp("abc");
 var re2 = /abc/;
 ----
 
-Both of these regular expression objects represent the same
-((pattern)): an _a_ character followed by a _b_ followed by a _c_.
+Оба этих регулярных выражения представляют один ((шаблон)): символ _a_, за которым следует символ _b_, за которым следует символ _c_.
 
-(((backslash character)))(((RegExp constructor)))When using the
-`RegExp` constructor, the pattern is written as a normal string, so
-the usual rules apply for backslashes.
+(((backslash character)))(((RegExp constructor)))Если вы используете конструктор `RegExp`, тогда шаблон записывается как обычная строка, поэтому действуют все правила относительно обратных слешей.
 
-(((regular expression,escaping)))(((escaping,in regexps)))(((slash
-character)))The second notation, where the pattern appears between
-slash characters, treats backslashes somewhat differently. First,
-since a forward slash ends the pattern, we need to put a backslash
-before any forward slash that we want to be _part_ of the pattern. In
-addition, backslashes that aren't part of special character codes
-(like `\n`) will be _preserved_, rather than ignored as they are in
-strings, and change the meaning of the pattern. Some characters, such
-as question marks and plus signs, have special meanings in regular
-expressions and must be preceded by a backslash if they are meant to
-represent the character itself.
+(((regular expression,escaping)))(((escaping,in regexps)))(((slash character)))Вторая запись, где шаблон находится между слешами, обрабатывает обратные слеши по-другому. Во-первых, так как шаблон заканчивается прямым слешем, то нужно ставить обратный слеш перед прямым слешем, который мы хотим включить в наш шаблон. Кроме того, обратные слеши, не являющиеся частью специальных символов типа `\n`, будут _сохранены_ (а не проигнорированы, как в строках), и изменят смысл шаблона. У некоторых символов, таких, как знак вопроса или плюс, есть особое значение в регулярках, и если вам нужно найти такой символ, его также надо предварять обратным слешем.
 
 [source,javascript]
 ----
 var eighteenPlus = /eighteen\+/;
 ----
 
-Knowing precisely what characters to backslash-escape when writing
-regular expressions requires you to know every character with a
-special meaning. For the time being, this may not be realistic, so
-when in doubt, just put a backslash before any character that is not a
-letter, number, or ((whitespace)).
+Чтобы знать, какие символы надо предварять слешем, вам надо выучить список всех специальных символов в регулярках. Пока это нереально, поэтому в случае сомнений просто ставьте обратный слеш перед любым символом, не являющимся буквой, числом или ((пробел))ом.
 
-== Testing for matches ==
+== Проверяем на совпадения ==
 
-(((matching)))(((test method)))(((regular expression,methods)))Regular
-expression objects have a number of methods. The simplest one is
-`test`. If you pass it a string, it will return a ((Boolean)) telling
-you whether the string contains a match of the pattern in the
-expression.
+(((matching)))(((test method)))(((regular expression,methods)))У регулярок есть несколько методов. Простейший – `test`. Если передать ему строку, он вернёт ((булевское)) значение, сообщая, содержит ли строка вхождение заданного шаблона.
 
 [source,javascript]
 ----
@@ -104,23 +61,15 @@ console.log(/abc/.test("abxde"));
 // → false
 ----
 
-(((pattern)))A ((regular expression)) consisting of only nonspecial
-characters simply represents that sequence of characters. If _abc_
-occurs anywhere in the string we are testing against (not just at the
-start), `test` will return `true`.
+(((pattern)))((Регулярка)), состоящая только из неспециальных символов, просто представляет собой последовательность этих символов. Если _abc_ есть где-то в строке, которую мы проверяем (не только в начале), `test` вернёт `true`.
 
-== Matching a set of characters ==
+== Ищем набор символов ==
 
-(((regular expression)))(((indexOf method)))Finding out whether a
-string contains _abc_ could just as well be done with a call to
-`indexOf`. Regular expressions allow us to go beyond that and express
-more complicated ((pattern))s.
+(((regular expression)))(((indexOf method)))Выяснить, содержит ли строка _abc_, можно было бы и при помощи `indexOf`. Регулярки позволяют пройти дальше и составлять более сложные ((шаблон))ы.
 
-Say we want to match any ((number)). In a regular expression, putting
-a ((set)) of characters between square brackets makes that part of the
-expression match any of the characters between the brackets.
+Допустим, нам надо найти любой ((номер)). Когда мы в регулярке помещаем ((набор)) символов в квадратные скобки, это означает, что эта часть выражения совпадает с любым из символов в скобках.
 
-Both of the following expressions match all strings that contain a ((digit)):
+Оба выражения находятся в строчках, содержащих ((цифру)):
 
 [source,javascript]
 ----
@@ -130,31 +79,22 @@ console.log(/[0-9]/.test("in 1992"));
 // → true
 ----
 
-(((dash character)))Within square brackets, a dash (`-`) between two
-characters can be used to indicate a ((range)) of characters, where
-the ordering is determined by the character's ((Unicode)) number.
-Characters 0 to 9 sit right next to each other in this ordering
-(codes 48 to 57), so `[0-9]` covers all of them and matches any
-((digit)).
+(((dash character)))В квадратных скобках тире между двумя символами используется для задания ((диапазон))а символов, где последовательность задаётся кодировкой ((Unicode)). Символы от 0 до 9 находятся там просто подряд (коды с 48 до 57), поэтому `[0-9]` захватывает их все и совпадает с любой ((цифрой)).
 
-(((whitespace)))(((alphanumeric character)))(((period
-character)))There are a number of common character groups that have
-their own built-in shortcuts. Digits are one of them: `\d` means the
-same thing as `[0-9]`.
+(((whitespace)))(((alphanumeric character)))(((period character)))У нескольких групп символов есть свои встроенные сокращения.
 
 [cols="1,5"]
 |====
-|`\d`      |Any ((digit)) character
-|`\w`      |An alphanumeric character (“((word character))”)
-|`\s`      |Any ((whitespace)) character (space, tab, newline, and similar)
-|`\D`      |A character that is _not_ a digit
-|`\W`      |A nonalphanumeric character
-|`\S`      |A nonwhitespace character
-|`.`       |Any character except for newline(((newline character)))
+|`\d`      |Любая ((цифра))
+|`\w`      |Алфавитно-цифровой символ
+|`\s`      |Пробельный символ (пробел, табуляция, перевод строки, и т.п.)
+|`\D`      |_Не_ цифра
+|`\W`      |_Не_ алфавитно-цифровой символ
+|`\S`      |_Не_ пробельный символ
+|`.`       |Любой символ, кроме перевода строки
 |====
 
-So you could match a ((date)) and ((time)) format like 30-01-2003
-15:20 with the following expression:
+Таким образом можно задать формат ((даты)) и ((времени)) вроде 30-01-2003 15:20 следующим выражением:
 
 [source,javascript]
 ----
@@ -165,23 +105,11 @@ console.log(dateTime.test("30-jan-2003 15:20"));
 // → false
 ----
 
-(((backslash character)))That looks completely awful, doesn't it? It has way too
-many backslashes, producing background noise that makes it hard to
-spot the actual ((pattern)) expressed. We'll see a slightly improved
-version of this expression
-link:09_regexp.html#date_regexp_counted[later].
+(((backslash character)))Выглядит ужасно, не так ли? Слишком много обратных слешей, которые затрудняют понимание ((шаблон))а. link:09_regexp.html#date_regexp_counted[Позже] мы слегка улучшим его.
 
-(((escaping,in regexps)))(((regular expression)))(((set)))These
-backslash codes can also be used inside ((square brackets)). For
-example, `[\d.]` means any digit or a period character. But note that
-the period itself, when used between square brackets, loses its
-special meaning. The same goes for other special characters, such as
-`+`.
+(((escaping,in regexps)))(((regular expression)))(((set)))Обратные слеши можно использовать и в ((квадратных скобках)). Например, `[\d.]` означает любую цифру или точку. Заметьте, что точка внутри квадратных скобок теряет своё особое значение и превращается просто в точку. То же касается и других специальных символов, типа `+`.
 
-(((square brackets)))(((inversion)))(((caret character)))To _invert_ a
-set of characters—that is, to express that you want to match any
-character _except_ the ones in the set—you can write a caret (`^`)
-character after the opening bracket.
+(((square brackets)))(((inversion)))(((caret character)))_Инвертировать_ набор символов – то есть, сказать, что вам надо найти любой символ, _кроме_ тех, что есть в наборе – можно, поставив знак `^` (“карет”) сразу после открывающей квадратной скобки.
 
 [source,javascript]
 ----
@@ -192,16 +120,11 @@ console.log(notBinary.test("1100100010200110"));
 // → true
 ----
 
-== Repeating parts of a pattern ==
+== Повторяем части шаблона ==
 
-(((regular expression,repetition)))We now know how to match a single digit. What
-if we want to match a whole number—a ((sequence)) of one or more
-((digit))s?
+(((regular expression,repetition)))Мы знаем, как найти одну цифру. А если нам надо найти число целиком – ((последовательность)) из одной или более ((цифр))?
 
-(((plus character)))(((repetition)))(((+ operator)))When you put a
-plus sign (`+`) after something in a regular expression, it indicates
-that the element may be repeated more than once. Thus, `/\d+/` matches
-one or more digit characters.
+(((plus character)))(((repetition)))(((+ operator)))Если поставить после чего-либо в регулярке знак `+`, это будет означать, что этот элемент может быть повторён более одного раза. `/\d+/` означает одну или несколько цифр.
 
 [source,javascript]
 ----
@@ -215,15 +138,9 @@ console.log(/'\d*'/.test("''"));
 // → true
 ----
 
-(((pass:[*] operator)))(((asterisk)))The star (`*`) has a similar
-meaning but also allows the pattern to match zero times. Something
-with a star after it never prevents a pattern from matching—it'll just
-match zero instances if it can't find any suitable text to match.
+(((pass:[*] operator)))(((asterisk)))У звёздочки `*` значение почти такое же, но она разрешает шаблону присутствовать ноль раз. Если после чего-то стоит звёздочка, то оно никогда не препятствует нахождению шаблона в строке – оно просто находится там ноль раз.
 
-(((British English)))(((American English)))(((question mark)))A
-question mark makes a part of a pattern “((optional))”, meaning it may
-occur zero or one time. In the following example, the _u_ character
-is allowed to occur, but the pattern also matches when it is missing.
+(((British English)))(((American English)))(((question mark)))Знак вопроса делает часть шаблона необязательной, то есть она может встретиться ноль или один раз. В следующем примере символ _u_ может встречаться, но шаблон совпадает и тогда, когда его нет.
 
 [source,javascript]
 ----
@@ -234,16 +151,10 @@ console.log(neighbor.test("neighbor"));
 // → true
 ----
 
-(((repetition)))(((curly braces)))To indicate that a pattern should
-occur a precise number of times, use curly braces. Putting `{4}` after
-an element, for example, requires it to occur exactly four times. It
-is also possible to specify a ((range)) this way: `{2,4}` means the
-element must occur at least twice and at most four times.
+(((repetition)))(((curly braces)))Чтобы задать точное количество раз, которое шаблон должен встретиться, используются фигурные скобки. `{4}` после элемента означает, что он должен встретиться в строке 4 раза. Также можно задать ((промежуток)): `{2,4}` означает, что элемент должен встретиться не менее 2 и не более 4 раз.
 
 [[date_regexp_counted]]
-Here is another version of the ((date)) and ((time)) pattern that
-allows both single- and double-((digit)) days, months, and hours. It
-is also slightly more readable.
+Ещё одна версия формата ((даты)) и ((времени)), где разрешены дни, месяцы и часы из одной или двух ((цифр)). И ещё она чуть более читаема.
 
 [source,javascript]
 ----
@@ -252,17 +163,11 @@ console.log(dateTime.test("30-1-2003 8:45"));
 // → true
 ----
 
-You can also specify open-ended ((range))s when using ((curly braces))
-by omitting the number after the comma. So `{5,}` means five or more
-times.
+Можно использовать ((промежутки)) с открытым концом, опуская одно из чисел. `{,5}` означает, что шаблон может встретиться от нуля до пяти раз, а `{5,}` – от пяти и более.
 
-== Grouping subexpressions ==
+== Группировка подвыражений ==
 
-(((regular expression,grouping)))(((grouping)))To use an operator like `*` or
-`+` on more than one element at a time, you can use ((parentheses)). A
-part of a regular expression that is enclosed in parentheses counts
-as a single element as far as the operators following it are
-concerned.
+(((regular expression,grouping)))(((grouping)))Чтобы использовать операторы `*` или `+` на нескольких элементах сразу, можно использовать ((круглые скобки)). Часть регулярки, заключённая в скобки, считается одним элементом с точки зрения операторов.
 
 [source,javascript]
 ----
@@ -271,24 +176,13 @@ console.log(cartoonCrying.test("Boohoooohoohooo"));
 // → true
 ----
 
-(((crying)))The first and second `+` characters apply only to the
-second _o_ in _boo_ and _hoo_, respectively. The third `+` applies to
-the whole group `(hoo+)`, matching one or more sequences like that.
+(((crying)))Первый и второй плюсы относятся только ко вторым буквам _o_ в словах _boo_ и _hoo_. Третий `+` относится к целой группе `(hoo+)`, находя одну или несколько таких последовательностей.
 
-(((case sensitivity)))(((capitalization)))(((regular
-expression,flags)))The `i` at the end of the expression in the
-previous example makes this regular expression case insensitive, allowing it to
-match the uppercase _B_ in the input string, even though the pattern
-is itself all lowercase.
+(((case sensitivity)))(((capitalization)))(((regular expression,flags)))Буква `i` в конце выражения делает регулярку нечувствительной к регистру симолов – так, что _B_ совпадает с _b_.
 
-== Matches and groups ==
+== Совпадения и группы ==
 
-(((regular expression,grouping)))(((exec method)))(((array)))The `test` method
-is the absolute simplest way to match a regular expression. It 
-tells you only whether it matched and nothing else. Regular expressions
-also have an `exec` (execute) method that will return `null` if no
-match was found and return an object with information about the match
-otherwise.
+(((regular expression,grouping)))(((exec method)))(((array)))Метод `test` – самый простой метод проверки регулярок. Он только сообщает, было ли найдено совпадение, или нет. У регулярок есть ещё метод `exec`, который вернёт `null`, если ничего не было найдено, а в противном случае вернёт объект с информацией о совпадении.
 
 [source,javascript]
 ----
@@ -299,15 +193,9 @@ console.log(match.index);
 // → 8
 ----
 
-(((index property)))(((string,indexing)))An object returned from
-`exec` has an `index` property that tells us _where_ in the string the
-successful match begins. Other than that, the object looks like (and
-in fact is) an array of strings, whose first element is the string
-that was matched—in the previous example, this is the sequence of
-((digit))s that we were looking for.
+(((index property)))(((string,indexing)))У возвращаемого `exec` объекта есть свойство `index`, _где_ содержится номер символа, с которого случилось совпадение. А вообще объект выглядит как массив строк, где первый элемент – строка, которая была подобрана. В нашем примере это будет последовательность ((цифр)), которую мы искали.
 
-(((string,methods)))(((match method)))String values have a `match`
-method that behaves similarly.
+(((string,methods)))(((match method)))У строк есть метод `match`, работающий примерно так же.
 
 [source,javascript]
 ----
@@ -315,12 +203,7 @@ console.log("one two 100".match(/\d+/));
 // → ["100"]
 ----
 
-(((grouping)))(((capture group)))(((exec method)))When the regular
-expression contains subexpressions grouped with parentheses, the text
-that matched those groups will also show up in the array. The whole
-match is always the first element. The next element is the part
-matched by the first group (the one whose opening parenthesis comes
-first in the expression), then the second group, and so on.
+(((grouping)))(((capture group)))(((exec method)))Когда в регулярке содержатся подвыражения, сгруппированные круглыми скобками, текст, совпавший с этими группами, тоже появится в массиве. Первый элемент – всегда совпадение целиком. Второй – часть, совпавшая с первой группой (той, у кого круглые скобки встретились раньше всех), затем со второй группой, и так далее.
 
 [source,javascript]
 ----
@@ -329,10 +212,7 @@ console.log(quotedText.exec("she said 'hello'"));
 // → ["'hello'", "hello"]
 ----
 
-(((capture group)))When a group does not end up being matched at all
-(for example, when followed by a question mark), its position in the
-output array will hold `undefined`. Similarly, when a group is matched
-multiple times, only the last match ends up in the array.
+(((capture group)))Когда группа не найдена вообще (например, если за ней стоит знак вопроса), её позиция в массиве содержит undefined. Если группа совпала несколько раз, то в массиве будет только последнее совпадение.
 
 [source,javascript]
 ----
@@ -342,22 +222,13 @@ console.log(/(\d)+/.exec("123"));
 // → ["123", "3"]
 ----
 
-(((exec method)))(((regular
-expression,methods)))(((extraction)))Groups can be useful for
-extracting parts of a string. If we don't just want to verify whether
-a string contains a ((date)) but also extract it and construct an
-object that represents it, we can wrap parentheses around the digit
-patterns and directly pick the date out of the result of `exec`.
+(((exec method)))(((regular expression,methods)))(((extraction)))Группы полезны для извлечения частей строк. Если нам не просто надо проверить, есть ли в строке ((дата)), а извлечь её и создать представляющий дату объект, мы можем заключить последовательности цифр в круглые скобки и выбрать дату из результата `exec`.
 
-But first, a brief detour, in which we discuss the preferred way to
-store date and ((time)) values in JavaScript.
+Но для начала небольшое отступление, в котором мы узнаем предпочтительный способ хранения даты и ((времени)) в JavaScript.
 
-== The date type ==
+== Тип даты ==
 
-(((constructor)))(((Date constructor)))JavaScript has a standard
-object type for representing ((date))s—or rather, points in ((time)).
-It is called `Date`. If you simply create a date object using `new`,
-you get the current date and time.
+(((constructor)))(((Date constructor)))В JavaScript есть стандартный тип объекта для ((дат)) – а точнее, моментов во ((времени)). Он называется `Date`. Если просто создать объект даты через `new`, вы получите текущие дату и ремя.
 
 // test: no
 
@@ -367,8 +238,7 @@ console.log(new Date());
 // → Wed Dec 04 2013 14:24:57 GMT+0100 (CET)
 ----
 
-(((Date constructor)))You can also create an object for a specific
-time.
+(((Date constructor)))Также можно создать объект, содержащий заданное время
 
 [source,javascript]
 ----
@@ -378,18 +248,11 @@ console.log(new Date(2009, 11, 9, 12, 59, 59, 999));
 // → Wed Dec 09 2009 12:59:59 GMT+0100 (CET)
 ----
 
-(((zero-based counting)))(((interface,design)))JavaScript uses a
-convention where month numbers start at zero (so December is 11), yet
-day numbers start at one. This is confusing and silly. Be careful.
+(((zero-based counting)))(((interface,design)))JavaScript использует соглашение, в котором номера месяцев начинаются с нуля, а номера дней – с единицы. Это глупо и нелепо. Поберегитесь.
 
-The last four arguments (hours, minutes, seconds, and milliseconds)
-are optional and taken to be zero when not given.
+Последние четыре аргумента (часы, минуты, секунды и миллисекунды) необязательны, и в случае отсутствия приравниваются к нулю.
 
-(((getTime method)))Timestamps are stored as the number of
-milliseconds since the start of 1970, using negative numbers for
-times before 1970 (following a convention set by “((Unix time))”,
-which was invented around that time). The `getTime` method on a date object
-returns this number. It is big, as you can imagine.
+(((getTime method)))Метки времени хранятся как количество миллисекунд, прошедших с начала 1970 года. Для времени до 1970 года используются отрицательные числа (это связано с соглашением по “((Unix time))”, которое было создано примерно в то время). Метод `getTime` объекта даты возвращает это число. Оно, естественно, большое.
 
 [source,javascript]
 ----
@@ -399,23 +262,11 @@ console.log(new Date(1387407600000));
 // → Thu Dec 19 2013 00:00:00 GMT+0100 (CET)
 ----
 
-(((Date.now function)))(((Date constructor)))If you give the `Date`
-constructor a single argument, that argument is treated as such
-a millisecond count. You can get the current millisecond count by
-creating a new `Date` object and calling `getTime` on it but also by
-calling the `Date.now` function.
+(((Date.now function)))(((Date constructor)))Если задать конструктору `Date` один аргумент, он воспринимается как это количество миллисекунд. Можно получить текущее значение миллисекунд, создав объект `Date` и вызвав метод `getTime`, или же вызвав функцию `Date.now`.
 
-(((getFullYear method)))(((getMonth method)))(((getDate
-method)))(((getHours method)))(((getMinutes method)))(((getSeconds
-method)))(((getYear method)))Date objects provide methods like
-`getFullYear`, `getMonth`, `getDate`, `getHours`, `getMinutes`, and
-`getSeconds` to extract their components. There's also `getYear`,
-which gives you a rather useless two-digit year value (such as `93` or
-`14`).
+(((getFullYear method)))(((getMonth method)))(((getDate method)))(((getHours method)))(((getMinutes method)))(((getSeconds method)))(((getYear method)))У объекта `Date` для извлечения его компонентов есть методы `getFullYear`, `getMonth`, `getDate`, `getHours`, `getMinutes`, и `getSeconds`. Есть также метод `getYear`, возвращающий довольно бесполезный двузначный код, типа `93` или `14`.
 
-(((capture group)))Putting ((parentheses)) around the parts of the
-expression that we are interested in, we can now easily create a date
-object from a string.
+(((capture group)))Заключив нужные части шаблона в круглые скобки, мы можем создать объект даты прямо из строки.
 
 [source,javascript]
 ----
@@ -430,27 +281,13 @@ console.log(findDate("30-1-2003"));
 // → Thu Jan 30 2003 00:00:00 GMT+0100 (CET)
 ----
 
-== Word and string boundaries ==
+== Границы слова и строки ==
 
-(((matching)))(((regular expression,boundary)))Unfortunately,
-`findDate` will also happily extract the nonsensical date 00-1-3000
-from the string `"100-1-30000"`. A match may happen anywhere in the
-string, so in this case, it'll just start at the second character and
-end at the second-to-last character.
+(((matching)))(((regular expression,boundary)))К сожалению, `findDate` так же радостно извлечёт бессмысленную дату 00-1-3000 из строки `"100-1-30000"`. Совпадение может случиться в любом месте строки, так что в данном случае он просто начнёт со второго символа и закончит на предпоследнем.
 
-(((boundary)))(((caret character)))(((dollar sign)))If we want to
-enforce that the match must span the whole string, we can add the
-markers `^` and `$`. The caret matches the start of the input string,
-while the dollar sign matches the end. So, `/^\d+$/` matches a string
-consisting entirely of one or more digits, `/^!/` matches any string
-that starts with an exclamation mark, and `/x^/` does not match any
-string (there cannot be an _x_ before the start of the string).
+(((boundary)))(((caret character)))(((dollar sign)))Если нам надо принудить совпадение взять всю строку целиком, мы используем метки `^` и `$`. `^` совпадает с началом строки, а `$` с концом. Поэтому `/^\d+$/` совпадает со строкой, состоящей только из одной или нескольких цифр, `/^!/` совпадает со сторокой, начинающейся с восклицательного знака, а `/x^/` не совпадает ни с какой строчкой (перед началом строки не может быть _x_).
 
-(((word boundary)))(((word character)))If, on the other hand, we just
-want to make sure the date starts and ends on a word boundary, we can
-use the marker `\b`. A word boundary can be the start or end of the
-string or any point in the string that has a word character (as in
-`\w`) on one side and a nonword character on the other.
+(((word boundary)))(((word character)))Если, с другой стороны, нам просто надо убедиться, что дата начинается и заканчивается на границе слова, мы используем метку `\b`. Границей слова может быть начало или конец строки, или любое место строки, где с одной стороны стоит алфавитно-цифровой символ `\w`, а с другой – не алфавитно-цифровой.
 
 [source,javascript]
 ----
@@ -460,22 +297,13 @@ console.log(/\bcat\b/.test("concatenate"));
 // → false
 ----
 
-(((matching)))Note that a boundary marker doesn't represent an actual
-character. It just enforces that the regular expression matches only
-when a certain condition holds at the place where it appears in the
-pattern.
+(((matching)))Отметим, что метка границы не представляет из себя символ. Это просто ограничение, обозначающее, что совпадение происходит только если выполняется определённое условие.
 
-== Choice patterns ==
+== Шаблоны с выбором ==
 
-(((branching)))(((regular expression,alternatives)))(((farm
-example)))Say we want to know whether a piece of text contains not
-only a number but a number followed by one of the words _pig_, _cow_,
-or _chicken_, or any of their plural forms.
+(((branching)))(((regular expression,alternatives)))(((farm example)))Допустим, надо выяснить, содержит ли текст не просто номер, а номер, за которым следует _pig_, _cow_, или _chicken_ в единственном или множественном числе.
 
-We could write three regular expressions and test them in turn, but
-there is a nicer way. The ((pipe character)) (`|`) denotes a
-((choice)) between the pattern to its left and the pattern to its
-right. So I can say this:
+Можно было бы написать три регулярки и проверить их по очереди, но есть способ лучше. Символ `|` обозначает ((выбор)) между шаблонами слева и справа от него. И можно сказать следующее:
 
 [source,javascript]
 ----
@@ -486,142 +314,64 @@ console.log(animalCount.test("15 pigchickens"));
 // → false
 ----
 
-(((parentheses)))Parentheses can be used to limit the part of the
-pattern that the pipe operator applies to, and you can put multiple
-such operators next to each other to express a choice between more
-than two patterns.
+(((parentheses)))Скобки ограничивают часть шаблона, к которой применяется `|`, и можно поставить много таких операторов друг за другом, чтобы обозначить выбор из более чем двух вариантов.
 
-== The mechanics of matching ==
+== Механизм поиска ==
 
-(((regular expression,matching)))(((matching,algorithm)))Regular
-expressions can be thought of as ((flow diagram))s. This is the
-diagram for the livestock expression in the previous example:
+(((regular expression,matching)))(((matching,algorithm)))Регулярные выражения можно рассматривать как ((блок-схемы)). Следующая диаграмма описывает последний животноводческий пример.
 
 image::img/re_pigchickens.svg[alt="Visualization of /\\b\\d+ (pig|cow|chicken)s?\\b/"]
 
-(((traversal)))Our expression matches a string if we can find a path
-from the left side of the diagram to the right side. We keep
-a current position in the string, and every time we move through a
-box, we verify that the part of the string after our current position
-matches that box.
+(((traversal)))Выражение совпадает со строкой, если можно найти путь с левой части диаграммы в правую. Мы запоминаем текущее положение в строке, и каждый раз, проходя прямоугольник, проверяем, что часть строки сразу за нашим положением в ней совпадает с содержимым прямоугольника.
 
-So if we try to match `"the 3 pigs"` with our regular expression, 
-our progress through the flow chart would look like this:
+Значит, проверка совпадения нашей регулярки в строке `"the 3 pigs"` при прохождении по блок-схеме выглядит так:
 
- - At position 4, there is a word ((boundary)), so we can move past
-   the first box.
+ - На позиции 4 есть ((граница)) слова, и проходим первый прямоугольник.
 
- - Still at position 4, we find a digit, so we can also move past the
-   second box.
+ - Начиная с 4 позиции находим цифру, и проходим второй прямоугольник.
 
- - At position 5, one path loops back to before the second (digit) box,
-   while the other moves forward through the box that holds a single space
-   character. There is a space here, not a digit, so we must take the
-   second path.
+ - На позиции 5 один путь замыкается назад перед вторым прямоугольником, а второй проходит далее к прямоугольнику с пробелом. У нас пробел, а не цифра, и мы выбираем второй путь.
 
- - We are now at position 6 (the start of “pigs”) and at the three-way
-   branch in the diagram. We don't see “cow” or “chicken” here, but we
-   do see “pig”, so we take that branch.
+ - Теперь мы на позиции 6, начало “pigs”, и на тройном разветвлении путей. В строке нет “cow” или “chicken”, зато есть “pig”, поэтому мы выбираем этот путь.
 
- - At position 9, after the three-way branch, one path skips
-   the _s_ box and goes straight to the final word boundary, while the other path
-   matches an _s_. There is an _s_ character here, not a word boundary,
-   so we go through the _s_ box.
+ - На позиции 9 после тройного разветвления, один путь обходит _s_ и направляется к последнему прямоугольнику с границей слова, а второй проходит через _s_. У нас есть _s_, поэтому мы идём туда.
 
- - We're at position 10 (the end of the string) and can match only  a
-   word ((boundary)). The end of a string counts as a word boundary,
-   so we go through the last box and have successfully matched this
-   string.
+ - На позиции 10 мы в конце строки, и совпасть может только ((граница)) слова. Конец строки считается границей, и мы проходим через последний прямоугольник. И вот мы успешно нашли наш шаблон.
 
-(((regular
-expression,matching)))(((matching,algorithm)))(((searching)))Conceptually,
-a regular expression engine looks for a match in a string as follows:
-it starts at the start of the string and tries a match there. In this
-case, there _is_ a word boundary there, so it'd get past the first
-box—but there is no digit, so it'd fail at the second box. Then it
-moves on to the second character in the string and tries to begin a
-new match there... and so on, until it finds a match or reaches the end
-of the string and decides that there really is no match.
+(((regular expression,matching)))(((matching,algorithm)))(((searching)))В принципе, работают регулярные выражения следующим образом: алгоритм начинает в начале строки и пытается найти совпадение там. В нашем случае там _есть_ граница слова, поэтому он проходит первый прямоугольник – но там нет цифры, поэтому на втором прямоугольнике он спотыкается. Потом он двигается ко второму символу в строке, и пытается найти совпадение там... И так далее, пока он не находит совпадение или не доходит до конца строки, в таком случае совпадение на найдено.
 
 [[backtracking]]
-== Backtracking ==
+== Откаты ==
 
-(((regular expression,backtracking)))(((binary number)))(((decimal
-number)))(((hexadecimal number)))(((flow
-diagram)))(((matching,algorithm)))(((backtracking)))The regular
-expression `/\b([01]+b|\d+|[\da-f]+h)\b/` matches either a binary
-number followed by a _b_, a regular decimal number with no suffix
-character, or a hexadecimal number (that is, base 16, with the letters
-_a_ to _f_ standing for the digits 10 to 15) followed by an _h_. This
-is the corresponding diagram:
+(((regular expression,backtracking)))(((binary number)))(((decimal number)))(((hexadecimal number)))(((flow diagram)))(((matching,algorithm)))(((backtracking)))Регулярка `/\b([01]+b|\d+|[\da-f]h)\b/` совпадает либо с двоичным числом, за которым следует _b_, либо с десятичным числом без суффикса, либо шестнадцатеричным (цифры от 0 до 9 или символы от _a_ до _h_), за которым идёт _h_. Соответствующая диаграмма:
 
 image::img/re_number.svg[alt="Visualization of /\\b([01]+b|\\d+|[\\da-f]+h)\\b/"]
 
-(((branching)))When matching this expression, it will often happen
-that the top (binary) branch is entered even though the input does not
-actually contain a binary number. When matching the string `"103"`,
-for example, it becomes clear only  at the 3 that we are in the wrong
-branch. The string _does_ match the expression, just not the branch we
-are currently in.
+(((branching)))В поисках совпадения может случиться, что алгоритм пошёл по верхнему пути (двоичное число), даже если в строке нет такого числа. Если там есть строка `"103"`, к примеру, понятно, что только достигнув цифры 3 алгоритм поймёт, что он на неправильном пути. Вообще строка _совпадает_ с регуляркой, просто не в этой ветке.
 
-(((backtracking)))(((searching)))So the matcher _backtracks_. When
-entering a branch, it remembers its current position (in this
-case, at the start of the string, just past the first boundary box in
-the diagram) so that it can go back and try another branch if the
-current one does not work out. For the string `"103"`, after
-encountering the 3 character, it will start trying the branch for
-decimal numbers. This one matches, so a match is reported after all.
+(((backtracking)))(((searching)))Тогда алгоритм совершает _откат_. На развилке он запоминает текущее положение (в нашем случае, это начало строки, сразу после границы слова), чтобы можно было вернуться назад и попробовать другой путь, если выбранный не срабатывает. Для строки `"103"` после встречи с тройкой он вернётся и попытается пройти путь для десятичных чисел. Это сработает, поэтому совпадение будет найдено.
 
-(((matching,algorithm)))The matcher stops as soon as it finds a full
-match. This means that if multiple branches could potentially match a
-string, only the first one (ordered by where the branches appear in
-the regular expression) is used.
+(((matching,algorithm)))Алгоритм останавливается, как только найдёт полное совпадение. Это значит, что даже если несколько вариантов могут подойти, используется только один из них (в том порядке, в каком они появляются в регулярке).
 
-Backtracking also happens for ((repetition)) operators like + and `*`.
-If you match `/^.*x/` against `"abcxe"`, the `.*` part will first try
-to consume the whole string. The engine will then realize that it
-needs an _x_ to match the pattern. Since there is no _x_ past the end
-of the string, the star operator tries to match one character less.
-But the matcher doesn't find an _x_ after `abcx` either, so it
-backtracks again, matching the star operator to just `abc`. _Now_ it
-finds an _x_ where it needs it and reports a successful match from
-positions 0 to 4.
+Откаты случаются при использовании операторов ((повторения)), таких, как `+` и `*`. Если вы ищете `/^.*x/` в строке `"abcxe"`, часть регулярки `.*` попробует поглотить всю строчку. Алгоритм затем сообразит, что ему нужен ещё и _x_. Так как никакого _x_ после конца строки нет, алгоритм попробует поискать совпадение, откатившись на один символ. После `abcx` тоже нет _x_, тогда он снова откатывается, уже к подстроке `abc`. И после неё он находит _x_ и докладывает об успешном совпадении, на позициях с 0 по 4.
 
-(((performance)))(((complexity)))It is possible to write regular
-expressions that will do a _lot_ of backtracking. This problem occurs
-when a pattern can match a piece of input in many different ways. For
-example, if we get confused while writing a binary-number regular expression, we
-might accidentally write something like `/([01]+)+b/`.
+(((performance)))(((complexity)))Можно написать регулярку, которая приведёт ко _множественным_ откатам. Такая проблема возникает, когда шаблон может совпасть с входными данными множеством разных способов. Например, если мы ошибёмся при написании регулярки для двоичных чисел, мы можем случайно написать что-то вроде `/([01]+)+b/`.
 
 image::img/re_slow.svg[alt="Visualization of /([01]+)+b/",width="6cm"]
 
-(((inner loop)))(((nesting,in regexps)))If that tries to match some
-long series of zeros and ones with no trailing _b_ character, the
-matcher will first go through the inner loop until it runs out of
-digits. Then it notices there is no _b_, so it backtracks one
-position, goes through the outer loop once, and gives up again, trying
-to backtrack out of the inner loop once more. It will continue to try
-every possible route through these two loops. This means the amount of
-work _doubles_ with each additional character. For even just a few
-dozen characters, the resulting match will take practically forever.
+(((inner loop)))(((nesting,in regexps)))Если алгоритм будет искать такой шаблон в длинной строке из нолей и единиц, не содержащей в конце _b_, он сначала пройдёт по внутренней петле, пока у него не кончатся цифры. Тогда он заметит, что в конце нет _b_, сделает откат на одну позицию, пройдёт по внешней петле, опять сдастся, попытается откатиться на ещё одну позицию по внутренней петле... И будет дальше искать таким образом, задействуя обе петли. То есть, количество работы с каждым символом строки будет _удваиваться_. Даже для нескольких десятков символов поиск совпадения займёт очень долгое время.
 
-== The replace method ==
+== Метод replace ==
 
-(((replace method)))(((regular expression)))String values have a
-`replace` method, which can be used to replace part of the string
-with another string.
+(((replace method)))(((regular expression)))У строк есть метод `replace`, который может заменять часть строки другой строкой.
 
 [source,javascript]
 ----
-console.log("papa".replace("p", "m"));
-// → mapa
+console.log("папа".replace("п", "м"));
+// → мапа
 ----
 
-(((regular expression,flags)))(((regular expression,global)))The first
-argument can also be a regular expression, in which case the first
-match of the regular expression is replaced. When a `g` option (for
-_global_) is added to the regular expression, _all_ matches in the
-string will be replaced, not just the first.
+(((regular expression,flags)))(((regular expression,global)))Первый аргумент может быть и регулярным выражением, в таком случае заменяется первое вхождение регулярки в строке. Когда к регулярке добавляется опция `g` (_global_, _всеобщий_), заменяются _все_ вхождения, а не только первое.
 
 [source,javascript]
 ----
@@ -631,20 +381,9 @@ console.log("Borobudur".replace(/[ou]/g, "a"));
 // → Barabadar
 ----
 
-(((interface,design)))(((argument)))It would have been sensible if the
-choice between replacing one match or all matches was made through an
-additional argument to `replace` or by providing a different method,
-`replaceAll`. But for some unfortunate reason, the choice relies on a
-property of the regular expression instead.
+(((interface,design)))(((argument)))Имело бы смысл передавать опцию “заменить всё” через отдельный аргумент, или через отдельный метод типа `replaceAll`. Но к сожалению, опция передаётся через саму регулярку.
 
-(((grouping)))(((capture group)))(((dollar sign)))(((replace
-method)))(((regular expression,grouping)))The real power of using
-regular expressions with `replace` comes from the fact that we can
-refer back to matched groups in the replacement string. For example,
-say we have a big string containing the names of people, one name per
-line, in the format `Lastname, Firstname`. If we want to swap these
-names and remove the comma to get a simple `Firstname Lastname`
-format, we can use the following code:
+(((grouping)))(((capture group)))(((dollar sign)))(((replace method)))(((regular expression,grouping)))Вся сила регулярок с `replace` раскрывается, когда мы используем ссылки на найденные в строке группы, заданные в регулярке. Например, у нас есть строка, содержащая имена людей, одно имя на строчку, в формате `Фамилия, Имя`. Если нам надо поменять их местами и убрать запятую, чтобы получилось `Имя Фамилия`, мы пишем следующее:
 
 [source,javascript]
 ----
@@ -656,18 +395,11 @@ console.log(
 //   Dennis Ritchie
 ----
 
-The `$1` and `$2` in the replacement string refer to the parenthesized
-groups in the pattern. `$1` is replaced by the text that matched
-against the first group, `$2` by the second, and so on, up to `$9`.
-The whole match can be referred to with `$&`.
+`$1` и `$2` в строчке на замену ссылаются на группы символов, заключённые в скобки. `$1` заменяется текстом, который совпал с первой группой, `$2` – со второй группой, и так далее, до `$9`. Всё совпадение целиком содержится в переменной `$&`.
 
-(((function,higher-order)))(((grouping)))(((capture group)))It is also
-possible to pass a function, rather than a string, as the second
-argument to `replace`. For each replacement, the function will be
-called with the matched groups (as well as the whole match) as
-arguments, and its return value will be inserted into the new string.
+(((function,higher-order)))(((grouping)))(((capture group)))Также можно в качестве второго аргумента `replace` передавать и функцию. Для каждой замены будет вызвана функция, аргументами которой будут найденные группы (и вся совпадающая часть строки целиком), а её результат будет вставлен в новую строку.
 
-Here's a simple example:
+Простой пример:
 
 [source,javascript]
 ----
@@ -678,7 +410,7 @@ console.log(s.replace(/\b(fbi|cia)\b/g, function(str) {
 // → the CIA and FBI
 ----
 
-And here's a more interesting one:
+А вот более интересный:
 
 [source,javascript]
 ----
@@ -695,20 +427,13 @@ console.log(stock.replace(/(\d+) (\w+)/g, minusOne));
 // → no lemon, 1 cabbage, and 100 eggs
 ----
 
-This takes a string, finds all occurrences of a number followed by an
-alphanumeric word, and returns a string wherein every such occurrence
-is decremented by one.
+Код принимает строку, находит все вхождения чисел, за которыми идёт слово, и возвращает строчку, где каждое число уменьшено на единицу.
 
-The `(\d+)` group ends up as the `amount` argument to the function,
-and the `(\w+)` group gets bound to `unit`. The function converts
-`amount` to a number—which always works, since it matched `\d+`—and
-makes some adjustments in case there is only one or zero left.
+Группа `(\d+)` попадает в аргумент `amount`, а `(\w+)` – в `unit`. Функция преобразовывает `amount` в число – и это всегда срабатывает, потому что наш шаблон как раз `\d+`. И затем вносит изменения в слово, на случай если остался всего 1 предмет или их не осталось вовсе.
 
-== Greed ==
+== Жадность ==
 
-(((greed)))(((regular expression)))It isn't hard to use `replace` to
-write a function that removes all ((comment))s from a piece of
-JavaScript ((code)). Here is a first attempt:
+(((greed)))(((regular expression)))Несложно при помощи `replace` написать функцию, убирающую все ((комментарии)) из ((код))а JavaScript. Вот первая попытка:
 
 // test: wrap
 
@@ -725,38 +450,15 @@ console.log(stripComments("1 /* a */+/* b */ 1"));
 // → 1  1
 ----
 
-(((period character)))(((slash character)))(((newline
-character)))(((empty set)))(((block comment)))(((line comment)))The
-part before the _or_ operator simply matches two slash characters
-followed by any number of non-newline characters. The part for
-multiline comments is more involved. We use `[^]` (any character that
-is not in the empty set of characters) as a way to match any
-character. We cannot just use a dot here because block comments can
-continue on a new line, and dots do not match the newline character.
+(((period character)))(((slash character)))(((newline character)))(((empty set)))(((block comment)))(((line comment)))Часть перед оператором _или_ совпадает с двумя слешами, за которыми идут любое количество символов, кроме символов перевода строки. Часть, убирающая многострочные комментарии, более сложна. Мы используем `[^]`, т.е. любой символ, не являющийся пустым, в качестве способа найти любой символ. Мы не можем использовать точку, потому что блочные комментарии продолжаются и на новой строке, а символ перевода строки не совпадает с точкой.
 
-But the output of the previous example appears to have gone wrong. Why?
+Но вывод предыдущего примера неправильный. Почему?
 
-(((backtracking)))(((greed)))(((regular expression)))The `[^]*` part of
-the expression, as I described in the section on backtracking, will
-first match as much as it can. If that causes the next part of the
-pattern to fail, the matcher moves back one character and tries again
-from there. In the example, the matcher first tries to match the whole
-rest of the string and then moves back from there. It will find an
-occurrence of `*/` after going back four characters and match that.
-This is not what we wanted—the intention was to match a single
-comment, not to go all the way to the end of the code and find the end
-of the last block comment.
+(((backtracking)))(((greed)))(((regular expression)))Часть `[^]*` сначала попытается захватить столько символов, сколько может. Если из-за этого следующая часть регулярки не найдёт себе совпадения, произойдёт откат на один символ и попробует снова. В примере, алгоритм пытается захватить всю строку, и затем откатывается. Откатившись на 4 символа назад, он найдёт в строчке `*/` — а это не то, чего мы добивались. Мы-то хотели захватить только один комментарий, а не пройти до конца строки и найти последний комментарий.
 
-Because of this behavior, we say the repetition operators (`+`, `*`,
-`?`, and `{}`) are _((greed))y_, meaning they match as much as they
-can and backtrack from there. If you put a ((question mark)) after
-them (`+?`, `*?`, `??`, `{}?`), they become nongreedy and start by
-matching as little as possible, matching more only when the remaining
-pattern does not fit the smaller match.
+Из-за этого мы говорим, что операторы повторения (`+`, `*`, `?`, and `{}`) _((жадные))_, то есть они сначала захватывают, сколько могут, а потом идут назад. Если вы поместите ((вопрос)) после такого оператора (`+?`, `*?`, `??`, `{}?`), они превратятся в нежадных, и начнут находить самые маленькие из возможных вхождений.
 
-And that is exactly what we want in this case. By having the star
-match the smallest stretch of characters that brings us to a `*/`,
-we consume one block comment and nothing more.
+И это то, что нам нужно. Заставив звёздочку находить совпадения в минимально возможном количестве символов строчки, мы поглощаем только один блок комментариев, и не более того.
 
 // test: wrap
 
@@ -769,69 +471,42 @@ console.log(stripComments("1 /* a */+/* b */ 1"));
 // → 1 + 1
 ----
 
-A lot of ((bug))s in ((regular expression)) programs can be traced to
-unintentionally using a greedy operator where a nongreedy one would
-work better. When using a ((repetition)) operator, consider the
-nongreedy variant first.
+Множество ((баг))ов возникает при использовании жадных операторов вместо нежадных. При использовании оператора ((повтора)) сначала всегда рассматривайте вариант нежадного оператора.
 
-== Dynamically creating RegExp objects ==
+== Динамическое создание объектов RegExp ==
 
-(((regular expression,creation)))(((underscore character)))(((RegExp
-constructor)))There are cases where you might not know the exact
-((pattern)) you need to match against when you are writing your code.
-Say you want to look for the user's name in a piece of text and
-enclose it in underscore characters to make it stand out. Since you
-will know the name only once the program is actually running, you
-can't use the slash-based notation.
+(((regular expression,creation)))(((underscore character)))(((RegExp constructor)))В некоторых случаях точный ((шаблон)) неизвестен во время написания кода. Например, вам надо будет искать имя пользователя в тексте, и заключать его в подчёркивания. Так как вы узнаете имя только после запуска программы, вы не можете использовать запись со слешами.
 
-But you can build up a string and use the `RegExp` ((constructor)) on
-that. Here's an example:
+Но вы можете построить строку и использовать ((конструктор)) `RegExp`. Вот пример:
 
 [source,javascript]
 ----
-var name = "harry";
-var text = "Harry is a suspicious character.";
+var name = "гарри";
+var text = "А у Гарри на лбу шрам.";
 var regexp = new RegExp("\\b(" + name + ")\\b", "gi");
 console.log(text.replace(regexp, "_$1_"));
-// → _Harry_ is a suspicious character.
+// → А у _Гарри_ на лбу шрам.
 ----
 
-(((regular expression,flags)))(((backslash character)))When creating
-the `\b` ((boundary)) markers, we have to use two backslashes because
-we are writing them in a normal string, not a slash-enclosed regular
-expression. The second argument to the `RegExp` constructor contains
-the options for the regular expression—in this case `"gi"` for global
-and case-insensitive.
+(((regular expression,flags)))(((backslash character)))При создании ((границ)) слова приходится использовать двойные слеши, потому что мы пишем их в нормальной строке, а не в регулярке с прямыми слешами. Второй аргумент для `RegExp` содержит опции для регулярок – в нашем случае `"gi"`, т.е. глобальный и регистро-независимый.
 
-But what if the name is `"dea+hl[]rd"` because our user is a ((nerd))y
-teenager? That would result in a nonsensical regular expression, which
-won't actually match the user's name.
+Но что, если имя будет `"dea+hl[]rd"` (если наш пользователь – кульхацкер)? В результате мы получим бессмысленную регулярку, которая не найдёт в строке совпадений.
 
-(((backslash character)))(((escaping,in regexps)))(((regular
-expression,escaping)))To work around this, we can add backslashes
-before any character that we don't trust. Adding backslashes before
-alphabetic characters is a bad idea because things like `\b` and `\n`
-have a special meaning. But escaping everything that's not
-alphanumeric or ((whitespace)) is safe.
+(((backslash character)))(((escaping,in regexps)))(((regular expression,escaping)))Мы можем добавить обратных слешей перед любым символом, который нам не нравится. Мы не можем добавлять обратные слеши перед буквами, потому что `\b` или `\n` – это спецсимволы. Но добавлять слеши перед любыми не алфавитно-цифровыми символами или ((пробелами)) можно без проблем.
 
 [source,javascript]
 ----
 var name = "dea+hl[]rd";
-var text = "This dea+hl[]rd guy is super annoying.";
+var text = "Этот dea+hl[]rd всех достал.";
 var escaped = name.replace(/[^\w\s]/g, "\\$&");
 var regexp = new RegExp("\\b(" + escaped + ")\\b", "gi");
 console.log(text.replace(regexp, "_$1_"));
-// → This _dea+hl[]rd_ guy is super annoying.
+// → Этот _dea+hl[]rd_ всех достал.
 ----
 
-== The search method ==
+== Метод search ==
 
-(((searching)))(((regular expression,methods)))(((indexOf
-method)))(((search method)))The `indexOf` method on strings cannot be
-called with a regular expression. But there is another method,
-`search`, which does expect a regular expression. Like `indexOf`, it
-returns the first index on which the expression was found, or -1 when
-it wasn't found.
+(((searching)))(((regular expression,methods)))(((indexOf method)))(((search method)))Метод `indexOf` нельзя использовать с регулярками. Зато есть метод `search`, который как раз ожидает регулярку. Как и `indexOf`, он возвращает индекс первого вхождения, или -1, если его не случилось.
 
 [source,javascript]
 ----
@@ -841,30 +516,15 @@ console.log("    ".search(/\S/));
 // → -1
 ----
 
-Unfortunately, there is no way to indicate that the match should start
-at a given offset (like we can with the second argument to `indexOf`),
-which would often be useful.
+К сожалению, никак нельзя задать, чтобы метод искал совпадение, начиная с конкретного смещения (как это можно сделать с `indexOf`). Это было бы полезно.
 
-== The lastIndex property ==
+== Свойство lastIndex ==
 
-(((exec method)))(((regular expression)))The `exec` method similarly
-does not provide a convenient way to start searching from a given
-position in the string. But it does provide an __in__convenient way.
+(((exec method)))(((regular expression)))Метод `exec` тоже не даёт удобного способа начать поиск с заданной позиции в строке. Но __не__удобный способ даёт.
 
-(((regular expression,matching)))(((matching)))(((source
-property)))(((lastIndex property)))Regular expression objects have
-properties. One such property is `source`, which contains the string
-that expression was created from. Another property is `lastIndex`,
-which controls, in some limited circumstances, where the next match
-will start.
+(((regular expression,matching)))(((matching)))(((source property)))(((lastIndex property)))У объекта регулярок есть свойства. Одно из них – `source`, содержащее строку. Ещё одно – `lastIndex`, контролирующее, в некоторых условиях, где начнётся следующий поиск вхождений.
 
-(((interface,design)))(((exec method)))(((regular
-expression,global)))Those circumstances are that the regular
-expression must have the global (`g`) option enabled, and the match
-must happen through the `exec` method. Again, a more sane solution
-would have been to just allow an extra argument to be passed to
-`exec`, but sanity is not a defining characteristic of JavaScript's
-regular expression interface.
+(((interface,design)))(((exec method)))(((regular expression,global)))Эти условия включают необходимость присутствия глобальной опции `g`, и то, что поиск должен идти с применением метода `exec`. Более разумным решением было бы просто допустить дополнительный аргумент для передачи в `exec`, но разумность – не основополагающая черта в интерфейсе регулярок JavaScript.
 
 [source,javascript]
 ----
@@ -877,16 +537,9 @@ console.log(pattern.lastIndex);
 // → 5
 ----
 
-(((side effect)))(((lastIndex property)))If the match was successful,
-the call to `exec` automatically updates the `lastIndex` property to
-point after the match. If no match was found, `lastIndex` is set back
-to zero, which is also the value it has in a newly constructed regular
-expression object.
+(((side effect)))(((lastIndex property)))Если поиск был успешным, вызов `exec` обновляет свойство `lastIndex`, чтоб оно указывало на позицию после найденного вхождения. Если успеха не было, `lastIndex` устанавливается в ноль – как и `lastIndex` у только что созданного объекта.
 
-(((bug)))When using a global regular expression value for multiple
-`exec` calls, these automatic updates to the `lastIndex` property can
-cause problems. Your regular expression might be accidentally starting
-at an index that was left over from a previous call.
+(((bug)))При использовании глобальной переменной-регулярки и нескольких вызовов `exec` эти автоматические обновления `lastIndex` могут привести к проблемам. Ваша регулярка может начать поиск с позиции, оставшейся с предыдущего вызова.
 
 [source,javascript]
 ----
@@ -897,30 +550,19 @@ console.log(digit.exec("and now: 1"));
 // → null
 ----
 
-(((regular expression,global)))(((match method)))Another interesting
-effect of the global option is that it changes the way the `match`
-method on strings works. When called with a global expression, instead
-of returning an array similar to that returned by `exec`, `match` will
-find _all_ matches of the pattern in the string and return an array
-containing the matched strings.
+(((regular expression,global)))(((match method)))Ещё один интересный эффект опции `g` в том, что она меняет работу метода `match`. Когда он вызывается с этой опцией, вместо возврата массива, похожего на результат работы `exec`, он находит _все_ вхождения шаблона в строке и возвращает массив из найденных подстрок.
 
 [source,javascript]
 ----
-console.log("Banana".match(/an/g));
-// → ["an", "an"]
+console.log("Банан".match(/ан/g));
+// → ["ан", "ан"]
 ----
 
-So be cautious with global regular expressions. The cases where they
-are necessary—calls to `replace` and places where you want to
-explicitly use ++lastIndex++—are typically the only places where you
-want to use them.
+Так что поосторожнее с глобальными переменными-регулярками. В случаях, когда они необходимы – вызовы `replace` или места, где вы специально используете `lastIndex` – пожалуй и все случаи, в которых их следует применять.
 
-=== Looping over matches ===
+=== Циклы по вхождениям ===
 
-(((lastIndex property)))(((exec method)))(((loop)))A common pattern is
-to scan through all occurrences of a pattern in a string, in a way
-that gives us access to the match object in the loop body, by using
-`lastIndex` and `exec`.
+(((lastIndex property)))(((exec method)))(((loop)))Типичная задача – пройти по всем вхождениям шаблона в строку так, чтобы иметь доступ к объекту `match` в теле цикла, используя `lastIndex` и `exec`.
 
 [source,javascript]
 ----
@@ -934,73 +576,49 @@ while (match = number.exec(input))
 //   Found 88 at 40
 ----
 
-(((while loop)))(((= operator)))This makes use of the fact that the
-value of an ((assignment)) expression (`=`) is the assigned value. So
-by using `match = number.exec(input)` as the condition in the `while`
-statement, we perform the match at the start of each iteration, save
-its result in a ((variable)), and stop looping when no more matches
-are found.
+(((while loop)))(((= operator)))Используется тот факт, что значением ((присвоения)) является присваиваемое значение. Используя конструкцию `match = re.exec(input)` в качестве условия в цикле `while`, мы производим поиск в начале каждой итерации, сохраняем результат в ((переменной)), и заканчиваем цикл, когда все совпадения найдены.
 
 [[ini]]
-== Parsing an INI file ==
+== Разбор INI файла ==
 
-(((comment)))(((file format)))(((enemies example)))(((ini file)))To
-conclude the chapter, we'll look at a problem that calls for ((regular
-expression))s. Imagine we are writing a program to automatically
-harvest information about our enemies from the ((Internet)). (We will
-not actually write that program here, just the part that reads the
-((configuration)) file. Sorry to disappoint.) The configuration file
-looks like this:
+(((comment)))(((file format)))(((enemies example)))(((ini file)))В заключение главы рассмотрим задачу с использованием ((регулярных выражений)). Представьте, что мы пишем программу, собирающую сведения о наших врагах через ((интернет)) в автоматическом режиме. (Всю программу писать не будем, только ту часть, которая читает файл с настройками. Извините.) Файл выглядит так:
 
 [source,text/plain]
 ----
 searchengine=http://www.google.com/search?q=$1
 spitefulness=9.7
 
-; comments are preceded by a semicolon...
-; each section concerns an individual enemy
+; перед комментариями ставится точка с запятой
+; каждая секция относится к отдельному врагу
 [larry]
 fullname=Larry Doe
-type=kindergarten bully
+type=бычара из детсада
 website=http://www.geocities.com/CapeCanaveral/11451
 
 [gargamel]
 fullname=Gargamel
-type=evil sorcerer
+type=злой волшебник
 outputdir=/home/marijn/enemies/gargamel
 ----
 
-(((grammar)))The exact rules for this format (which is actually a
-widely used format, usually called an _INI_ file) are as follows:
+(((grammar)))Точный формат файла (который довольно широко используется, и обычно называется _INI_), следующий:
 
-- Blank lines and lines starting with semicolons are ignored.
+- Пустые строки и строки, начинающиеся с точки с запятой, игнорируются.
 
-- Lines wrapped in `[` and `]` start a new ((section)).
+- Строки, заключённые в квадратные скобки, начинают новую ((секцию)).
 
-- Lines containing an alphanumeric identifier followed by an `=`
-  character add a setting to the current section.
+- Строки, содержащие алфавитно-цифровой идентификатор, за которым следует `=`, добавляют настройку в данной секции.
 
-- Anything else is invalid.
+- Всё остальное – неверные данные.
 
-Our task is to convert a string like this into an array of objects,
-each with a `name` property and an array of settings. We'll need one
-such object for each section and one for the global settings at the
-top.
+Наша задача – преобразовать такую строку в массив объектов, каждый со свойством `name` и массивом настроек. Для каждой секции нужен один объект, и ещё один – для глобальных настроек сверху файла.
 
-(((carriage return)))(((line break)))(((newline character)))Since the
-format has to be processed ((line)) by line, splitting up the file 
-into separate lines is a good start. We used `string.split("\n")` to
-do this in link:06_object.html#split[Chapter 6]. Some operating
-systems, however, use not just a newline character to separate lines
-but a carriage return character followed by a newline (`"\r\n"`).
-Given that the `split` method also allows a regular expression as its
-argument, we can split on a regular expression like `/\r?\n/` to split
-in a way that allows both `"\n"` and `"\r\n"` between lines.
+(((carriage return)))(((line break)))(((newline character)))Так как файл надо разбирать ((построчно)), неплохо начать с разбиения файла на строки. Для этого в link:06_object.html#split[главе 6] мы использовали `string.split("\n")`. Некоторые операционки используют для перевода строки не один символ `"\n"`, а два — `"\r\n"`. Так как метод `split` принимает регулярки в качестве аргумента, мы можем делить линии при помощи выражения `/\r?\n/`, разрешающего и одиночные `"\n"` и `"\r\n"` между строками.
 
 [source,javascript]
 ----
 function parseINI(string) {
-  // Start with an object to hold the top-level fields
+  // Начнём с объекта, содержащего настройки верхнего уровня
   var currentSection = {name: null, fields: []};
   var categories = [currentSection];
 
@@ -1015,7 +633,7 @@ function parseINI(string) {
       currentSection.fields.push({name: match[1],
                                   value: match[2]});
     } else {
-      throw new Error("Line '" + line + "' is invalid.");
+      throw new Error("Строчка '" + line + "' содержит неверные данные.");
     }
   });
 
@@ -1023,160 +641,87 @@ function parseINI(string) {
 }
 ----
 
-(((parseINI function)))(((parsing)))This code goes over every line in
-the file, updating the “current section” object as it goes along.
-First, it checks whether the line can be ignored, using the expression
-`/^\s*(;.*)?$/`. Do you see how it works? The part between the
-((parentheses)) will match comments, and the `?` will make sure it
-also matches lines containing only whitespace.
+(((parseINI function)))(((parsing)))Код проходит все строки, обновляя объект “текущей секции”. Сначала он проверяет, можно ли игнорировать строчку, при помощи регулярки `/^\s*(;.*)?$/`. Соображаете, как это работает? Часть между ((скобок)) совпадает с комментариями, а `?` делает так, что регулярка совпадёт и со строчками, состоящими из одних пробелов.
 
-If the line is not a ((comment)), the code then checks whether the
-line starts a new ((section)). If so, it creates a new current section
-object, to which subsequent settings will be added.
+Если строка – не ((комментарий)), код проверяет, начинает ли она новую ((секцию)). Если да, он создаёт новый объект для текущей секции, к которому добавляются последующие настройки.
 
-The last meaningful possibility is that the line is a normal setting,
-which the code adds to the current section object.
+Последняя осмысленная возможность – строка является обычной настройкой, и в этом случае она добавляется к текущему объекту.
 
-If a ((line)) matches none of these forms, the function throws an
-error.
+Если ни один вариант не сработал, функция выдаёт ошибку.
 
-(((caret character)))(((dollar sign)))(((boundary)))Note the recurring
-use of `^` and `$` to make sure the expression matches the whole line,
-not just part of it. Leaving these out results in code that mostly
-works but behaves strangely for some input, which can be a difficult
-bug to track down.
+(((caret character)))(((dollar sign)))(((boundary)))Заметьте, как частое использование `^` и `$` заботится о том, что выражение совпадает со всей строкой целиком, а не с частью. Если их не использовать, код в целом будет работать, но иногда будет выдавать странные результаты, и такую ошибку будет трудно отследить.
 
-(((if keyword)))(((assignment)))(((= operator)))The pattern `if (match
-= string.match(...))` is similar to the trick of using an assignment
-as the condition for `while`. You often aren't sure that your call to
-`match` will succeed, so you can  access the resulting object only
-inside an `if` statement that tests for this. To not break the
-pleasant chain of `if` forms, we assign the result of the match to a
-variable and immediately use that assignment as the test in the `if`
-statement.
+(((if keyword)))(((assignment)))(((= operator)))Конструкция `if (match = string.match(...))` похожа на трюк, использующий присвоение как условие в цикле `while`. Часто вы не знаете, что вызов `match` будет успешным, поэтому вы можете получить доступ к результирующему объекту только внутри блока `if`, который это проверяет. Чтоб не разбивать красивую цепочку проверок `if`, мы присваиваем результат поиска переменной, и сразу используем это присвоение как проверку.
 
-== International characters ==
+== Международные символы ==
 
-(((internationalization)))(((Unicode)))(((regular
-expression,internationalization)))Because of JavaScript's initial
-simplistic implementation and the fact that this simplistic approach
-was later set in stone as ((standard)) behavior, JavaScript's regular
-expressions are rather dumb about characters that do not appear in the
-English language. For example, as far as JavaScript's regular
-expressions are concerned, a “((word character))” is only one of the
-26 characters in the Latin alphabet (uppercase or lowercase) and, for
-some reason, the underscore character. Things like _é_ or _β_, which
-most definitely are word characters, will not match `\w` (and _will_
-match uppercase `\W`, the nonword category).
+(((internationalization)))(((Unicode)))(((regular expression,internationalization)))Из-за изначально простой реализации языка, и последующей фиксации такой реализации “в граните”, регулярки JavaScript тупят с символами, не встречающимися в английском языке. К примеру, символ “((буквы))” с точки зрения регулярок JavaScript, может быть одним из 26 букв английского алфавита (в верхнем или в нижнем регистре), и почему-то ещё подчёркиванием. Буквы типа _é_ или _β_, однозначно являющиеся буквами, не совпадают с `\w` (и совпадут с `\W`, то есть с не-буквой).
 
-(((whitespace)))By a strange historical accident, `\s` (whitespace)
-does not have this problem and matches all characters that the
-Unicode standard considers whitespace, including things like the
-((nonbreaking space)) and the ((Mongolian vowel separator)).
+(((whitespace)))По странному стечению обстоятельств, исторически `\s` (пробел) совпадает со всеми символами, которые в Unicode считаются пробельными, включая такие штуки, как ((неразрывный пробел)) или ((монгольский разделитель гласных)).
 
-(((character category)))Some ((regular expression))
-((implementation))s in other programming languages have syntax to
-match specific ((Unicode)) character categories, such as “all
-uppercase letters”, “all punctuation”, or “control characters”. There
-are plans to add support for such categories to JavaScript, but it
-unfortunately looks like they won't be realized in the near ((future)).
+(((character category)))У некоторых ((реализаций)) ((регулярок)) в других языках есть особый синтаксис для поиска специальных категорий символов ((Unicode)), типа “все прописные буквы”, “все знаки препинания” или “управляющие символы”. Есть планы по добавлению таких категорий и в JavaScript, но они, видимо, будут реализованы не скоро.
 
 [[summary_regexp]]
-== Summary ==
+== Итог ==
 
-Regular expressions are objects that represent patterns in strings.
-They use their own syntax to express these patterns.
+Регулярные выражения – это объекты, представляющие шаблоны поиска в строках. Они используют свой синтаксис для выражения этих шаблонов.
 
 [cols="1,5"]
 |====
-|`/abc/`     |A sequence of characters
-|`/[abc]/`   |Any character from a set of characters
-|`/[^abc]/`  |Any character _not_ in a set of characters
-|`/[0-9]/`   |Any character in a range of characters
-|`/x+/`      |One or more occurrences of the pattern `x`
-|`/x+?/`     |One or more occurrences, nongreedy
-|`/x*/`      |Zero or more occurrences
-|`/x?/`      |Zero or one occurrence
-|`/x{2,4}/`  |Between two and four occurrences
-|`/(abc)/`   |A group
-|++/a{brvbar}b{brvbar}c/++ |Any one of several patterns
-|`/\d/`      |Any digit character
-|`/\w/`      |An alphanumeric character (“word character”)
-|`/\s/`      |Any whitespace character
-|`/./`       |Any character except newlines
-|`/\b/`      |A word boundary
-|`/^/`       |Start of input
-|`/$/`       |End of input
+|`/abc/`     |Последовательность символов
+|`/[abc]/`   |Любой символ из списка
+|`/[^abc]/`  |Любой символ, _кроме_ символов из списка
+|`/[0-9]/`   |Любой символ из промежутка
+|`/x+/`      |Одно или более вхождений шаблона `x`
+|`/x+?/`     |Одно или более вхождений, нежадное
+|`/x*/`      |Ноль или более вхождений
+|`/x?/`      |Ноль или одно вхождение
+|`/x{2,4}/`  |От двух до четырёх вхождений
+|`/(abc)/`   |Группа
+|++/a{brvbar}b{brvbar}c/++ |Любой из нескольких шаблонов
+|`/\d/`      |Любая цифра
+|`/\w/`      |Любой алфавитно-цифровой символ (“буква”)
+|`/\s/`      |Любой пробельный символ
+|`/./`       |Любой символ, кроме переводов строки
+|`/\b/`      |Граница слова
+|`/^/`       |Начало строки
+|`/$/`       |Конец строки
 |====
 
-A regular expression has a method `test` to test whether a given
-string matches it. It also has an `exec` method that, when a match is
-found, returns an array containing all matched groups. Such an array
-has an `index` property that indicates where the match started.
+У регулярки есть метод `test`, для проверки того, есть ли шаблон в строке. Есть метод `exec`, возвращающий массив, содержащий все найденные группы. У массива есть свойство `index`, где содержится номер символа, с которого случилось совпадение.
 
-Strings have a `match` method to match them against a regular
-expression and a `search` method to search for one, returning only the
-starting position of the match. Their `replace` method can replace
-matches of a pattern with a replacement string. Alternatively, you can
-pass a function to `replace`, which will be used to build up a
-replacement string based on the match text and matched groups.
+У строк есть метод `match` для поиска шаблонов, и метод `search`, возвращающий только начальную позицию вхождения. Метод `replace` может заменять вхождения шаблона на другую строку. Кроме этого, вы можете передать в `replace` функцию, которая будет строить строчку на замену, основываясь на шаблоне и найденных группах.
 
-Regular expressions can have options, which are written after
-the closing slash. The `i` option makes the match case insensitive,
-while the `g` option makes the expression _global_, which, among other
-things, causes the `replace` method to replace all instances instead
-of just the first.
+У регулярок есть настройки, которые пишут после закрывающего слеша. Опция `i` делает регулярку регистронезависимой, а опция `g` делает её _глобальной_, что, кроме прочего, заставляет метод `replace` заменять все найденные вхождения, а не только первое.
 
-The `RegExp` constructor can be used to create a regular expression
-value from a string.
+Конструктор `RegExp` можно использовать для создания регулярок из строк.
 
-Regular expressions are a sharp ((tool)) with an awkward handle. They
-simplify some tasks tremendously but can quickly become unmanageable
-when applied to complex problems. Part of knowing how to use them is
-resisting the urge to try to shoehorn things that they cannot sanely
-express into them.
+Регулярки – острый ((инструмент)) с неудобной ручкой. Они сильно упрощают одни задачи, и могут стать неуправляемыми при решении других, сложных задач. Часть умения пользоваться регулярками состоит в том, чтобы уметь сопротивляться искушению запихнуть в них задачу, для которой они не предназначены.
 
-== Exercises ==
+== Упражнения ==
 
-(((debugging)))(((bug)))It is almost unavoidable that, in the course
-of working on these exercises, you will get confused and frustrated by
-some regular expression's inexplicable ((behavior)). Sometimes it
-helps to enter your expression into an online tool like
-https://www.debuggex.com/[_debuggex.com_] to see whether its
-visualization corresponds to what you intended and to ((experiment))
-with the way it responds to various input strings.
+(((debugging)))(((bug)))Неизбежно при решении задач у вас возникнут непонятные случаи, и вы можете иногда отчаиваться, видя непредсказуемое ((поведение)) некоторых регулярок. Иногда помогает изучить поведение регулярки через онлайн-сервис типа https://www.debuggex.com/[_debuggex.com_], где можно посмотреть её визуализацию и сравнить с желаемым эффектом.
 
-=== Regexp golf ===
+=== Регулярный гольф ===
 
-(((program size)))(((code golf)))(((regexp golf (exercise))))_Code
-golf_ is a term used for the game of trying to express a particular
-program in as few characters as possible. Similarly, _regexp golf_ is
-the practice of writing as tiny a regular expression as possible to
-match a given pattern, and _only_ that pattern.
+(((program size)))(((code golf)))(((regexp golf (exercise))))_Гольфом_ в коде называют игру, где нужно выразить заданную программу минимальным количеством символов. _Регулярный гольф_ – практическое упражнение по написанию наименьших возможных регулярок для поиска заданного шаблона, и _только_ его.
 
-(((boundary)))(((matching)))For each of the following items, write a ((regular
-expression)) to test whether any of the given substrings occur in a
-string. The regular expression should match only strings containing
-one of the substrings described. Do not worry about word boundaries
-unless explicitly mentioned. When your expression works, see whether you
-can make it any smaller.
+(((boundary)))(((matching)))Для каждой из подстрочек напишите ((регулярное выражение)) для проверки их нахождения в строке. Регулярка должна находить только эти указанные подстроки. Не волнуйтесь насчёт границ слов, если это не упомянуто особо. Когда у вас получится работающая регулярка, попробуйте её уменьшить.
 
- 1. _car_ and _cat_
- 2. _pop_ and _prop_
- 3. _ferret_, _ferry_, and _ferrari_
- 4. Any word ending in _ious_
- 5. A whitespace character followed by a dot, comma, colon, or semicolon
- 6. A word longer than six letters
- 7. A word without the letter _e_
+ 1. _car_ и _cat_
+ 2. _pop_ и _prop_
+ 3. _ferret_, _ferry_, и _ferrari_
+ 4. Любое слово, заканчивающееся на _ious_
+ 5. Пробел, за которым идёт точка, запятая, двоеточие или точка с запятой
+ 6. Слово длинее шести букв
+ 7. Слово без букв _e_
 
-Refer to the table in the
-link:09_regexp.html#summary_regexp[chapter summary] for help. Test each
-solution with a few test strings.
+Refer to the table in the link:09_regexp.html#summary_regexp[chapter summary] for help. Test each solution with a few test strings.
 
 ifdef::interactive_target[]
 [source,javascript]
 ----
-// Fill in the regular expressions
+// Впишите свои регулярки
 
 verify(/.../,
        ["my car", "bad cats"],
@@ -1212,28 +757,21 @@ function verify(regexp, yes, no) {
   if (regexp.source == "...") return;
   yes.forEach(function(s) {
     if (!regexp.test(s))
-      console.log("Failure to match '" + s + "'");
+      console.log("Не нашлось '" + s + "'");
   });
   no.forEach(function(s) {
     if (regexp.test(s))
-      console.log("Unexpected match for '" + s + "'");
+      console.log("Неожиданное вхождение '" + s + "'");
   });
 }
 ----
 endif::interactive_target[]
 
-=== Quoting style ===
+=== Кавычки в тексте ===
 
-(((quoting style (exercise))))(((single-quote
-character)))(((double-quote character)))Imagine you have written a
-story and used single ((quotation mark))s throughout to mark pieces
-of dialogue. Now you want to replace all the dialogue quotes with
-double quotes, while keeping the single quotes used in contractions
-like _aren't_.
+(((quoting style (exercise))))(((single-quote character)))(((double-quote character)))Допустим, вы написали рассказ, и везде для обозначения диалогов использовали ((одинарные кавычки)). Теперь вы хотите заменить кавычки диалогов на двойные, и оставить одинарные в сокращениях слов типа _aren’t_.
 
-(((replace method)))Think of a pattern that distinguishes these two
-kinds of quote usage and craft a call to the `replace` method that
-does the proper replacement.
+(((replace method)))Придумайте шаблон, различающий два этих использования кавычек, и напишите вызов метода `replace`, который производит замену.
 
 ifdef::interactive_target[]
 // test: no
@@ -1263,39 +801,30 @@ replaced by nothing.
 
 !!hint!!
 
-=== Numbers again ===
+=== Снова числа ===
 
-(((number)))A series of ((digit))s can be matched by the simple
-regular expression `/\d+/`.
+(((number)))Последовательности ((цифр)) можно найти простой регуляркой `/\d+/`.
 
-(((sign)))(((fractional number)))(((syntax)))(((minus)))(((plus
-character)))(((exponent)))(((scientific notation)))(((period
-character)))Write an expression that matches only JavaScript-style
-numbers. It must support an optional minus _or_ plus sign in front of
-the number, the decimal dot, and exponent notation—`5e-3` or ++1E10++—
-again with an optional sign in front of the exponent. Also note that
-it is not necessary for there to be digits in front of or after the
-dot, but the number cannot be a dot alone. That is, `.5` and `5.`
-are valid JavaScript numbers, but a lone dot _isn't_.
+(((sign)))(((fractional number)))(((syntax)))(((minus)))(((plus character)))(((exponent)))(((scientific notation)))(((period character)))Напишите выражение, находящее только числа, записанные в стиле JavaScript. Оно должно поддерживать возможный минус _или_ плюс перед числом, десятичную точку, и экспоненциальную запись `5e-3` или `1E10` – опять-таки с возможными плюсом или минусом. Также заметьте, что до или после точки не обязательно могут стоять цифры, но при этом число не может состоять из одной точки. То есть, `.5` или `5.` – допустимые числа, а одна точка сама по себе – _нет_.
 
 ifdef::interactive_target[]
 // test: no
 
 [source,javascript]
 ----
-// Fill in this regular expression.
+// Впишите сюда регулярку.
 var number = /^...$/;
 
 // Tests:
 ["1", "-1", "+15", "1.55", ".5", "5.", "1.3e2", "1E-4",
  "1e+12"].forEach(function(s) {
   if (!number.test(s))
-    console.log("Failed to match '" + s + "'");
+    console.log("Не нашла '" + s + "'");
 });
 ["1a", "+-1", "1.2.3", "1+1", "1e4.5", ".5.", "1f5",
  "."].forEach(function(s) {
   if (number.test(s))
-    console.log("Incorrectly accepted '" + s + "'");
+    console.log("Неправильно принято '" + s + "'");
 });
 ----
 endif::interactive_target[]
