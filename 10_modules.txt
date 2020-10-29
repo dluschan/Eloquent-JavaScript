@@ -3,231 +3,104 @@
 :next_link: 11_language
 :load_files: ["code/chapter/10_modules.js", "code/loadfile.js"]
 
-= Modules =
+= Модули =
 
 ifdef::interactive_target[]
 
 [chapterquote="true"]
-[quote, Master Yuan-Ma, The Book of Programming]
+[quote, Мастер Юан-Ма, Книга программирования]
 ____
-A beginning programmer writes her programs like an ant builds her
-hill, one piece at a time, without thought for the bigger structure.
-Her programs will be like loose sand. They may stand for a while, but
-growing too big they fall apart.
+Начинающий программист пишет программы так, как муравьи строят муравейник – по кусочку, без размышления над общей структурой. Его программы как песок. Они могут недолго простоять, но вырастая, они разваливаются.
 
-Realizing this problem, the programmer will start to spend a lot of
-time thinking about structure. Her programs will be rigidly
-structured, like rock sculptures. They are solid, but when they must
-change, violence must be done to them.
+Поняв проблему, программист тратит много времени на размышления о структуре. Его программы получаются жёстко структурированными, как каменные изваяния. Они тверды, но когда их нужно менять, над ними приходится совершать насилие.
 
-The master programmer knows when to apply structure and when to leave
-things in their simple form. Her programs are like clay, solid yet
-malleable.
+Мастер-программист знает, когда нужна структура, а когда нужно оставить вещи в простом виде. Его программы словно глина – твёрдые, но податливые.
 ____
 
 endif::interactive_target[]
 
-(((organization)))(((code structure)))Every program has a shape. On
-a small scale, this shape is determined by its division into
-((function))s and the blocks inside those functions. Programmers have
-a lot of freedom in the way they structure their programs. Shape follows
-more from the ((taste)) of the programmer than from the program's
-intended functionality.
+(((organization)))(((code structure)))У каждой программы есть структура. В частностях она определяется тем, как программист делит код на ((функции)) и блоки внутри этих функций. Программисты вольны в создании структуры своей программы. Структура определяется больше ((вкус))ом программиста, нежели функциональностью программы.
 
-(((readability)))When looking at a larger program in its entirety,
-individual functions start to blend into the background. Such a
-program can be made more readable if we have a larger unit of
-organization.
+(((readability)))В случае больших программ отдельные функции уже теряются в коде, и нам необходима единица организации кода больших масштабов. _Модули_ группируют программный код по каким-то _определённым_ признакам. В этой главе мы рассмотрим преимущества такого деления и техники создания ((модулей)) в JavaScript.
 
-_Modules_ divide programs into clusters of code that, by _some_
-criterion, belong together. This chapter explores some of the benefits
-that such division provides and shows techniques for building
-((module))s in JavaScript.
+== Зачем нужны модули ==
 
-== Why modules help ==
+(((book analogy)))(((organization)))Есть несколько причин, по которым авторы делят свои книги на ((главы)) и секции. Это помогает читателю понять, как построена книга, и найти нужные им части. _Автору_ это помогает концентрироваться на каждой конкретной части. Преимущества организации программ в нескольких ((файл))ах, или ((модулях)), примерно те же. Структуризация помогает незнакомым с кодом людям найти то, что им нужно, и помогает программистам хранить связанные друг с другом вещи в одном месте.
 
-(((book analogy)))(((organization)))There are a number of reasons why
-authors divide their books into ((chapter))s and sections. These
-divisions make it easier for a reader to see how the book is built up
-and to find specific parts that they are interested in. They also help
-the _author_ by providing a clear focus for every section.
+(((project chapter)))(((readability)))(((interconnection)))Некоторые программы организованы по модели обычного ((текст))а, где порядок следования чётко определён, и где читателю предлагается последовательное изучение программы и множество прозы (комментариев) для описания кода. Это делает чтение кода менее пугающим (а чтение чужого кода обычно пугает), но требует больших усилий при создании кода. Также такую программу сложнее менять, потому что части прозы связаны между собой сильнее, чем части кода. Этот стиль называется _((литературным программированием))_. Те главы книги, в которых обсуждаются проекты, можно считать литературным кодом.
 
-The benefits of organizing a program into several ((file))s or
-((module))s are similar. Structure helps people who aren't yet
-familiar with the code find what they are looking for and makes it
-easier for the programmer to keep things that are related
-close together.
+(((minimalism)))(((evolution)))(((structure)))(((organization)))Обычно структурирование чего-либо требует затрат энергии. На ранних стадиях проекта, когда вы ещё не уверены, что где будет, и какие ((модули)) вообще нужны, я пропагандирую бесструктурную минималистическую организацию кода. Просто размещайте все части там, где удобно, пока код не стабилизируется. Таким образом не придётся тратить время на перестановку кусков программы, и вы не поймаете себя в такую структуру, которая не подходит для вашей программы.
 
-(((project chapter)))(((readability)))(((interconnection)))Some
-programs are even organized along the model of a traditional ((text)),
-with a well-defined order in which the reader is encouraged to go
-through the program and with lots of prose (comments) providing a coherent
-description of the code. This makes reading the program a lot less
-intimidating—reading unknown code is usually intimidating—but has the
-downside of being more work to set up. It also makes the program more
-difficult to change because prose tends to be more tightly
-interconnected than code. This style is called _((literate
-programming))_. The “project” chapters of this book can be considered
-literate programs.
+=== Пространство имён ===
 
-(((minimalism)))(((evolution)))(((structure)))(((organization)))As a
-general rule, structuring things costs energy. In the early stages of
-a project, when you are not quite sure yet what goes where or what
-kind of ((module))s the program needs at all, I endorse a minimalist,
-structureless attitude. Just put everything wherever it is convenient
-to put it until the code stabilizes. That way, you won't be wasting
-time moving pieces of the program back and forth, and you won't
-accidentally lock yourself into a structure that does not actually fit
-your program.
+(((encapsulation)))(((isolation)))(((global scope)))(((local scope)))У большинства современных ((языков программирования)) есть промежуточные ((области видимости)) (ОВ) между _глобальной_ (видно всем) и _локальной_ (видно только этой функции). У JavaScript такого нет. По умолчанию, всё, что необходимо видеть снаружи функции верхнего уровня, находится в _глобальной_ ОВ.
 
-=== Namespacing ===
+(((namespace pollution)))Загрязнение пространства имён, когда не связанные друг с другом части кода делят один набор переменных, упоминалась в link:04_data.html#namespace_pollution[главе 4]. Там объект `Math` был приведён в качестве примера объекта, который группирует функциональность, связанную с математикой, в виде модуля.
 
-(((encapsulation)))(((isolation)))(((global
-scope)))(((local scope)))Most modern ((programming language))s have a
-((scope)) level between _global_ (everyone can see it) and _local_
-(only this function can see it). JavaScript does not. Thus, by
-default, everything that needs to be visible outside of the scope of a
-top-level function is visible _everywhere_.
+(((function,as namespace)))Хотя JavaScript не предлагает непосредственно конструкции для создания ((модуля)), мы можем использовать объекты для создания подпространств имён, доступных отовсюду. А функции можно использовать для создания изолированных частных пространств имён внутри модуля. Чуть дальше мы обсудим способ построения достаточно удобных модулей, изолирующих пространства имён при помощи базовых концепций языка.
 
-(((namespace pollution)))Namespace pollution, the problem of a lot of
-unrelated code having to share a single set of global variable names,
-was mentioned in link:04_data.html#namespace_pollution[Chapter 4],
-where the `Math` object was given as an example of an object that acts
-like a module by grouping math-related functionality.
+=== Повторное использование ===
 
-(((function,as namespace)))Though JavaScript provides no actual
-((module)) construct yet, objects can be used to create publicly
-accessible sub((namespace))s, and functions can be used to create an
-isolated, private namespace inside of a module. Later in this chapter,
-I will discuss a way to build reasonably convenient, namespace-isolating
-modules on top of the primitive concepts that JavaScript gives us.
+(((version control)))(((bug)))(((copy-paste programming)))(((ini file)))(((dependency)))(((structure)))В проекте, не разбитом на ((модули)), непонятно, какие части кода необходимы для конкретной функции. В моей программе, шпионящей за врагами (link:09_regexp.html#ini[глава 9])), я написал функцию чтения файлов с настройками. Если мне понадобится использовать её в другом проекте, я должен буду скопировать части старой программы, которые вроде бы связаны с этой функцией, в мой новый проект. А если я найду там ошибку, я её исправлю только в том проекте, над которым работаю в данный момент, и забуду исправить её во всех остальных.
 
-=== Reuse ===
+(((duplication)))Когда у вас будет множество таких сдублированных кусков кода, вы обнаружите, что тратите кучу времени и сил на их копирование и обновление. Если разместить связанные между собой части программ в отдельные модули, их будет проще отслеживать, исправлять и обновлять, потому что везде, где этот функционал потребуется, вы сможете просто загрузить этот модуль из файла.
 
-(((version control)))(((bug)))(((copy-paste programming)))(((ini
-file)))(((dependency)))(((structure)))In a “flat” project, which isn't
-structured as a set of ((module))s, it is not apparent which parts of
-the code are needed to use a particular function. In my program for
-spying on my enemies (see link:09_regexp.html#ini[Chapter 9]), I wrote
-a function for reading configuration files. If I want to use that
-function in another project, I must go and copy out the parts of the
-old program that look like they are relevant to the functionality that
-I need and paste them into my new program. Then, if I find a mistake
-in that code, I'll fix it only in whichever program that I'm working
-with at the time and forget to also fix it in the other program.
+(((dependency)))(((library)))(((installation)))(((upgrading)))Эту идею можно использовать ещё лучше, если чётко прописать взаимоотношения разных модулей – кто от кого зависит. Тогда можно автоматизировать процесс установки и обновления внешних модулей (_библиотек_).
 
-(((duplication)))Once you have lots of such shared, duplicated pieces
-of code, you will find yourself wasting a lot of time and energy on
-moving them around and keeping them up-to-date.
-
-(((reuse)))Putting pieces of functionality that stand on their own
-into separate files and modules makes them easier to track, update,
-and share because all the various pieces of code that want to use the
-module load it from the same actual file.
-
-(((dependency)))(((library)))(((installation)))(((upgrading)))This
-idea gets even more powerful when the relations between modules—which
-other modules each module depends on—are explicitly stated. You can
-then automate the process of installing and upgrading external modules
-(_libraries_).
-
-(((package manager)))(((download)))(((reuse)))Taking this idea even
-further, imagine an online service that tracks and distributes
-hundreds of thousands of such libraries, allowing you to search for
-the functionality you need and, once you find it, set up your project
-to automatically download it.
+(((package manager)))(((download)))(((reuse)))Если ещё развить идею – представьте себе онлайн-сервис, который отслеживает и распространяет сотни тысяч таких библиотек, и вы можете искать нужную вам функциональность среди них, а когда найдёте – ваш проект автоматически скачает её.
 
 [[modules_npm]]
-(((NPM)))This service exists. It is called NPM
-(http://npmjs.org[_npmjs.org_]). NPM consists of an online database of
-modules and a tool for downloading and upgrading the modules your
-program depends on. It grew out of ((Node.js)), the browserless
-JavaScript environment we will discuss in
-link:20_node.html#node[Chapter 20], but can also be useful when
-programming for the browser.
+(((NPM)))И такой сервис есть! Он называется NPM (http://npmjs.org[_npmjs.org_]). NPM – онлайн-база модулей и инструмент для скачивания и апгрейда модулей, от которых зависит ваша программа. он вырос из ((Node.js)), окружения JavaScript, не требующего браузера, которое мы обсудим в link:20_node.html#node[главе 20], но также может использоваться и в браузерных программах.
 
-=== Decoupling ===
+=== Устранение связей ===
 
-(((isolation)))(((decoupling)))(((backward
-compatibility)))Another important role of modules is isolating pieces
-of code from each other, in the same way that the object interfaces
-from link:06_object.html#interface[Chapter 6] do. A well-designed
-module will provide an interface for external code to use. As the
-module gets updated with ((bug)) fixes and new functionality, the
-existing ((interface)) stays the same (it is _stable_) so that other
-modules can use the new, improved version without any changes to
-themselves.
+(((isolation)))(((decoupling)))(((backward compatibility)))Ещё одна задача модулей – изолировать несвязанные между собой части кода так, как это делают интерфейсы объектов из link:06_object.html#interface[главы 6]. Хорошо продуманный модуль предоставляет интерфейс для его использования вовне. Когда модуль обновляют или исправляют, существующий ((интерфейс)) остаётся неизменным, чтобы другие модули могли использовать новую, обновлённую версию без изменений в них самих.
 
-(((stability)))Note that a stable interface does not mean no new
-functions, methods, or variables are added. It just means that
-existing functionality isn't removed and its meaning is not changed.
+(((stability)))Стабильный интерфейс не означает, что в него не добавляют новые функции, методы или переменные. Главное, что существующая функциональность не удаляется и её смысл не меняется.
 
-(((implementation detail)))(((encapsulation)))A good ((module))
-((interface)) should allow the module to grow without breaking the old
-interface. This means exposing as few of the module's internal
-concepts as possible while also making the “language” that the
-interface exposes powerful and flexible enough to be applicable in a
-wide range of situations.
+(((implementation detail)))(((encapsulation)))Хороший ((интерфейс)) позволяет ((модулю)) расти, не ломая старый интерфейс. А это значит – выставлять наружу как можно меньше внутренней кухни модуля, при этом “язык” интерфейса должен быть достаточно гибким и мощным для применения в различных ситуациях.
 
-(((interface,design)))For interfaces that expose a single, focused
-concept, such as a configuration file reader, this design comes
-naturally. For others, such as a text editor, which has many different
-aspects that external code might need to access (content, styling,
-user actions, and so on), it requires careful design.
+(((interface,design)))Интерфейсы, выполняющие простую задачу, вроде чтения настроек из файла, выходят такими естественным образом. Для других – к примеру, для редактора текстов, у которого есть множество разных аспектов, требующих доступа извне (содержимое, стили, действия пользователя и т.п.) интерфейс необходимо скрупулёзно продумывать.
 
-== Using functions as namespaces ==
+== Использование функций в качестве пространств имён ==
 
-(((namespace)))(((function,as namespace)))Functions are the only things in
-JavaScript that create a new ((scope)). So if we want our ((module))s
-to have their own scope, we will have to base them on functions.
+(((namespace)))(((function,as namespace)))Функции – единственная вещь в JavaScript, создающая новую ((область видимости)). Если нам нужно, чтобы у ((модулей)) была своя область видимости, придётся основывать их на функциях.
 
-(((weekday example)))(((Date type)))(((getDay method)))Consider this
-trivial module for associating names with day-of-the-week numbers, as
-returned by a `Date` object's `getDay` method:
+(((weekday example)))(((Date type)))(((getDay method)))Обратите внимание на простейший модуль, связывающий имена с номерами дней недели – как делает метод `getDay` объекта `Date`.
 
 [source,javascript]
 ----
-var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-             "Thursday", "Friday", "Saturday"];
+var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+             "Пятница", "Суббота", "Воскресенье"];
 function dayName(number) {
   return names[number];
 }
 
 console.log(dayName(1));
-// → Monday
+// → Вторник
 ----
 
-(((access control)))(((encapsulation)))The `dayName` function is part
-of the module's ((interface)), but the `names` variable is not. We
-would prefer _not_ to spill it into the ((global scope)).
+(((access control)))(((encapsulation)))Функция `dayName` – часть ((интерфейса)) модуля, а переменная `names` – нет. Но хотелось бы _не_ загрязнять ((глобальное пространство имён)).
 
-We can do this:
+Можно сделать так:
 
 [source,javascript]
 ----
 var dayName = function() {
-  var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-               "Thursday", "Friday", "Saturday"];
+  var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+               "Пятница", "Суббота", "Воскресенье"];
   return function(number) {
     return names[number];
   };
 }();
 
 console.log(dayName(3));
-// → Wednesday
+// → Четверг
 ----
 
-(((anonymous function)))Now `names` is a local variable in an
-(unnamed) function. This function is created and immediately called,
-and its return value (the actual `dayName` function) is stored in a
-variable. We could have pages and pages of code in this function, with
-100 local variables, and they would all be internal to our
-module—visible to the module itself but not to outside code.
+(((anonymous function)))Теперь `names` – локальная переменная безымянной функции. Функция создаётся и сразу вызывается, а её возвращаемое значение (уже нужная нам функция `dayName`) хранится в переменной. Мы можем написать много страниц кода в функции, объявить там сотню переменных, и все они будут внутренними для нашего модуля, а не для внешнего кода.
 
-(((isolation)))(((side effect)))We can use a similar pattern to
-isolate code from the outside world entirely. The following module logs a
-value to the console but does not actually provide any values for
-other modules to use:
+(((isolation)))(((side effect)))Подобный шаблон можно использовать для изолирования кода. Следующий модуль пишет в консоль значение, но не предоставляет никаких значений для использования другими модулями:
 
 [source,javascript]
 ----
@@ -240,61 +113,36 @@ other modules to use:
 // → 10000
 ----
 
-(((namespace pollution)))This code simply outputs the square of 100,
-but in the real world it could be a module that adds a method
-to some ((prototype)) or sets up a widget on a web page. It is
-wrapped in a function to prevent the variables it uses internally from
-polluting the ((global scope)).
+(((namespace pollution)))Этот код выводит квадрат сотни, но в реальности это мог бы быть модуль, добавляющий метод к какому-то ((прототипу)), или настраивающий виджет на веб-странице. Он обёрнут в функцию для предотвращения загрязнения ((глобальной области видимости)) используемыми им переменными.
 
-(((parsing)))(((function keyword)))Why did we wrap the namespace
-function in a pair of ((parentheses))? This has to do with a quirk in
-JavaScript's ((syntax)). If an _((expression))_ starts with the
-keyword `function`, it is a function expression. However, if a
-_((statement))_ starts with `function`, it is a function
-_declaration_, which requires a name and, not being an expression,
-cannot be called by writing parentheses after it. You can think of the
-extra wrapping parentheses as a trick to force the function to be
-interpreted as an expression.
+(((parsing)))(((function keyword)))А зачем мы заключили функцию в ((круглые скобки))? Это связано с глюком ((синтаксис))а JavaScript. Если _((выражение))_ начинается с ключевого слова `function`, это функциональное выражение. А если _((инструкция))_ начинается с `function`, это _объявление_ функции, которое требует названия, и, так как это не выражение, не может быть вызвано при помощи скобок `()` после неё. Можно представлять себе заключение в скобки как трюк, чтобы функция принудительно интерпретировалась как выражение.
 
-== Objects as interfaces ==
+== Объекты в качестве интерфейсов ==
 
-(((interface)))Now imagine that we want to add another function to our
-day-of-the-week module, one that goes from a day name to a
-number. We can't simply return the function anymore but must wrap the
-two functions in an object.
+(((interface)))Представьте, что нам надо добавить ещё одну функцию в наш модуль “день недели”. Мы уже не можем возвращать функцию, а должны завернуть две функции в объект.
 
 [source,javascript]
 ----
 var weekDay = function() {
-  var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-               "Thursday", "Friday", "Saturday"];
+  var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+               "Пятница", "Суббота", "Воскресенье"];
   return {
     name: function(number) { return names[number]; },
     number: function(name) { return names.indexOf(name); }
   };
 }();
 
-console.log(weekDay.name(weekDay.number("Sunday")));
-// → Sunday
+console.log(weekDay.name(weekDay.number("Среда")));
+// → Среда
 ----
 
-(((exporting)))(((exports object)))(((this)))For bigger ((module))s,
-gathering all the _exported_ values into an object at the end of the
-function becomes awkward since many of the exported functions are
-likely to be big and you'd prefer to write them somewhere else, near
-related internal code. A convenient alternative is to declare an
-object (conventionally named `exports`) and add properties to that
-whenever we are defining something that needs to be exported. In the
-following example, the module function takes its interface object as
-an argument, allowing code outside of the function to create it and store
-it in a variable. (Outside of a function, `this` refers to the global
-scope object.)
+(((exporting)))(((exports object)))(((this)))Когда ((модуль)) большой, собирать все _возвращаемые_ значения в объект в конце функции неудобно, потому что многие возвращаемые функции будут большими, и вам было бы удобнее их записывать где-то в другом месте, рядом со связанным с ними кодом. Удобно объявить объект (обычно называемый `exports`) и добавлять к нему свойства каждый раз, когда нам надо что-то экспортировать. В следующем примере функция модуля принимает объект интерфейса как аргумент, позволяя коду снаружи функции создать его и сохранить в переменной. Снаружи функции `this` ссылается на объект глобальной области видимости.
 
 [source,javascript]
 ----
 (function(exports) {
-  var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-               "Thursday", "Friday", "Saturday"];
+  var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+               "Пятница", "Суббота", "Воскресенье];
 
   exports.name = function(number) {
     return names[number];
@@ -304,53 +152,26 @@ scope object.)
   };
 })(this.weekDay = {});
 
-console.log(weekDay.name(weekDay.number("Saturday")));
-// → Saturday
+console.log(weekDay.name(weekDay.number("Четверг")));
+// → Четверг
 ----
 
-== Detaching from the global scope ==
+== Отсоединяемся от глобальной области видимости ==
 
-(((variable,global)))The previous pattern is commonly used by JavaScript
-modules intended for the ((browser)). The module will claim a single
-global variable and wrap its code in a function in order to have its
-own private ((namespace)). But this pattern still causes problems if
-multiple modules happen to claim the same name or if you want to load
-two ((version))s of a module alongside each other.
+(((variable,global)))Такой шаблон часто используется в модулях JavaScript, предназначающихся для ((браузер))а. Модуль возьмёт одну глобальную переменную и обернёт свой код в функцию, чтобы у него было своё личное ((пространство имён)). Но с этим шаблоном бывают проблемы, когда много модулей требуют одно и то же имя, или когда вам надо загрузить две ((версии)) модуля одновременно.
 
-(((module loader)))(((require
-function)))(((CommonJS)))(((dependency)))With a little plumbing, we
-can create a system that allows one ((module)) to directly ask for the
-((interface)) object of another module, without going through the
-global scope. Our goal is a `require` function that, when given a
-module name, will load that module's file (from disk or the Web,
-depending on the platform we are running on) and return the
-appropriate interface value.
+(((module loader)))(((require function)))(((CommonJS)))(((dependency)))Подкрутив кое-что, мы можем сделать систему, разрешающую одному ((модулю)) обращаться к ((интерфейсному)) объекту другого, без выхода в глобальную ОВ. Наша цель – функция `require`, которая, получая имя модуля, загрузит его файл (с диска или из сети, в зависимости от платформы) и вернёт соответствующее значение с интерфейсом.
 
-This approach solves the problems mentioned previously and has the added
-benefit of making your program's dependencies explicit, making it
-harder to accidentally make use of some module without stating that
-you need it.
+Этот подход решает проблемы, упомянутые ранее, и у него есть ещё одно преимущество – зависимости вашей программы становятся явными, и поэтому сложнее случайно вызвать ненужный вам модуль без чёткого его объявления.
 
-(((readFile function)))(((require function)))For `require` we need two
-things. First, we want a function `readFile`, which returns the
-content of a given file as a string. (A single such function is not
-present in ((standard)) JavaScript, but different JavaScript
-environments, such as the browser and Node.js, provide their own ways
-of accessing ((file))s. For now, let's just pretend we have this
-function.) Second, we need to be able to actually execute this
-string as JavaScript code.
+(((readFile function)))(((require function)))Нам понадобятся две вещи. Во-первых, функция `readFile`, возвращающая содержимое файла в виде строки. В ((стандартном)) JavaScript такой функции нет, но разные окружения, такие как браузер или Node.js, предоставляют свои способы доступа к ((файлам)). Пока притворимся, что у нас есть такая функция. Во-вторых, нам нужна возможность выполнить содержимое этой строки как код.
 
 [[eval]]
-== Evaluating data as code ==
+== Выполняем данные как код ==
 
-(((evaluation)))(((interpretation)))There are several ways to take
-data (a string of code) and run it as part of the current program.
+(((evaluation)))(((interpretation)))Есть несколько способов получить данные (строку кода) и выполнить их как часть текущей программы.
 
-(((isolation)))(((eval)))The most obvious way is the special operator
-`eval`, which will execute a string of code in the _current_ scope.
-This is usually a bad idea because it breaks some of the sane
-properties that scopes normally have, such as being isolated from the
-outside world.
+(((isolation)))(((eval)))Самый очевидный – оператор `eval`, который выполняет строку кода в _текущем_ окружении. Это плохая идея – он нарушает некоторые свойства окружения, которые обычно у него есть, например изоляция от внешнего мира.
 
 [source,javascript]
 ----
@@ -363,10 +184,7 @@ console.log(evalAndReturnX("var x = 2"));
 // → 2
 ----
 
-(((Function constructor)))A better way of interpreting data as code is
-to use the `Function` constructor. This takes two arguments: a string
-containing a comma-separated list of argument names and a string
-containing the function's body.
+(((Function constructor)))Способ лучше – использовать конструктор `Function`. Он принимает два аргумента – строку, содержащую список имён аргументов через запятую, и строку, содержащую тело функции.
 
 [source,javascript]
 ----
@@ -375,15 +193,12 @@ console.log(plusOne(4));
 // → 5
 ----
 
-This is precisely what we need for our modules. We can wrap a module's
-code in a function, with that function's scope becoming our module
-((scope)).
+Это то, что нам надо. Мы обернём код модуля в функцию, и её область видимости станет ((областью видимости)) нашего модуля.
 
 [[commonjs]]
 == Require ==
 
-(((require function)))(((CommonJS)))The following is a minimal
-implementation of `require`:
+(((require function)))(((CommonJS)))Вот минимальная версия функции `require`:
 
 // test: wrap
 
@@ -397,20 +212,15 @@ function require(name) {
 }
 
 console.log(require("weekDay").name(1));
-// → Monday
+// → Вторник
 ----
 
-(((weekday example)))(((exports object)))(((Function
-constructor)))Since the `new Function` constructor wraps the module
-code in a function, we don't have to write a wrapping ((namespace))
-function in the module file itself. And since we make `exports` an
-argument to the module function, the module does not have to declare
-it. This removes a lot of clutter from our example module.
+(((weekday example)))(((exports object)))(((Function constructor)))Так как конструктор `new Function` оборачивает код модуля в функцию, нам не надо писать функцию, оборачивающую ((пространство имён)), внутри самого модуля. А так как `exports` является аргументом функции модуля, модулю не нужно его объявлять. Это убирает много мусора из нашего модуля-примера.
 
 [source,javascript]
 ----
-var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-             "Thursday", "Friday", "Saturday"];
+var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+             "Пятница", "Суббота", "Воскресенье"];
 
 exports.name = function(number) {
   return names[number];
@@ -420,9 +230,7 @@ exports.number = function(name) {
 };
 ----
 
-(((require function)))When using this pattern, a ((module)) typically
-starts with a few variable declarations that load the modules it
-depends on.
+(((require function)))При использовании такого шаблона ((модуль)) обычно начинается с объявления нескольких переменных, которые загружают модули, от которых он зависит.
 
 // test: no
 
@@ -434,28 +242,13 @@ var today = require("today");
 console.log(weekDay.name(today.dayNumber()));
 ----
 
-(((efficiency)))The simplistic implementation of `require` given previously
-has several problems. For one, it will load and run a module every
-time it is ++require++d, so if several modules have the same
-dependency or a `require` call is put inside a function that will
-be called multiple times, time and energy will be wasted.
+(((efficiency)))У такого простого варианта `require` есть недостатки. Во-первых, он загрузит и выполнит модуль каждый раз, когда его грузят через `require` – если у нескольких модулей есть одинаковые зависимости, или вызов `require` находится внутри функции, которая вызывается многократно, будет потеряно время и энергия.
 
-(((cache)))This can be solved by storing the modules that have already
-been loaded in an object and simply returning the existing value when
-one is loaded multiple times.
+(((cache)))Это можно решить, храня уже загруженные модули в объекте, и возвращая существующее значение, когда он грузится несколько раз.
 
-(((exports object)))(((exporting)))The second problem is that it is
-not possible for a module to directly export a value other than the
-`exports` object, such as a function. For example, a module might want
-to export only the constructor of the object type it defines. Right
-now, it cannot do that because `require` always uses the `exports`
-object it creates as the exported value.
+(((exports object)))(((exporting)))Вторая проблема – модуль не может экспортировать переменную напрямую, только через объект `export`. К примеру, модулю может потребоваться экспортировать только конструктор объекта, объявленного в нём. Сейчас это невозможно, поскольку `require` всегда использует объект `exports` в качестве возвращаемого значения.
 
-(((module object)))The traditional solution for this is to provide
-modules with another variable, `module`, which is an object that has a
-property `exports`. This property initially points at the empty object
-created by `require` but can be overwritten with another value in
-order to export something else.
+(((module object)))Традиционное решение – предоставить модули с другой переменной, `module`, которая является объектом со свойством `exports`. Оно изначально указывает на пустой объект, созданный `require`, но может быть перезаписано другим значением, чтобы экспортировать что-либо ещё.
 
 // test: wrap
 // include_code
@@ -476,50 +269,20 @@ function require(name) {
 require.cache = Object.create(null);
 ----
 
-(((require function)))We now have a module system that uses a single
-global variable (`require`) to allow modules to find and use each
-other without going through the ((global scope)).
+(((require function)))Сейчас у нас есть система модулей, использующих одну глобальную переменную `require`, чтобы позволять модулям искать и использовать друг друга без выхода в ((глобальную область видимости)).
 
-This style of module system is called _((CommonJS)) modules_, after
-the pseudo-((standard)) that first specified it. It is built into the
-((Node.js)) system. Real implementations do a lot more than the
-example I showed. Most importantly, they have a much more intelligent
-way of going from a module name to an actual piece of code, allowing
-both pathnames relative to the current file and module names that
-point directly to locally installed modules.
+Такой стиль системы модулей называется _((CommonJS))_, по имени псевдо((стандарт))а, который первым его описал. Он встроен в систему ((Node.js)). Настоящие реализации делают гораздо больше описанного мною. Главное, что у них есть более умный способ перехода от имени модуля к его коду, который разрешает загружать модули по относительному пути к файлу, или же по имени модуля, указывающему на локально установленные модули.
 
 [[amd]]
-== Slow-loading modules ==
+== Медленная загрузка модулей ==
 
-(((loading)))(((synchronous I/O)))(((blocking)))(((World Wide
-Web)))Though it is possible to use the CommonJS module style when
-writing JavaScript for the ((browser)), it is somewhat involved. The
-reason for this is that reading a file (module) from the Web is a lot
-slower than reading it from the hard disk. While a script is running
-in the browser, nothing else can happen to the website on which it
-runs, for reasons that will become clear in
-link:14_event.html#timeline[Chapter 14]. This means that if every
-`require` call went and fetched something from some faraway web
-server, the page would freeze for a painfully long time while loading
-its scripts.
+(((loading)))(((synchronous I/O)))(((blocking)))(((World Wide Web)))Хотя и возможно использовать стиль CommonJS для ((браузер))а, но он не очень подходит для этого. Загрузка файла из Сети происходит медленнее, чем с жёсткого диска. Пока скрипт в браузере работает, на сайте ничего другого не происходит (по причинам, которые станут ясны к link:14_event.html#timeline[главе 14]). Значит, если бы каждый вызов `require` скачивал что-то с дальнего веб-сервера, страница бы зависла на очень долгое время при загрузке.
 
-(((Browserify)))(((require function)))(((preprocessing)))One way to
-work around this problem is to run a program like
-http://browserify.org[_Browserify_] on your code before you serve it
-on a web page. This will look for calls to `require`, resolve all
-dependencies, and gather the needed code into a single big file.
-The website itself can simply load this file to get all the modules
-it needs.
+(((Browserify)))(((require function)))(((preprocessing)))Можно обойти это, запуская программу типа http://browserify.org[_Browserify_] с вашим кодом перед выкладыванием её в веб. Она просмотрит все вызовы `require`, обработает все зависимости и соберёт нужный код в один большой файл. Веб-сайт просто грузит этот файл и получает все необходимые модули.
 
-(((AMD)))(((dependency)))(((asynchronous I/O)))Another solution is to wrap the
-code that makes up your module in a function so that the ((module
-loader)) can first load its dependencies in the background and then
-call the function, initializing the ((module)), when the dependencies
-have been loaded. That is what the Asynchronous Module Definition
-(AMD) module system does.
+(((AMD)))(((dependency)))(((asynchronous I/O)))Второй вариант – оборачивать код модуля в функцию, чтобы ((загрузчик модулей)) сначала грузил зависимости в фоне, а потом вызывал функцию, инициализирующую ((модуль)), после загрузки зависимостей. Этим занимается система AMD (асинхронное определение модулей).
 
-(((weekday example)))Our trivial program with dependencies would look
-like this in AMD:
+(((weekday example)))Наша простая программа с зависимости выглядела бы в AMD так:
 
 // test: no
 
@@ -530,25 +293,15 @@ define(["weekDay", "today"], function(weekDay, today) {
 });
 ----
 
-(((define function)))(((asynchronous programming)))The `define`
-function is central to this approach. It takes first an array of
-module names and then a function that takes one argument for each
-dependency. It will load the dependencies (if they haven't already
-been loaded) in the background, allowing the page to continue working
-while the files are being fetched. Once all dependencies are loaded,
-`define` will call the function it was given, with the ((interface))s
-of those dependencies as arguments.
+(((define function)))(((asynchronous programming)))Функция `define` здесь самая важная. Она принимает массив имён модулей, а затем функцию, принимающую один аргумент для каждой из зависимостей. Она загрузит зависимости (если они уже не загружены) в фоне, позволяя странице работать, пока файлы качаются. Когда всё загружено, `define` вызывает данную ему функцию, с ((интерфейс))ами этих зависимостей в качестве аргументов.
 
-(((weekday example)))(((define function)))The modules that are loaded
-this way must themselves contain a call to `define`. The value used as
-their interface is whatever was returned by the function passed to
-`define`. Here is the `weekDay` module again:
+(((weekday example)))(((define function)))Загруженные таким образом модули должны содержать вызовы `define`. В качестве их интерфейса используется то, что было возвращено функцией, переданной в `define`. Вот модуль `weekDay`:
 
 [source,javascript]
 ----
 define([], function() {
-  var names = ["Sunday", "Monday", "Tuesday", "Wednesday",
-               "Thursday", "Friday", "Saturday"];
+  var names = ["Понедельник", "Вторник", "Среда", "Четверг",
+               "Пятница", "Суббота", "Воскресенье"];
   return {
     name: function(number) { return names[number]; },
     number: function(name) { return names.indexOf(name); }
@@ -556,21 +309,11 @@ define([], function() {
 });
 ----
 
-(((define function)))(((backgroundReadFile function)))To be
-able to show a minimal implementation of `define`, we will pretend we
-have a `backgroundReadFile` function that takes a filename and a
-function and calls the function with the content of the file as
-soon as it has finished loading it. (link:17_http.html#getURL[Chapter
-17] will explain how to write that function.)
+(((define function)))(((backgroundReadFile function)))Чтобы показать минимальную реализацию `define`, притворимся, что у нас есть функция `backgroundReadFile`, которая принимает имя файла и функцию, и вызывает эту функцию с содержимым этого файла, как только он будет загружен. (В link:17_http.html#getURL[главе 17] будет объяснено, как написать такую функцию.)
 
-For the purpose of keeping track of modules while they are being
-loaded, the implementation of `define` will use objects that describe
-the state of modules, telling us whether they are available yet and
-providing their interface when they are.
+Чтоб отслеживать модули, пока они загружаются, `define` использует объекты, описывающие состояние модулей, сообщает нам, доступны ли они уже, и предоставляет их интерфейс по доступности.
 
-The `getModule` function, when given a name, will return such an
-object and ensure that the module is scheduled to be loaded. It uses
-a ((cache)) object to avoid loading the same module twice.
+Функция `getModule` принимает имя и возвращает такой объект, и убеждается в том, что модуль поставлен в очередь загрузки. Она использует ((кеш))ирующий объект, чтобы не грузить один модуль дважды.
 
 // include_code
 
@@ -595,24 +338,9 @@ function getModule(name) {
 }
 ----
 
-(((define function)))We assume the loaded file also contains a
-(single) call to `define`. The `currentMod` variable is used to tell
-this call about the module object that is currently being loaded so
-that it can update this object when it finishes loading. We will come
-back to this mechanism in a moment.
+(((define function)))Мы предполагаем, что загружаемый файл тоже содержит вызов `define`. Переменная `currentMod` используется, чтобы сообщить этому вызову о загружаемом объекте модуля, чтобы тот смог обновить этот объект после загрузки. Мы ещё вернёмся к этому механизму.
 
-(((dependency)))(((Function constructor)))(((asynchronous
-programming)))(((event handling)))The `define` function itself uses
-`getModule` to fetch or create the module objects for the current
-module's dependencies. Its task is to schedule the `moduleFunction`
-(the function that contains the module's actual code) to be run
-whenever those dependencies are loaded. For this purpose, it defines a
-function `whenDepsLoaded` that is added to the `onLoad` array of all
-dependencies that are not yet loaded. This function immediately
-returns if there are still unloaded dependencies, so it will do
-actual work only once, when the last dependency has finished loading. It is
-also called immediately, from `define` itself, in case there are no
-dependencies that need to be loaded.
+(((dependency)))(((Function constructor)))(((asynchronous programming)))(((event handling)))Функция `define` сама использует `getModule` для загрузки или создания объектов модулей для зависимостей текущего модуля. Её задача – запланировать запуск функции `moduleFunction` (содержащей сам код модуля) после загрузки зависимостей. Для этого она определяет функцию `whenDepsLoaded`, добавляемую в массив `onLoad`, содержащий все пока ещё не загруженные зависимости. Эта функция сразу прекращает работу, если есть ещё незагруженные зависимости, так что она выполнит свою работу только раз, когда последняя зависимость загрузится. Она также вызывается сразу из самого `define`, в случае когда никакие зависимости не нужно грузить.
 
 // include_code
 
@@ -643,144 +371,53 @@ function define(depNames, moduleFunction) {
 }
 ----
 
-(((define function)))When all dependencies are available,
-`whenDepsLoaded` calls the function that holds the module, giving it
-the dependencies’ interfaces as arguments.
+(((define function)))Когда все зависимости доступны, `whenDepsLoaded` вызывает функцию, содержащую модуль, передавая в виде аргументов интерфейсы зависимостей.
 
-The first thing `define` does is store the value that `currentMod` had
-when it was called in a variable `myMod`. Remember that `getModule`,
-just before evaluating the code for a module, stored the corresponding
-module object in `currentMod`. This allows `whenDepsLoaded` to store
-the return value of the module function in that module's `exports`
-property, set the module's `loaded` property to true, and call all the
-functions that are waiting for the module to load.
+Первое, что делает `define`, это сохраняет значение `currentMod`, которое было у него при вызове, в переменной `myMod`. Вспомните, что `getModule` прямо перед исполнением кода модуля сохранил соответствующий объект модуля в `currentMod`. Это позволяет `whenDepsLoaded` хранить возвращаемое значение функции модуля в свойстве `exports` этого модуля, установить свойство `loaded` модуля в true, и вызвать все функции, ждавшие загрузки модуля.
 
-(((asynchronous programming)))This code is a lot harder to follow than
-the `require` function. Its execution does not follow a simple,
-predictable path. Instead, multiple operations are set up to happen at
-some unspecified time in the ((future)), which obscures the way the
-code executes.
+(((asynchronous programming)))Этот код изучать тяжелее, чем функцию `require`. Его выполнение идёт не по простому и предсказуемому пути. Вместо этого, несколько операций должны быть выполнены в неопределённые моменты в ((будущем)), что затрудняет изучения того, как выполняется этот код.
 
-A real ((AMD)) implementation is, again, quite a lot more clever about
-resolving module names to actual URLs and generally more robust than
-the one shown previously. The _((RequireJS))_ (http://requirejs.org[_requirejs.org_]) project provides
-a popular implementation of this style of ((module loader)).
+Настоящая реализация ((AMD)) гораздо умнее подходит к превращению имён модулей в URL и более надёжна, чем показано в примере. Проект _((RequireJS))_ (http://requirejs.org[_requirejs.org_]) предоставляет популярную реализацию такого стиля ((загрузчика модулей)).
 
-== Interface design ==
+== Разработка интерфейса ==
 
-(((interface,design)))Designing interfaces for modules and object
-types is one of the subtler aspects of programming. Any nontrivial
-piece of functionality can be modeled in various ways. Finding a way that
-works well requires insight and foresight.
+(((interface,design)))Разработка интерфейсов – один из самых тонких моментов в программировании. Любую нетривиальную функциональность можно реализовать множеством способов. Поиск работающего способа требует проницательности и предусмотрительности.
 
-The best way to learn the value of good interface design is to use
-lots of interfaces—some good, some bad. Experience will teach
-you what works and what doesn't. Never assume that a painful interface
-is “just the way it is”. Fix it, or wrap it in a new interface that
-works better for you.
+Лучший способ познать значимость хорошего интерфейса – использовать много интерфейсов. Некоторые будут плохие, некоторые хорошие. Опыт покажет вам, что работает, а что – нет. Никогда не принимайте как должное плохой интерфейс. Исправьте его, или заключите в другой интерфейс, который лучше вам подходит.
 
-=== Predictability ===
+=== Предсказуемость ===
 
-(((documentation)))(((predictability)))(((convention)))If programmers
-can predict the way your interface works, they (or you) won't get
-sidetracked as often by the need to look up how to use it. Thus, try
-to follow conventions. When there is another module or part of the
-standard JavaScript environment that does something similar to what
-you are implementing, it might be a good idea to make your interface
-resemble the existing interface. That way, it'll feel familiar to
-people who know the existing interface.
+(((documentation)))(((predictability)))(((convention)))Если программист может предсказать, как работает ваш интерфейс, ему не придётся часто отвлекаться и смотреть подсказку по его использованию. Постарайтесь следовать общепринятым соглашениям. Если есть модуль или часть языка JavaScript, которая делает что-то похожее на то, что вы пытаетесь реализовать – будет неплохо, если ваш интерфейс будет напоминать существующий. Таким образом, он будет привычен для людей, знакомых с существующим интерфейсом.
 
-(((cleverness)))Another area where predictability is important is the
-actual _behavior_ of your code. It can be tempting to make an
-unnecessarily clever interface with the justification that it's more
-convenient to use. For example, you could accept all kinds of
-different types and combinations of arguments and do the “right
-thing” for all of them. Or you could provide dozens of specialized
-convenience functions that provide slightly different flavors of your
-module's functionality. These might make code that builds on your
-interface slightly shorter, but they will also make it much harder for
-people to build a clear ((mental model)) of the module's behavior.
+(((cleverness)))В _поведении_ вашего кода предсказуемость также важна. Вас может постичь искушение сделать интерфейс слишком заумным якобы потому, что его удобнее использовать. К примеру, вы можете принимать любые виды типов и комбинаций аргументов и проделывать с ними “то, что надо”. Или предоставлять десятки специализированных функций, которые предлагают незначительно отличающуюся функциональность. Это может сделать код, опирающийся на ваш интерфейс, немного короче, зато затруднить людям, работающим с ним, строить чёткую ((мысленную модель)) работы вашего модуля.
 
-=== Composability ===
+=== Компонуемость ===
 
-(((composability)))In your interfaces, try to use the simplest ((data
-structure))s possible and make functions do a single, clear thing.
-Whenever practical, make them ((pure function))s (see
-link:03_functions.html#pure[Chapter 3]).
+(((composability)))Старайтесь использовать в интерфейсах настолько простые ((структуры данных)), насколько это возможно. Делайте так, чтобы функции выполняли простые и понятные вещи. Если это применимо, делайте ((функции чистыми)) (см. link:03_functions.html#pure[главу 3]).
 
-(((array-like object)))For example, it is not uncommon for modules to
-provide their own array-like collection objects, with their own
-interface for counting and extracting elements. Such objects won't
-have `map` or `forEach` methods, and any existing function that
-expects a real array won't be able to work with them. This is an
-example of poor __composability__—the module cannot be easily composed
-with other code.
+(((array-like object)))К примеру, частенько модули предлагают свою версию массивоподобных коллекций объектов со своим интерфейсом для подсчёта и извлечения элементов. У таких объектов нет методов `map` или `forEach`, и никакая функция, ожидающая настоящий массив, не сможет с ними работать. Это пример плохой _компонуемости_ – модуль нельзя легко скомпоновать с другим кодом.
 
-(((encapsulation)))(((spell-check example)))One example would be a
-module for spell-checking text, which we might need when we want to
-write a text editor. The spell-checker could be made to operate
-directly on whichever complicated ((data structure))s the editor uses
-and directly call internal functions in the editor to have the user
-choose between spelling suggestions. If we go that way, the module
-cannot be used with any other programs. On the other hand, if we
-define the spell-checking interface so that you can pass it a simple
-string and it will return the position in the string where it found a
-possible misspelling, along with an array of suggested corrections,
-then we have an interface that could also be composed with other
-systems because strings and arrays are always available in
-JavaScript.
+(((encapsulation)))(((spell-check example)))Примером может служить модуль для орфографической проверки текста, который может пригодиться в текстовом редакторе. Проверочный модуль можно сделать таким, чтобы он работал с любыми сложными ((структурами данных)), используемыми самим редактором, и вызывал внутренние функции редактора для предоставления пользователю выбора вариантов написания. Если вы поступите таким образом, модуль нельзя будет использовать с другими программами. С другой стороны, если мы определим интерфейс модуля проверки, который принимает простую строку и возвращает позицию, на которой в строке есть возможная ошибка, а впридачу – массив предлагаемых поправок, тогда у нас будет интерфейс, который можно скомпоновать с другими системами, потому что строки и массивы всегда доступны в JavaScript.
 
-=== Layered interfaces ===
+=== Многослойные интерфейсы ===
 
-(((simplicity)))(((complexity)))(((layering)))(((interface
-design)))When designing an interface for a complex piece of
-functionality—sending email, for example—you often run into a dilemma.
-On the one hand, you do not want to overload the user of your
-interface with details. They shouldn't have to study your interface
-for 20 minutes before they can send an email. On the other hand, you
-do not want to hide all the details either—when people need to do
-complicated things with your module, they should be able to.
+(((simplicity)))(((complexity)))(((layering)))(((interface design)))Разрабатывая интерфейс для сложной системы (к примеру, отправка email), часто приходишь к дилемме. С одной стороны, не нужно перегружать пользователя интерфейса деталями. Не надо заставлять их изучать его 20 минут перед тем, как они смогут отправить email. С другой стороны, не хочется и прятать все детали – когда людям надо сделать что-то сложное при помощи вашего модуля, у них должна быть такая возможность.
 
-Often the solution is to provide two interfaces: a detailed
-_low-level_ one for complex situations and a simple _high-level_ one
-for routine use. The second can usually be built easily using the
-tools provided by the first. In the email module, the high-level
-interface could just be a function that takes a message, a sender
-address, and a receiver address and then sends the email. The low-level
-interface would allow full control over email headers, attachments,
-HTML mail, and so on.
+Часто приходится предлагать два интерфейса: детализированный _низкоуровневый_ для сложных ситуаций, и простой _высокоуровневый_ для обычного использования. Второй можно построить на основе первого. В модуле для отправки email высокоуровневый интерфейс может быть просто функцией, которая принимает сообщение, адрес получателя и отправителя, и отправляет письмо. Низкоуровневый должен давать доступ к заголовкам, приложенным файлам, HTML письмам и т.д.
 
-== Summary ==
+== Итог ==
 
-Modules provide structure to bigger programs by separating the code
-into different files and namespaces. Giving these modules well-defined
-interfaces makes them easier to use and reuse
-and makes it possible to continue using them as the module
-itself evolves.
+Модули позволяют структурировать большие программы, разделяя код по разным файлам и пространствам имён. Если обеспечить их хорошо разработанными интерфейсами, их будет просто использовать, применять в других проектах и продолжать использовать при развитии и эволюции самого проекта.
 
-Though the JavaScript language is characteristically unhelpful
-when it comes to modules, the flexible functions and objects it
-provides make it possible to define rather nice module systems.
-Function scopes can be used as internal namespaces for the module, and
-objects can be used to store sets of exported values.
+Хотя JavaScript совершенно не помогает делать модули, его гибкие функции и объекты позволяют сделать достаточно неплохую систему модулей. Область видимости функций используется как внутреннее пространство имён модуля, а объекты используются для хранения наборов переменных.
 
-There are two popular, well-defined approaches to such modules. One is
-called _CommonJS Modules_ and revolves around a `require` function
-that fetches a module by name and returns its interface. The other is
-called _AMD_ and uses a `define` function that takes an array of
-module names and a function and, after loading the modules, runs the
-function with their interfaces as arguments.
+Есть два популярных подхода к использованию модулей. Один – _CommonJS Modules_, построенный на функции `require`, которая вызывает модули по имени и возвращает их интерфейс. Другой – _AMD_, использующий функцию `define`, принимающую массив имён модулей и, после их загрузки, исполняющую функцию, аргументами которой являются их интерфейсы.
 
-== Exercises ==
+== Упражнения ==
 
-=== Month names ===
+=== Названия месяцев ===
 
-(((Date type)))(((weekday example)))(((month name (exercise))))Write a
-simple module similar to the `weekDay` module that can convert month
-numbers (zero-based, as in the `Date` type) to names and can convert names back
-to numbers. Give it its own namespace since it will need an internal
-array of month names, and use plain JavaScript, without any module
-loader system.
+(((Date type)))(((weekday example)))(((month name (exercise))))Напишите простой модуль типа `weekday`, преобразующий номера месяцев (начиная с нуля) в названия и обратно. Выделите ему собственное пространство имён, т.к. ему потребуется внутренний массив с названиями месяцев, и используйте чистый JavaScript, без системы загрузки модулей.
 
 ifdef::interactive_target[]
 
@@ -788,7 +425,7 @@ ifdef::interactive_target[]
 
 [source,javascript]
 ----
-// Your code here.
+// Ваш код.
 
 console.log(month.name(2));
 // → March
@@ -807,14 +444,9 @@ returned interface object is stored in the `month` variable.
 
 !!hint!!
 
-=== A return to electronic life ===
+=== Вернёмся к электронной жизни ===
 
-(((electronic life)))(((module)))Hoping that
-link:07_elife.html#elife[Chapter 7] is still somewhat fresh in your
-mind, think back to the system designed in that chapter and come up
-with a way to separate the code into modules. To refresh your memory,
-these are the functions and types defined in that chapter, in order of
-appearance:
+(((electronic life)))(((module)))Надеюсь, что link:07_elife.html#elife[глава 7] ещё не стёрлась из вашей памяти. Вернитесь к разработанной там системе и предложите способ разделения кода на модули. Чтобы освежить вам память – вот список функций и типов, по порядку появления:
 
 ----
 Vector
@@ -837,17 +469,9 @@ SmartPlantEater
 Tiger
 ----
 
-(((book analogy)))Don't exaggerate and create too many modules. A book
-that starts a new chapter for every page would probably get on your
-nerves, if only because of all the space wasted on titles. Similarly,
-having to open 10 files to read a tiny project isn't helpful. Aim for
-three to five modules.
+(((book analogy)))Не надо создавать слишком много модулей. Книга, в которой на каждой странице была бы новая глава, действовала бы вам на нервы (хотя бы потому, что всё место съедали бы заголовки). Не нужно делать десять файлов для одного мелкого проекта. Рассчитывайте на 3-5 модулей.
 
-(((encapsulation)))You can choose to have some functions become
-internal to their module and thus inaccessible to other modules.
-
-There is no single correct solution here. Module organization is
-largely a matter of ((taste)).
+(((encapsulation)))Некоторые функции можно сделать внутренними, недоступными из других модулей. Правильного варианта здесь не существует. Организация модулей – вопрос ((вкус))а.
 
 !!hint!!
 
@@ -897,19 +521,11 @@ modules.
 
 !!hint!!
 
-=== Circular dependencies ===
+=== Круговые зависимости ===
 
-(((dependency)))(((circular dependency)))(((require function)))A
-tricky subject in dependency management is circular dependencies,
-where module A depends on B, and B also depends on A. Many module
-systems simply forbid this. ((CommonJS)) modules allow a limited form:
-it works as long as the modules do not replace their default `exports`
-object with another value and start accessing each other's
-interface only after they finish loading.
+(((dependency)))(((circular dependency)))(((require function)))Запутанная тема в управлении зависимостями – круговые зависимости, когда модуль А зависит от Б, а Б зависит от А. Многие системы модулей это просто запрещают. Модули ((CommonJS)) допускают ограниченный вариант: это работает, пока модули не заменяют объект `exports`, существующий по-умолчанию, другим значением, и начинают использовать интерфейсы друг друга только после окончания загрузки.
 
-Can you think of a way in which support for this feature could be
-implemented? Look back to the definition of `require` and consider
-what the function would have to do to allow this.
+Можете ли вы придумать способ, который позволил бы воплотить систему поддержки таких зависимостей? Посмотрите на определение `require` и подумайте, что нужно сделать этой функции для этого.
 
 !!hint!!
 
