@@ -102,7 +102,7 @@ ejs_tex.zip: nostarch/book.tex $(foreach CHAP,$(CHAPTERS),nostarch/$(CHAP).tex) 
 	mv /tmp/ejs_tex.zip $@
 	rm -rf $(TMPDIR)
 
-book.epub: epub/titlepage.xhtml epub/toc.xhtml epub/hints.xhtml $(foreach CHAP,$(CHAPTERS),epub/$(CHAP).xhtml) \
+book.epub: epub/toc.xhtml epub/hints.xhtml $(foreach CHAP,$(CHAPTERS),epub/$(CHAP).xhtml) \
 	   epub/content.opf.src epub/style.css bin/add_images_to_epub.js
 	rm -f $@
 	grep '<img' epub/*.xhtml | sed -e 's/.*src="\([^"]*\)".*/\1/' | xargs -I{} cp --parents "{}" epub
