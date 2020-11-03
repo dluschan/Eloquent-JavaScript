@@ -4,7 +4,7 @@
 :load_files: ["code/chapter/07_elife.js", "code/animateworld.js"]
 :zip: html
 
-= Проект «Электронная жизнь» =
+= Проект: электронная жизнь =
 
 [chapterquote="true"]
 [quote, Эдсгер Дейкстра, Угрозы вычислительной науке]
