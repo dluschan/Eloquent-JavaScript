@@ -30,6 +30,8 @@ dir.forEach(function(file) {
     chapter.links = (zip ? [zip] : []).concat(extraLinks || []);
 
   var exerciseSection = text.indexOf("\n== Exercises ==\n");
+  if (exerciseSection == -1)
+      exerciseSection = text.indexOf("\n== Упражнения ==\n");
   var exerciseBlock = exerciseSection ? text.slice(exerciseSection) : "";
   var header = /\n=== (.*?) ===\n/g;
   var num = 1;
@@ -43,7 +45,7 @@ dir.forEach(function(file) {
       var sourceBlock = indef.match(/\[source,([^\]]*)\]\n----\n([^]+?)\n----/);
       if (!sourceBlock) continue;
       var type = sourceBlock[1].indexOf("html") > -1 ? "html" : "js";
-      var file = chapNum + "_" + num + "_" + match[1].toLowerCase().replace(/[^\-\s\w]/g, "").replace(/\s/g, "_") + "." + type;
+      var file = chapNum + "_" + num + "_" + match[1].toLowerCase().replace(/[^\-\s\p{L}]/gu, "").replace(/\s/g, "_") + "." + type;
       try {
         var solution = fs.readFileSync("code/solutions/" + file, "utf8");
         var extra = /^\s*<!doctype html>\s*(<base .*\n(<script src=.*\n)*)?/.exec(solution);
