@@ -2,11 +2,11 @@
   "name": "Eloquent-JavaScript",
   "license": "CC BY-NC 3.0",
   "version": "0.1.0",
-  "author": "Marijn Haverbeke <marijnh@gmail.com>",
-  "description": "Sources for the book Eloquent JavaScript",
+  "author": "Dmitry Luschan <dluschan@gmail.com>",
+  "description": "Исходные файлы русского перевода книги Выразительный JavaScript Марейна Хавербека",
   "repository": {
     "type": "git",
-    "url": "git://github.com/marijnh/Eloquent-JavaScript.git"
+    "url": "git://github.com/dluschan/Eloquent-JavaScript.git"
   },
   "dependencies": {
     "acorn": "^5.1.0",
