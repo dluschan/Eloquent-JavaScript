@@ -2,171 +2,92 @@
 :prev_link: 11_language
 :next_link: 13_dom
 
-= JavaScript and the Browser =
+= JavaScript и браузер =
 
 [chapterquote="true"]
-[quote,Douglas Crockford,The JavaScript Programming Language (video lecture)]
+[quote,Дуглас Крокфорд,Язык программирования JavaScript (видеолекция)]
 ____
-The browser is a really hostile programming environment.
+Браузер – крайне враждебная программная среда.
 ____
 
-(((Crockford+++,+++ Douglas)))(((JavaScript,history of)))(((World Wide
-Web)))The next part of this book will talk about web browsers. Without
-web ((browser))s, there would be no JavaScript. And even if there
-were, no one would ever have paid any attention to it.
+(((Crockford+++,+++ Douglas)))(((JavaScript,history of)))(((World Wide Web)))Следующая часть книги расскажет о веб-((браузер))ах. Без них не было бы JavaScript. А если бы и был, никто бы не обратил на него внимания.
 
-(((decentralization)))(((compatibility)))Web technology has, from the
-start, been decentralized, not just technically but also in the
-way it has evolved. Various browser vendors have added new
-functionality in ad hoc and sometimes poorly thought out ways, which
-then sometimes ended up being adopted by others and finally set down
-as a ((standard)).
+(((decentralization)))(((compatibility)))Технологии веба с самого начала были децентрализованными – не только технически, но и с точки зрения их эволюции. Различные разработчики браузеров добавляли новую функциональность «по случаю», непродуманно, и часто эта функциональность обретала поддержку в других браузерах и становилась ((стандарт))ом.
 
-This is both a blessing and a curse. On the one hand, it is empowering
-to not have a central party control a system but have it be improved
-by various parties working in loose ((collaboration)) (or,
-occasionally, open hostility). On the other hand, the haphazard way in
-which the Web was developed means that the resulting system is not
-exactly a shining example of internal ((consistency)). In fact, some
-parts of it are downright messy and confusing.
+Это и благословление и проклятие. С одной стороны, здорово не иметь контролирующего центра, чтобы технология развивалась различными сторонами, иногда ((сотрудничающими)), иногда конкурирующими. С другой – бессистемное развитие языка привело к тому, что результат не является ярким примером внутренней ((согласованности)). Некоторые части привносят путаницу и беспорядок.
 
-== Networks and the Internet ==
+== Сети и Интернет ==
 
-Computer ((network))s have been around since the 1950s. If you put
-cables between two or more computers and allow them to send data back
-and forth through these cables, you can do all kinds of wonderful
-things.
+Компьютерные ((сети)) появились в 1950-х. Если вы проложите кабель между двумя или несколькими компьютерами и разрешите им передавать данные, вы может делать много удивительных вещей. А если связь двух машин в одном здании позволяет делать много разного, то связь компьютеров по всей планете должна позволять ещё больше. Технология, позволяющая это сделать, была создана в 1980-х, и получившаяся сеть зовётся _((Интернет))ом_. И она оправдала ожидания.
 
-If connecting two machines in the same building allows us to do
-wonderful things, connecting machines all over the planet should be
-even better. The technology to start implementing this vision was
-developed in the 1980s, and the resulting network is called the
-_((Internet))_. It has lived up to its promise.
+Компьютер может использовать эту сеть, чтобы кидаться битами в другой компьютер. Чтобы ((общение)) вышло эффективным, оба компьютера должны знать, что эти биты означают. Значение любой заданной последовательности битов зависит от того, что пытаются ими выразить, и какой механизм ((кодирования)) используется.
 
-A computer can use this network to spew bits at another computer. For
-any effective ((communication)) to arise out of this bit-spewing, the
-computers at both ends must know what the bits are supposed to
-represent. The meaning of any given sequence of bits depends entirely
-on the kind of thing that it is trying to express and on the
-((encoding)) mechanism used.
+Стиль общения по ((сети)) описывает _сетевой ((протокол))_. Есть протоколы для отправки е-мейлов, для получения е-мейлов, для распространения файлов и даже для контроля над компьютерами, заражёнными вредоносным софтом.
 
-A _network ((protocol))_ describes a style of communication over a
-((network)). There are protocols for sending email, for fetching email,
-for sharing files, or even for controlling computers that happen to be
-infected by malicious software.
+К примеру, простой протокол ((чат))а может состоять из одного компьютера, отправляющего биты, представляющие текст “ЧАТ?” на другой, а второго отвечающего текстом “ОК!”, для подтверждения того, что он понял протокол. Дальше они могут перейти к отправке друг другу текстов, чтения полученных текстов и вывода их на экран.
 
-For example, a simple ((chat)) protocol might consist of one computer
-sending the bits that represent the text “CHAT?” to another machine
-and the other responding with “OK!” to confirm that it understands the
-protocol. They can then proceed to send each other strings of text,
-read the text sent by the other from the network, and display whatever
-they receive on their screens.
-
-(((layering)))(((stream)))(((ordering)))Most protocols are built on
-top of other protocols. Our example chat protocol treats the network
-as a streamlike device into which you can put bits and have them
-arrive at the correct destination in the correct order. Ensuring those
-things is already a rather difficult technical problem.
+(((layering)))(((stream)))(((ordering)))Большинство протоколов построено на основе других протоколов. Наш протокол чата из примера рассматривает сеть как потоковое устройство, в которое можно вводить биты и заказывать их приход на конкретный адрес в правильном порядке. А обеспечение этого процесса – само по себе является сложной задачей.
 
 indexsee:[Transmission Control Protocol,TCP]
-(((TCP)))The _Transmission Control Protocol_ (TCP) is a ((protocol)) that
-solves this problem. All Internet-connected devices “speak” it, and
-most communication on the ((Internet)) is built on top of it.
+(((TCP)))_Transmission Control Protocol_ (TCP) – ((протокол)), решающий эту задачу. Все устройства, подключённые к Интернету, “говорят” на нём, и большинство общения в ((Интернете)) построено на его основе.
 
-(((listening (TCP))))A TCP ((connection)) works as follows: one
-computer must be waiting, or _listening_, for other computers to start
-talking to it. To be able to listen for different kinds of
-communication at the same time on a single machine, each listener has
-a number (called a _((port))_) associated with it. Most ((protocol))s
-specify which port should be used by default. For example, when we
-want to send an email using the ((SMTP)) protocol, the machine through
-which we send it is expected to be listening on port 25.
+(((listening (TCP))))((Соединение)) по TCP работает так: один компьютер ждёт, или _слушает_, пока другие не начнут с ним говорить. Чтобы можно было слушать разные виды общения в одно и то же время, для каждого из них назначается номер (называемый _((порт))ом_). Большинство ((протокол))ов устанавливают порт, используемый по умолчанию. К примеру, если мы отправляем е-мейл по протоколу ((SMTP)), компьютер, через который мы его шлём, должен слушать порт 25.
 
-Another computer can then establish a ((connection)) by connecting to
-the target machine using the correct port number. If the target
-machine can be reached and is listening on that port, the connection
-is successfully created. The listening computer is called the
-_((server))_, and the connecting computer is called the _((client))_.
+Тогда другой компьютер может установить ((соединение)), связавшись с компьютером назначения по правильному порту. Если машина назначения доступна, и она слушает этот порт, соединение устанавливается. Слушающий компьютер зовётся _((сервер))ом_, а соединяющийся – _((клиент))ом_.
 
-Such a connection acts as a two-way ((pipe)) through which bits can
-flow—the machines on both ends can put data into it. Once the bits are
-successfully transmitted, they can be read out again by the machine on
-the other side. This is a convenient model. You could say that
-((TCP)) provides an ((abstraction)) of the network.
+Такое соединение работает как двусторонняя ((труба)), по которой текут биты – обе машины могут помещать в неё данные. Когда биты переданы, другая машина может их прочесть. Это удобная модель. Можно сказать, что ((TCP)) обеспечивает ((абстракцию)) сети.
 
 [[web]]
-== The Web ==
+== Веб ==
 
-The _((World Wide Web))_ (not to be confused with the ((Internet)) as
-a whole) is a set of ((protocol))s and formats that allow us to visit
-web pages in a browser. The “Web” part in the name refers to the fact
-that such pages can easily link to each other, thus connecting into a
-huge ((mesh)) that users can move through.
+_((World Wide Web))_, всемирная паутина (это не то же самое, что весь ((Интернет)) в целом) – набор ((протокол))ов и форматов, позволяющий нам посещать странички через браузер. Веб, “паутина” в названии обозначает, что страницы можно легко связать друг с другом, в результате чего образуется гигантская ((сеть))-паутина, по которой движутся пользователи.
 
 indexsee:[Hypertext Transfer Prototol,HTTP]
-(((HTTP)))To add content to the Web, all you need to do is connect a machine to
-the ((Internet)), and have it listen on port 80, using the
-_Hypertext Transfer Protocol_ (HTTP). This protocol allows other computers
-to request documents over the ((network)).
+(((HTTP)))Чтобы добавить в Веб содержимое, вам нужно соединить машину с ((Интернет))ом и заставить её слушать 80 порт, используя протокол передачи гипертекста, _Hypertext Transfer Protocol_ (HTTP). Он позволяет другим компьютерам запрашивать документы по ((сети)).
 
 indexsee:[Uniform Resource Locator,URL]
-(((URL)))Each ((document)) on the Web is named by a _Uniform Resource
-Locator_ (URL), which looks something like this:
+(((URL)))Каждый ((документ)) имеет имя в виде универсального локатора ресурсов, _Universal Resource Locator_ (URL), который выглядит примерно так:
 
 ----
   http://eloquentjavascript.net/12_browser.html
  |      |                      |               |
- protocol       server               path
+ протокол       сервер               путь
 ----
 
-(((HTTPS)))The first part tells us that this URL uses the HTTP
-((protocol)) (as opposed to, for example, encrypted HTTP, which would
-be _https://_). Then comes the part that identifies which ((server))
-we are requesting the document from. Last is a path string that
-identifies the specific document (or _((resource))_) we are interested
-in.
+(((HTTPS)))Первая часть говорит нам, что URL использует ((протокол)) HTTP (в отличие от, скажем, зашифрованного HTTP, который записывается как _https://_). Затем идёт часть, определяющая, с какого ((сервер))а мы запрашиваем документ. Последняя – строка пути, определяющая конкретный документ или _((ресурс))_.
 
+У каждой машины, присоединённой к Интернету, есть свой _((IP адрес))_, который выглядит как `37.187.37.82`. Его иногда можно использовать вместо имени сервера в ((URL)). Но цифры сложнее запоминать и печатать, чем имена – поэтому обычно вы регистрируете _((домен))ное имя_, которое указывает на конкретную машину (или набор машин). Я зарегистрировал _eloquentjavascript.net_, указывающий на IP-адрес машины, которую я контролирую, поэтому можно использовать этот адрес для предоставления веб-страниц.
 Each machine connected to the Internet gets a unique _((IP address))_,
-which looks something like `37.187.37.82`. You can use these directly
-as the server part of a ((URL)). But lists of more or less random
+which looks something like `37.187.37.82`. You can use these directly as the server part of a ((URL)). But lists of more or less random
 numbers are hard to remember and awkward to type, so you can instead
 register a _((domain)) name_ to point toward a specific machine or
 set of machines. I registered _eloquentjavascript.net_ to point at the
 IP address of a machine I control and can thus use that domain name
 to serve web pages.
 
-(((browser)))If you type the previous URL into your browser's ((address
-bar)), it will try to retrieve and display the ((document)) at that
-URL. First, your browser has to find out what address
-_eloquentjavascript.net_ refers to. Then, using the ((HTTP)) protocol,
-it makes a connection to the server at that address and asks for the
-resource _/12_browser.html_.
+(((browser)))Если вы введёте указанный URL в ((адресную строку)) браузера, он попробует запросить и показать ((документ)), находящийся по этому URL. Во-первых, браузеру надо выяснить, куда ссылается домен _eloquentjavascript.net_. Затем, используя протокол ((HTTP)), он соединяется с сервером по этому адресу, и спрашивает его ресурс по имени _/12_browser.html_.
 
-We will take a closer look at the HTTP protocol in
-link:17_http.html#http[Chapter 17].
+В link:17_http.html#http[главе 17] мы подробнее рассмотрим протокол HTTP.
 
 == HTML ==
 
 indexsee:[Hypertext Markup Language,HTML]
-(((HTML)))HTML, which stands for _Hypertext Markup Language_, is the
-document format used for web pages. An HTML document contains
-((text)), as well as _((tag))s_ that give structure to the text,
-describing things such as links, paragraphs, and headings.
+(((HTML)))HTML, или язык разметки гипертекста, _Hypertext Markup Language_ – формат документа, использующийся для веб-страниц. HTML содержит ((текст)) и _((тег))и_, придающие тексту структуру, описывающие такие вещи, как ссылки, параграфы и заголовки.
 
-A simple HTML document looks like this:
+Простой HTML документ может выглядеть так:
 
 [source,text/html]
 ----
 <!doctype html>
 <html>
   <head>
-    <title>My home page</title>
+    <title>Моя домашняя страничка</title>
   </head>
   <body>
-    <h1>My home page</h1>
-    <p>Hello, I am Marijn and this is my home page.</p>
-    <p>I also wrote a book! Read it
-      <a href="http://eloquentjavascript.net">here</a>.</p>
+    <h1>Моя домашняя страничка</h1>
+    <p>Привет, я Марейн и это моя домашняя страничка.</p>
+    <p>А ещё я книжку написал! Читайте её
+      <a href="http://eloquentjavascript.net">здесь</a>.</p>
   </body>
 </html>
 ----
@@ -179,218 +100,96 @@ image::img/home-page.png[alt="My home page",width="6.3cm"]
 
 endif::book_target[]
 
-(((angle brackets)))The tags, wrapped in angle brackets (`<`
-and `>`), provide information about the ((structure)) of the
-document. The other ((text)) is just plain text.
+(((angle brackets)))Теги, окружённые угловыми скобками `<` и `>`, описывают информацию о ((структуре)) документа. Всё остальное – просто ((текст)).
 
-(((doctype)))(((version)))The document starts with `<!doctype html>`,
-which tells the browser to interpret it as _modern_ HTML, as opposed
-to various dialects that were in use in the past.
+(((doctype)))(((version)))Документ начинается с `<!doctype html>`, и это говорит браузеру, что его надо интерпретировать как _современный_ HTML, в отличие от разных диалектов прошлого.
 
-(((head (HTML tag))))(((body (HTML tag))))(((title (HTML tag))))(((h1
-(HTML tag))))(((p (HTML tag))))HTML documents have a head and a body.
-The head contains information _about_ the document, and the body
-contains the document itself. In this case, we first declared that the
-title of this document is “My home page” and then gave a document
-containing a heading (`<h1>`, meaning “heading 1”—++<h2>++ to `<h6>`
-produce more minor headings) and two ((paragraph))s (`<p>`).
+(((head (HTML tag))))(((body (HTML tag))))(((title (HTML tag))))(((h1 (HTML tag))))(((p (HTML tag))))У HTML документов есть заголовок и тело. Заголовок содержит информацию _о_ документе, а тело – сам документ. В нашем случае мы объявили, что название страницы будет “Моя домашняя страничка”, затем описали документ, содержащий заголовок (`<h1>` означает “heading 1”, т.е. “заголовок 1”, а теги с `<h2>` по `<h6>` представляют заголовки меньших размеров) и два ((параграф))а (`<p>`).
 
-(((href attribute)))(((a (HTML tag))))Tags come in several forms. An
-((element)), such as the body, a paragraph, or a link, is started by
-an _((opening tag))_ like `<p>` and ended by a _((closing tag))_ like
-`</p>`. Some opening tags, such as the one for the ((link)) (`<a>`),
-contain extra information in the form of `name="value"` pairs. These
-are called _((attribute))s_. In this case, the destination of the link
-is indicated with `href="http://eloquentjavascript.net"`, where `href`
-stands for “hypertext reference”.
+(((href attribute)))(((a (HTML tag))))У тегов может быть несколько форм. ((Элемент)) вроде тела, параграфа и ссылки начинается _((открывающим тегом))_, например, `<p>` и заканчивается _((закрывающим))_, например, `</p>`. Некоторые открывающие теги, типа ((ссылки)) `<a>`, содержат дополнительную информацию в виде пар `имя="значение"`. Она называется _((атрибут))ами_. В нашем случае адрес ссылки задан как `href="http://eloquentjavascript.net"`, где `href` означает “hypertext reference”, т.е. “гипертекстовая ссылка”.
 
-(((src attribute)))(((self-closing tag)))(((img (HTML tag))))Some
-kinds of ((tag))s do not enclose anything and thus do not need to be
-closed. An example of this would be `<img
-src="http://example.com/image.jpg">`, which will display the ((image))
-found at the given source URL.
+(((src attribute)))(((self-closing tag)))(((img (HTML tag))))Некоторые ((тег))и ничего не окружают, и их не надо закрывать. Пример – тег картинки `<img src="http://example.com/image.jpg">`, который показывает ((картинку)), находящуюся по заданному адресу URL.
 
-(((escaping,in HTML)))To be able to include ((angle brackets)) in
-the text of a document, even though they have a special meaning in
-HTML, yet another form of special notation has to be introduced. A
-plain opening angle bracket is written as `&lt;` (“less than”), and
-a closing bracket is written as `&gt;` (“greater than”). In HTML, an ampersand
-(`&`) character followed by a word and a semicolon (`;`) is called an
-_((entity))_, and will be replaced by the character it encodes.
+(((escaping,in HTML)))Чтобы включать в текст документа ((угловые скобки)), нужно пользоваться специальной записью, так как в HTML они имеют особое значение. Открывающая скобка (она же знак «меньше») записывается как `&lt;` («less than», т.е. «меньше, чем»), закрывающая — `&gt;` (“greater that”, т.е. «больше, чем»). В HTML амперсанд `&`, за которым идёт слово и точка с запятой, зовётся _((сущность))ю_ и заменяется символом, который кодируется этой последовательностью.
 
-(((backslash character)))(((ampersand character)))(((double-quote
-character)))This is analogous to the way backslashes are used in
-JavaScript strings. Since this mechanism gives ampersand characters a
-special meaning, too, those need to be escaped as `&amp;`. Inside an
-attribute, which is wrapped in double quotes, `&quot;` can be used to
-insert an actual quote character.
+(((backslash character)))(((ampersand character)))(((double-quote character)))Это похоже на обратные слэши, используемые в строках JavaScript. Из-за специального значения амперсанда его самого в текст можно включать в виде `&amp;`. В атрибуте, заключаемом в двойные кавычки, символ кавычек записывается как `&quot;`.
 
-(((error tolerance)))(((parsing)))HTML is parsed in a remarkably
-error-tolerant way. When tags that should be there are missing, the
-browser reconstructs them. The way in which this is done has been
-standardized, and you can rely on all modern browsers to do it in the
-same way.
+(((error tolerance)))(((parsing)))HTML разбирается парсером довольно либерально по отношению к возможным ошибкам. Если какие-то теги пропущены, браузер их воссоздаёт. Как именно это происходит, записано в стандартах, поэтому можно ожидать, что все современные браузеры будут делать это одинаково.
 
-The following document will be treated just like the one shown previously:
+Следующий документ будет обработан так же, как и предыдущий:
 
 [source,text/html]
 ----
 <!doctype html>
 
-<title>My home page</title>
+<title>Моя домашняя страничка</title>
 
-<h1>My home page</h1>
-<p>Hello, I am Marijn and this is my home page.
-<p>I also wrote a book! Read it
-  <a href=http://eloquentjavascript.net>here</a>.
+<h1>Моя домашняя страничка</h1>
+<p>Привет, я Марейн и это моя домашняя страничка.
+<p>А ещё я книжку написал! Читайте её
+  <a href=http://eloquentjavascript.net>здесь</a>.
 ----
 
-(((title (HTML tag))))(((head (HTML tag))))(((body (HTML
-tag))))(((html (HTML tag))))The `<html>`, `<head>`, and `<body>` tags
-are gone completely. The browser knows that `<title>` belongs in a
-head, and that `<h1>` in a body. Furthermore, I am no longer explicitly
-closing the paragraphs since opening a new paragraph or ending the
-document will close them implicitly. The quotes around the link target
-are also gone.
+(((title (HTML tag))))(((head (HTML tag))))(((body (HTML tag))))(((html (HTML tag))))Отсутствуют теги `<html>`, `<head>` и `<body>`. Браузер знает, что `<title>` должен быть в `<head>`, а `<h1>` — в `<body>`. Кроме того, параграфы не закрыты, поскольку открытие нового параграфа или конец документа означают их принудительное закрытие. Также адрес не заключён в кавычки.
 
-This book will usually omit the `<html>`, `<head>`, and `<body>` tags
-from examples to keep them short and free of clutter. But I _will_
-close tags and include quotes around attributes.
+В этой книге мы опустим теги `<html>`, `<head>` и `<body>` для краткости. Но я _буду_ закрывать теги, и заключать атрибуты в кавычки.
 
-(((browser)))I will also usually omit the ((doctype)). This is not to
-be taken as an encouragement to omit doctype declarations. Browsers
-will often do ridiculous things when you forget them. You should
-consider doctypes implicitly present in examples, even when they are
-not actually shown in the text.
+(((browser)))Также обычно я буду опускать ((doctype)). Я не советую делать это вам – браузеры иногда могут творить странные вещи, когда вы их опускаете. Считайте, что они присутствуют в примерах по умолчанию.
 
 [[script_tag]]
-== HTML and JavaScript ==
+== HTML и JavaScript ==
 
-(((JavaScript,in HTML)))(((script (HTML tag))))In the context of this
-book, the most important ((HTML)) tag is `<script>`. This tag allows
-us to include a piece of JavaScript in a document.
+(((JavaScript,in HTML)))(((script (HTML tag))))В контексте нашей книги самый главный тег ((HTML)) — `<script>`. Он позволяет включать в документ программу на JavaScript.
 
 [source,text/html]
 ----
-<h1>Testing alert</h1>
-<script>alert("hello!");</script>
+<h1>Внимание, тест.</h1>
+<script>alert("Привет!");</script>
 ----
 
-(((alert function)))(((timeline)))Such a script will run as soon as
-its `<script>` tag is encountered as the browser reads the HTML. The
-page shown earlier will pop up an `alert` dialog when opened.
+(((alert function)))(((timeline)))Такой скрипт запустится сразу, как только браузер встретит тег `<script>` при разборе HTML. На странице появится диалог-предупреждение.
 
-(((src attribute)))Including large programs directly in HTML documents
-is often impractical. The `<script>` tag can be given an `src`
-attribute in order to fetch a script file (a text file containing a
-JavaScript program) from a URL.
+(((src attribute)))Включать большие программы в HTML непрактично. У тега `<script>` есть атрибут `src`, чтобы запрашивать файл со скриптом (текст, содержащий программу на JavaScript) с адреса URL.
 
 [source,text/html]
 ----
-<h1>Testing alert</h1>
+<h1>Внимание, тест.</h1>
 <script src="code/hello.js"></script>
 ----
 
-The _code/hello.js_ file included here contains the same simple program,
-`alert("hello!")`. When an HTML page references other URLs as part of
-itself, for example an image file or a script—web browsers will
-retrieve them immediately and include them in the page.
+В файле _code/hello.js_ содержится та же простая программа `alert('Привет!');`. Когда страница ссылается на другой URL и включает его в себя, браузер подгружает этот файл и включает их в страницу.
 
-(((script (HTML tag))))(((closing tag)))A script tag must always be
-closed with `</script>`, even if it refers to a script file and
-doesn't contain any code. If you forget this, the rest of the page
-will be interpreted as part of the script.
+(((script (HTML tag))))(((closing tag)))Тег `script` всегда надо закрывать при помощи `</script>`, даже если он не содержит кода и ссылается на файл скрипта. Если вы забудете это сделать, оставшаяся часть страницы будет обработана как скрипт.
 
-(((button (HTML tag))))(((onclick attribute)))Some attributes can also
-contain a JavaScript program. The `<button>` tag shown next (which shows up
-as a button) has an `onclick` attribute, whose content will be run
-whenever the button is clicked.
+(((button (HTML tag))))(((onclick attribute)))Некоторые атрибуты тоже могут содержать программу JavaScript. У тега `<button>` (на странице он выглядит как кнопка) есть атрибут `onClick`, и его содержимое будет запущено, когда по кнопке щёлкают мышкой.
 
 [source,text/html]
 ----
-<button onclick="alert('Boom!');">DO NOT PRESS</button>
+<button onclick="alert('Boom!');">НЕ ЖМИ</button>
 ----
 
-(((single-quote character)))(((escaping,in HTML)))Note that I had to
-use single quotes for the string in the `onclick` attribute because
-double quotes are already used to quote the whole attribute. I could
-also have used `&quot;`, but that'd make the program harder to read.
+(((single-quote character)))(((escaping,in HTML)))Заметьте, что я использовал одинарные кавычки для строки в атрибуте `onclick`, поскольку двойные кавычки уже используются в самом атрибуте. Можно было бы использовать `&quot`;, но это бы затруднило чтение.
 
-== In the sandbox ==
+== Песочница ==
 
-(((malicious script)))(((World Wide
-Web)))(((browser)))(((website)))(((security)))Running programs
-downloaded from the ((Internet)) is potentially dangerous. You do not
-know much about the people behind most sites you visit, and they do
-not necessarily mean well. Running programs by people who do not mean
-well is how you get your computer infected by ((virus))es, your data
-stolen, and your accounts hacked.
+(((malicious script)))(((World Wide Web)))(((browser)))(((website)))(((security)))Запуск скачанных из ((Интернет))а программ небезопасен. Вы не знаете ничего о тех людях, которые делали посещаемые вами сайты, и они не всегда доброжелательны. Запуская программы злых людей, вы можете заразить компьютер ((вирус))ами, потерять свои данные или дать доступ к своим аккаунтам третьим лицам.
 
-Yet the attraction of the Web is that you can surf it without
-necessarily ((trust))ing all the pages you visit. This is why browsers
-severely limit the things a JavaScript program may do: it can't look
-at the files on your computer or modify anything not related to the
-web page it was embedded in.
+Но привлекательность веба в том, что по нему можно сёрфить без обязательного ((доверия)) всем посещаемым страницам. Поэтому браузеры сильно ограничивают то, что может сделать программа JavaScript. Она не может открывать файлы на компьютере, или менять что-либо, не связанное со страницей, в которую она встроена.
 
-(((isolation)))Isolating a programming environment in this way is
-called _((sandbox))ing_, the idea being that the program is harmlessly
-playing in a sandbox. But you should imagine this particular kind of
-sandbox as having a cage of thick steel bars over it, which makes it
-somewhat different from your typical playground sandbox.
+(((isolation)))Изолированное таким образом окружение называется _((песочницей))_ – в том смысле, что программа безобидно играется в песочнице. Представляйте, однако, эту песочницу как клетку из толстых стальных прутьев.
 
-The hard part of sandboxing is allowing the programs enough room to be
-useful yet at the same time restricting them from doing anything
-dangerous. Lots of useful functionality, such as communicating with
-other servers or reading the content of the copy-paste ((clipboard)),
-can also be used to do problematic, ((privacy))-invading things.
+Сложность в создании песочницы – позволять программам делать достаточно много, чтобы они были полезными, при этом ограничивая их от совершения опасных действий. Много из того, что делает пользователь, например общение с другими серверами или чтение содержимого ((буфер))а обмена, можно использовать для нарушения ((приватности)).
 
-(((leak)))(((exploit)))(((security)))Every now and then, someone comes
-up with a new way to circumvent the limitations of a ((browser)) and
-do something harmful, ranging from leaking minor private information
-to taking over the whole machine that the browser runs on. The browser
-developers respond by fixing the hole, and all is well again—that is,
-until the next problem is discovered, and hopefully publicized, rather
-than secretly exploited by some government or ((mafia)).
+(((leak)))(((exploit)))(((security)))Время от времени кто-то придумывает способ обойти ограничения ((браузер))а и сделать что-то вредное, от утечки некоей приватной информации до полного контроля над компьютером, где запущен скрипт. Разработчики исправляют эту дырку в браузере, и снова всё хорошо – до появления следующей проблемы, которая, можно надеяться, будет опубликована, и не тайно использоваться правительством или ((мафией)).
 
-== Compatibility and the browser wars ==
+== Совместимость и браузерные войны ==
 
-(((Microsoft)))(((World Wide Web)))In the early stages of the
-Web, a browser called ((Mosaic)) dominated the market. After a few
-years, the balance had shifted to ((Netscape)), which was then, in
-turn, largely supplanted by Microsoft's ((Internet Explorer)). At any
-point where a single ((browser)) was dominant, that browser's vendor
-would feel entitled to unilaterally invent new features for the Web.
-Since most users used the same browser, ((website))s would simply
-start using those features—never mind the other browsers.
+(((Microsoft)))(((World Wide Web)))На ранних стадиях развития Веба браузер по имени ((Mosaic)) занимал большую часть рынка. Через несколько лет баланс сместился в сторону ((Netscape)), который затем был сильно потеснён браузером ((Internet Explorer)) от Microsoft. В любой момент превосходства одного из ((браузер))ов его разработчики позволяли себе в одностороннем порядке изобретать новые свойства Веба. Так как большинство людей использовали один и тот же браузер, ((сайт))ы просто начинали использовать эти свойства, не обращая внимания на остальные браузеры.
 
-This was the dark age of ((compatibility)), often called the
-_((browser wars))_. Web developers were left with not one unified Web
-but two or three incompatible platforms. To make things worse, the
-browsers in use around 2003 were all full of ((bug))s, and of course
-the bugs were different for each ((browser)). Life was hard for people
-writing web pages.
+Это были тёмные века ((совместимости)), которые иногда называли _((войнами браузеров))_. Веб-разработчики сталкивались с двумя или тремя несовместимыми платформами. Кроме того, браузеры около 2003 года были полны ошибок, причём у каждого они были свои. Жизнь людей, создававших веб-страницы, была тяжёлой.
 
-(((Apple)))(((Internet Explorer)))(((Mozilla)))Mozilla ((Firefox)), a
-not-for-profit offshoot of ((Netscape)), challenged Internet
-Explorer's hegemony in the late 2000s. Because ((Microsoft)) was not
-particularly interested in staying competitive at the time, Firefox
-took quite a chunk of market share away from it. Around the same
-time, ((Google)) introduced its ((Chrome)) browser, and Apple's
-((Safari)) browser gained popularity, leading to a situation where
-there were four major players, rather than one.
+(((Apple)))(((Internet Explorer)))(((Mozilla)))Mozilla ((Firefox)), некоммерческое ответвление ((Netscape)), бросил вызов гегемонии Internet Explorer в конце 2000-х. Так как ((Microsoft)) особо не стремилась к конкуренции, Firefox отобрал солидную часть рынка. Примерно в это время Google представил свой браузер ((Chrome)), а Apple – ((Safari)). Это привело к появлению четырёх основных игроков вместо одного.
 
-(((compatibility)))The new players had a more serious attitude toward
-((standards)) and better ((engineering)) practices, leading to less
-incompatibility and fewer ((bug))s. Microsoft, seeing its market share
-crumble, came around and adopted these attitudes. If you are starting
-to learn web development today, consider yourself lucky. The latest
-versions of the major browsers behave quite uniformly and have
-relatively few bugs.
+(((compatibility)))У новых игроков были более серьёзные намерения по отношению к ((стандарт))ам и больше ((инженерного)) опыта, что привело к лучшей совместимости и меньшему количеству ((баг))ов. Microsoft, видя сжатие своей части рынка, приняла эти стандарты. Если вы начинаете изучать веб-разработку сегодня – вам повезло. Последние версии основных браузеров работают одинаково и в них мало ошибок.
 
-(((World Wide Web)))That is not to say that the situation is perfect
-just yet. Some of the people using the Web are, for reasons of inertia
-or corporate policy, stuck with very old ((browser))s. Until those
-browsers die out entirely, writing websites that work for them will
-require a lot of arcane knowledge about their shortcomings and quirks.
-This book is not about those ((quirks)). Rather, it aims to present
-the modern, sane style of ((web programming)).
+(((World Wide Web)))Нельзя сказать, что ситуация уже идеальная. Некоторые люди в Вебе по причинам инерционности или корпоративных правил используют очень старые ((браузер))ы. Пока они не отомрут совсем, написание веб-страниц для них потребует мистических знаний об их недостатках и причудах. Эта книга не про ((причуды)) – она представляет современный, разумный стиль ((веб-программирования)).
