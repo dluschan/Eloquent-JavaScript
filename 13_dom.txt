@@ -3,26 +3,15 @@
 :next_link: 14_event
 :load_files: ["code/mountains.js", "code/chapter/13_dom.js"]
 
-= The Document Object Model =
+= Объектная модель документа =
 
-(((drawing)))(((parsing)))When you open a web page in your browser, the browser
-retrieves the page's ((HTML)) text and parses it, much like the way
-our parser from link:11_language.html#parsing[Chapter 11] parsed
-programs. The browser builds up a model of the document's
-((structure)) and then uses this model to draw the page on the screen.
+(((drawing)))(((parsing)))Когда вы открываете веб-страницу в браузере, он получает исходный текст ((HTML)) и разбирает (парсит) его примерно так, как наш парсер из link:11_language.html#parsing[главы 11] разбирал программу. Браузер строит модель ((структуры)) документа и использует её, чтобы нарисовать страницу на экране.
 
-(((live data structure)))This representation of the ((document))
-is one of the toys that a JavaScript program has
-available in its ((sandbox)). You can read from the model and also change it. It acts as a
-_live_ data structure: when it is modified, the page on the screen is
-updated to reflect the changes.
+(((live data structure)))Это представление ((документ))а и есть одна из игрушек, доступных в ((песочнице)) JavaScript. Вы можете читать её и изменять. Она изменяется в _реальном времени_ – как только вы её подправляете, страница на экране обновляется, отражая изменения.
 
-== Document structure ==
+== Структура документа ==
 
-You can imagine an ((HTML)) document as a nested set of ((box))es.
-Tags such as `<body>` and `</body>` enclose other ((tag))s, which in
-turn contain other tags or ((text)). Here's the example document from
-the link:12_browser.html#browser[previous chapter]:
+Можно представить ((HTML)) как набор вложенных ((коробок)). Теги вроде `<body>` и `</body>` включают в себя другие ((тег))и, которые в свою очередь включают теги, или ((текст)). Вот вам пример документа из link:12_browser.html#browser[предыдущей главы]:
 
 [sandbox="homepage"]
 [source,text/html]
@@ -30,154 +19,70 @@ the link:12_browser.html#browser[previous chapter]:
 <!doctype html>
 <html>
   <head>
-    <title>My home page</title>
+    <title>Моя домашняя страничка</title>
   </head>
   <body>
-    <h1>My home page</h1>
-    <p>Hello, I am Marijn and this is my home page.</p>
-    <p>I also wrote a book! Read it
-      <a href="http://eloquentjavascript.net">here</a>.</p>
+    <h1>Моя домашняя страничка</h1>
+    <p>Привет, я Марийн и это моя домашняя страничка.</p>
+    <p>А ещё я книжку написал! Читайте её
+      <a href="http://eloquentjavascript.net">здесь</a>.</p>
   </body>
 </html>
 ----
 
-This page has the following structure:
+У этой страницы следующая структура:
 
 image::img/html-boxes.svg[alt="HTML document as nested boxes",width="7cm"]
 
 indexsee:[Document Object Model,DOM]
-The data structure the browser uses to represent the document follows
-this shape. For each box, there is an ((object)), which we can
-interact with to find out things such as what HTML tag it represents and
-which boxes and text it contains. This representation is called the
-_Document Object Model_, or ((DOM)) for short.
+Структура данных, использующаяся браузером для представления документа, отражает его форму. Для каждой коробки есть ((объект)), с которым мы можем взаимодействовать и узнавать про него разные данные – какой тег он представляет, какие коробки и текст содержит. Это представление называется _Document Object Model_ (объектная модель документа), или сокращённо ((DOM)).
 
-(((documentElement property)))(((head property)))(((body
-property)))(((html (HTML tag))))(((body (HTML tag))))(((head (HTML
-tag))))The global variable `document` gives us access to these
-objects. Its `documentElement` property refers to the object
-representing the `<html>` tag. It also provides the properties `head` and
-`body`, which hold the objects for those elements.
+(((documentElement property)))(((head property)))(((body property)))(((html (HTML tag))))(((body (HTML tag))))(((head (HTML tag))))Мы можем получить доступ к этим объектам через глобальную переменную ((document)). Её свойство `documentElement` ссылается на объект, представляющий тег `<html>`. Он также предоставляет свойства `head` и `body`, в которых содержатся объекты для соответствующих элементов.
 
-== Trees ==
+== Деревья ==
 
-(((nesting,of objects)))Think back to the ((syntax tree))s from
-link:11_language.html#parsing[Chapter 11] for a moment. Their
-structures are strikingly similar to the structure of a browser's
-document. Each _((node))_ may refer to other nodes, _children_, which
-in turn may have their own children. This shape is typical of nested
-structures where elements can contain sub-elements that are similar to
-themselves.
+(((nesting,of objects)))Вспомните ((синтаксические деревья)) из link:11_language.html#parsing[главы 11]. Их структура удивительно похожа на структуру документа браузера. Каждый _((узел))_ может ссылаться на другие узлы, _потомки_, которые, в свою очередь, могут иметь своих собственных потомков. Эта структура – типичный пример вложенных структур, где элементы содержат подэлементы, похожие на них самих.
 
-(((documentElement property)))We call a data structure a _((tree))_
-when it has a branching structure, has no ((cycle))s (a node may not
-contain itself, directly or indirectly), and has a single,
-well-defined “((root))”. In the case of the ((DOM)),
-`document.documentElement` serves as the root.
+(((documentElement property)))Мы зовём структуру данных _((дерево))м_, когда она разветвляется, не имеет ((цикл))ов (узел не может содержать сам себя явно или неявно), и имеет единственный ярко выраженный “((корень))”. В случае ((DOM)) в качестве корня выступает `document.documentElement`.
 
-(((sorting)))(((data structure)))(((syntax tree)))Trees come up a lot
-in computer science. In addition to representing recursive structures such as
-HTML documents or programs, they are often used to maintain
-sorted ((set))s of data because elements can usually be found or
-inserted more efficiently in a sorted tree than in a sorted flat
-array.
+(((sorting)))(((data structure)))(((syntax tree)))Деревья часто встречаются в вычислительной науке. В дополнение к представлению рекурсивных структур вроде документа HTML или программ, они часто используются для работы с сортированными ((набор))ами данных, потому что элементы обычно проще найти или вставлять в отсортированное дерево, чем в отсортированный одномерный массив.
 
-(((leaf node)))(((Egg language)))A typical tree has different kinds of
-((node))s. The syntax tree for link:11_language.html#language[the Egg
-language] had variables, values, and application nodes. Application
-nodes always have children, whereas variables and values are _leaves_, or
-nodes without children.
+(((leaf node)))(((Egg language)))У типичного дерева есть разные ((узлы)). У синтаксического дерева link:11_language.html#language[языка Egg] были переменные, значения и приложения. У приложений всегда были дочерние ветви, а переменные и значения были _листьями_, то есть узлами без дочерних ответвлений.
 
-(((body property)))The same goes for the DOM. Nodes for regular
-_((element))s_, which represent ((HTML)) tags, determine the structure
-of the document. These can have ((child node))s. An example of such a
-node is `document.body`. Some of these children can be ((leaf node))s,
-such as pieces of ((text)) or ((comment))s (comments are written between
-`<!--` and `-->` in HTML).
+(((body property)))То же и у DOM. Узлы для обычных _((элемент))ов_, представляющих теги ((HTML)), определяют структуру документа. У них могут быть ((дочерние узлы)). Пример такого узла — `document.body`. Некоторые из этих дочерних узлов могут оказаться ((лист))ьями – например, ((текст)) или ((комментарии)) (в HTML комментарии записываются между символами `<!--` и `-->`).
 
-(((text node)))(((ELEMENT_NODE code)))(((COMMENT_NODE
-code)))(((TEXT_NODE code)))(((nodeType property)))Each DOM node object
-has a `nodeType` property, which contains a numeric code that
-identifies the type of node. Regular elements have the value 1, which
-is also defined as the constant property `document.ELEMENT_NODE`. Text
-nodes, representing a section of text in the document, have the value
-3 (`document.TEXT_NODE`). Comments have the value 8
-(`document.COMMENT_NODE`).
+(((text node)))(((ELEMENT_NODE code)))(((COMMENT_NODE code)))(((TEXT_NODE code)))(((nodeType property)))У каждого узлового объекта DOM есть свойство `nodeType`, содержащее цифровой код, определяющий тип узла. У обычных элементов он равен 1, что также определено в виде свойства-константы `document.ELEMENT_NODE`. У текстовых узлов, представляющих отрывки текста, он равен 3 (`document.TEXT_NODE`). У комментариев — 8 (`document.COMMENT_NODE`).
 
-So another way to visualize our document ((tree)) is as follows:
+То есть, вот ещё один способ графически представить ((дерево)) документа:
 
 image::img/html-tree.svg[alt="HTML document as a tree",width="8cm"]
 
-The leaves are text nodes, and the arrows indicate parent-child
-relationships between nodes.
+Листья – текстовые узлы, а стрелки показывают взаимоотношения отец-ребёнок между узлами.
 
 [[standard]]
-== The standard ==
+== Стандарт ==
 
-(((programming language)))(((interface,design)))Using cryptic numeric
-codes to represent node types is not a very JavaScript-like thing to
-do. Later in this chapter, we'll see that other parts of the
-((DOM)) interface also feel cumbersome and alien. The reason for this
-is that the DOM wasn't designed for just JavaScript. Rather, it tries
-to define a language-neutral ((interface)) that can be used in other
-systems as well—not just HTML but also ((XML)), which is a generic
-((data format)) with an HTML-like syntax.
+(((programming language)))(((interface,design)))Использовать загадочные цифры для представления типа узла – это подход не в стиле JavaScript. Позже мы встретимся с другими частями интерфейса ((DOM)), которые тоже кажутся чуждыми и нескладными. Причина в том, что DOM разрабатывался не только для JavaScript. Он пытается определить ((интерфейс)), не зависящий от языка, который можно использовать и в других системах – не только в HTML, но и в ((XML)), который представляет из себя ((формат данных)) общего назначения с синтаксисом, напоминающим HTML.
 
-(((consistency)))(((integration)))This is unfortunate. Standards are
-often useful. But in this case, the advantage (cross-language
-consistency) isn't all that compelling. Having an interface that is
-properly integrated with the language you are using will save you more
-time than having a familiar interface across languages.
+(((consistency)))(((integration)))Получается неудобно. Хотя стандарты – и весьма полезная штука, в нашем случае преимущество независимости от языка не такое уж и полезное. Лучше иметь интерфейс, хорошо приспособленный к языку, который вы используете, чем интерфейс, который будет знаком при использовании разных языков.
 
-(((array-like object)))(((NodeList type)))As an example of such poor
-integration, consider the `childNodes` property that element nodes in
-the DOM have. This property holds an array-like object, with a
-`length` property and properties labeled by numbers to access the
-child nodes. But it is an instance of the `NodeList` type, not a real
-array, so it does not have methods such as `slice` and `forEach`.
+(((array-like object)))(((NodeList type)))Чтобы показать неудобную интеграцию с языком, рассмотрим свойство `childNodes`, которое есть у узлов DOM. В нём содержится объект, похожий на массив, со свойством `length`, и пронумерованные свойства для доступа к дочерним узлам. Но это – экземпляр типа `NodeList`, не настоящий массив, поэтому у него нет методов вроде `slice` или `forEach`.
 
-(((interface,design)))(((DOM,construction)))(((side effect)))Then
-there are issues that are simply poor design. For example, there is no
-way to create a new node and immediately add children or attributes to
-it. Instead, you have to first create it, then add the children one by
-one, and finally set the attributes one by one, using side effects. Code that
-interacts heavily with the DOM tends to get long, repetitive, and
-ugly.
+(((interface,design)))(((DOM,construction)))(((side effect)))Есть также проблемы, связанные с плохой продуманностью системы. К примеру, нельзя создать новый узел и сразу добавить к нему свойства или дочерние узлы. Сначала нужно его создать, затем добавить дочерние по одному, и в конце назначить свойства по одному, с использованием побочных эффектов. Код, плотно работающий с DOM, получается длинным, некрасивым и со множеством повторов.
 
-(((library)))But these flaws aren't fatal. Since JavaScript
-allows us to create our own ((abstraction))s, it is easy to write some
-((helper function))s that allow you to express the operations you are
-performing in a clearer and shorter way. In fact, many libraries
-intended for browser programming come with such tools.
+(((library)))Но эти проблемы не фатальные. JavaScript позволяет создавать ((абстракции)). Легко написать ((вспомогательные функции)), позволяющие выражать операции более понятно и коротко. Вообще, такого рода инструменты предоставляют много библиотек, направленных на программирование для браузера.
 
-== Moving through the tree ==
+== Обход дерева ==
 
-(((pointer)))DOM nodes contain a wealth of ((link))s to other nearby
-nodes. The following diagram illustrates these:
+(((pointer)))Узлы DOM содержат много ((ссылок)) на соседние. Это показано на диаграмме:
 
 image::img/html-links.svg[alt="Links between DOM nodes",width="6cm"]
 
-(((child node)))(((parentNode property)))(((childNodes
-property)))Although the diagram shows only one link of each type,
-every node has a `parentNode` property that points to its containing
-node. Likewise, every element node (node type 1) has a `childNodes`
-property that points to an ((array-like object)) holding its children.
+(((child node)))(((parentNode property)))(((childNodes property)))Хотя тут показано только по одной ссылке каждого типа, у каждого узла есть свойство `parentNode`, указывающего на его родительский узел. Также у каждого узла-элемента (тип 1) есть свойство `childNodes`, указывающее на ((массивоподобный объект)), содержащий его дочерние узлы.
 
-(((firstChild property)))(((lastChild property)))(((previousSibling
-property)))(((nextSibling property)))In theory, you could move
-anywhere in the tree using just these parent and child links. But
-JavaScript also gives you access to a number of additional convenience
-links. The `firstChild` and `lastChild` properties point to the first
-and last child elements or have the value `null` for nodes without
-children. Similarly, `previousSibling` and `nextSibling` point to
-adjacent nodes, which are nodes with the same parent that appear immediately
-before or after the node itself. For a first child, `previousSibling`
-will be null, and for a last child, `nextSibling` will be null.
+(((firstChild property)))(((lastChild property)))(((previousSibling property)))(((nextSibling property)))В теории можно пройти в любую часть дерева, используя только эти ссылки. Но JavaScript предоставляет нам много дополнительных вспомогательных ссылок. Свойства `firstChild` и `lastChild` показывают на первый и последний дочерний элементы, или содержат `null` у тех узлов, у которых нет дочерних. `previousSibling` и `nextSibling` указывают на соседние узлы – узлы того же родителя, что и текущего узла, но находящиеся в списке сразу до или после текущей. У первого узла свойство `previousSibling` будет `null`, а у последнего `nextSibling` будет `null`.
 
-(((talksAbout function)))(((recursion)))(((nesting,of objects)))When
-dealing with a nested data structure like this one, recursive functions
-are often useful. The following recursive function scans a document for ((text node))s
-containing a given string and returns `true` when it has found one:
+(((talksAbout function)))(((recursion)))(((nesting,of objects)))При работе с такими вложенными структурами пригождаются рекурсивные функции. Следующая ищет в документе ((текстовые узлы)), содержащие заданную строку, и возвращает `true`, когда находит:
 
 [[talksAbout]]
 [sandbox="homepage"]
@@ -195,33 +100,17 @@ function talksAbout(node, string) {
   }
 }
 
-console.log(talksAbout(document.body, "book"));
+console.log(talksAbout(document.body, "книг"));
 // → true
 ----
 
-(((nodeValue property)))The `nodeValue` property of a text node refers
-to the string of text that it represents.
+(((nodeValue property)))Свойства текстового узла `nodeValue` содержит строчку текста.
 
-== Finding elements ==
+== Поиск элементов ==
 
-(((DOM)))(((body property)))(((hard-coding)))Navigating these
-((link))s among parents, children, and siblings is often useful, as in
-the previous function, which runs through the whole document. But if we
-want to find a specific node in the document, reaching it by starting
-at `document.body` and blindly following a hard-coded path of links is
-a bad idea. Doing so bakes assumptions into our program about the
-precise structure of the document—a structure we might want to change
-later. Another complicating factor is that text nodes are created even
-for the ((whitespace)) between nodes. The example document's body tag
-does not have just three children (`<h1>` and two `<p>` elements) but
-actually has seven: those three, plus the spaces before, after, and
-between them.
+(((DOM)))(((body property)))(((hard-coding)))Часто бывает полезным ориентироваться по этим ((ссылка))м между родителями, детьми и родственными узлами и проходить по всему документу. Однако если нам нужен конкретный узел в документе, очень неудобно идти по нему, начиная с `document.body` и тупо перебирая жёстко заданный в коде путь. Поступая так, мы вносим в программу допущения о точной структуре документа – а её мы позже можем захотеть поменять. Другой усложняющий фактор – текстовые узлы создаются даже для ((пробел))ов между узлами. В документе из примера у тега `<body>` не три дочерних (`<h1>` и два `<p>`), а целых семь: эти три плюс пробелы до, после и между ними.
 
-(((searching)))(((href attribute)))(((getElementsByTagName method)))So
-if we want to get the `href` attribute of the link in that document,
-we don't want to say something like “Get the second child of the sixth
-child of the document body”. It'd be better if we could say “Get the
-first link in the document”. And we can.
+(((searching)))(((href attribute)))(((getElementsByTagName method)))Так что если нам нужен атрибут `href` из ссылки, мы не должны писать в программе что-то вроде: “второй ребёнок шестого ребёнка тела документа”. Лучше бы, если б мы могли сказать: “первая ссылка в документе”. И так можно сделать.
 
 [sandbox="homepage"]
 [source,javascript]
@@ -230,18 +119,13 @@ var link = document.body.getElementsByTagName("a")[0];
 console.log(link.href);
 ----
 
-(((child node)))All element nodes have a `getElementsByTagName`
-method, which collects all elements with the given tag name that are
-descendants (direct or indirect children) of the given node and
-returns them as an array-like object.
+(((child node)))У всех узлов-элементов есть метод `getElementsByTagName`, собирающий все элементы с данным тэгом, которые происходят (прямые или не прямые потомки) от этого узла, и возвращает его в виде массивоподобного объекта.
 
-(((id attribute)))(((getElementById method)))To find a specific
-_single_ node, you can give it an `id` attribute and use
-`document.getElementById` instead.
+(((id attribute)))(((getElementById method)))Чтобы найти _конкретный_ узел, можно задать ему атрибут `id` и использовать метод `document.getElementById`.
 
 [source,text/html]
 ----
-<p>My ostrich Gertrude:</p>
+<p>Мой страус Гертруда:</p>
 <p><img id="gertrude" src="img/ostrich.png"></p>
 
 <script>
@@ -250,29 +134,17 @@ _single_ node, you can give it an `id` attribute and use
 </script>
 ----
 
-(((getElementsByClassName method)))(((class attribute)))A third,
-similar method is `getElementsByClassName`, which, like
-`getElementsByTagName`, searches through the contents of an element
-node and retrieves all elements that have the given string in their
-`class` attribute.
+(((getElementsByClassName method)))(((class attribute)))Третий метод – `getElementsByClassName`, который, как и `getElementsByTagName`, ищет в содержимом узла-элемента и возвращает все элементы, содержащие в своём классе заданную строчку.
 
-== Changing the document ==
+== Меняем документ ==
 
-(((side effect)))(((removeChild method)))(((appendChild
-method)))(((insertBefore method)))(((DOM,construction)))Almost
-everything about the ((DOM)) data structure can be changed. Element
-nodes have a number of methods that can be used to change their
-content. The `removeChild` method removes the given child node from
-the document. To add a child, we can use `appendChild`, which puts it
-at the end of the list of children, or `insertBefore`, which inserts
-the node given as the first argument before the node given as the second
-argument.
+(((side effect)))(((removeChild method)))(((appendChild method)))(((insertBefore method)))(((DOM,construction)))Почти всё в структуре ((DOM)) можно менять. У узлов-элементов есть набор методов, которые используются для их изменения. Метод `removeChild` удаляет заданный дочерний узел. Для добавления узла можно использовать `appendChild`, который добавляет узел в конец списка, либо `insertBefore`, добавляющий узел, переданный первым аргументом, перед узлом, переданным вторым аргументом.
 
 [source,text/html]
 ----
-<p>One</p>
-<p>Two</p>
-<p>Three</p>
+<p>Один</p>
+<p>Два</p>
+<p>Три</p>
 
 <script>
   var paragraphs = document.body.getElementsByTagName("p");
@@ -280,37 +152,22 @@ argument.
 </script>
 ----
 
-A node can exist in the document in only one place. Thus, inserting
-paragraph “Three” in front of paragraph “One” will first remove it
-from the end of the document and then insert it at the front,
-resulting in “Three/One/Two”. All operations that insert a node
-somewhere will, as a ((side effect)), cause it to be removed from its
-current position (if it has one).
+Узел может существовать в документе только в одном месте. Поэтому вставляя параграф “Три” перед параграфом “Один” мы фактически удаляем его из конца списка и вставляем в начало, и получаем “Три/Один/Два”. Все операции по вставке узла, в качестве ((стороннего эффекта)), приведут к его исчезновению с текущей позиции (если у него таковая была).
 
-(((insertBefore method)))(((replaceChild method)))The `replaceChild`
-method is used to replace a child node with another one. It takes as
-arguments two nodes: a new node and the node to be replaced. The
-replaced node must be a child of the element the method is called on.
-Note that both `replaceChild` and `insertBefore` expect the _new_ node
-as their first argument.
+(((insertBefore method)))(((replaceChild method)))Метод `replaceChild` используется для замены одного дочернего узла другим. Он принимает два узла: новый, и тот, который надо заменить. Заменяемый узел должен быть дочерним узлом того элемента, чей метод мы вызываем. Как `replaceChild`, так и `insertBefore` в качестве первого аргумента ожидают получить _новый_ узел.
 
-== Creating nodes ==
+== Создание узлов ==
 
-(((alt attribute)))(((img (HTML tag))))In the following example, we
-want to write a script that replaces all ((image))s (`<img>` tags) in
-the document with the text held in their `alt` attributes, which
-specifies an alternative textual representation of the image.
+(((alt attribute)))(((img (HTML tag))))В следующем примере нам надо сделать скрипт, заменяющий все ((картинки)) (тег `<img>`) в документе текстом, содержащимся в их атрибуте `alt`, который задаёт альтернативное текстовое представление картинки.
 
-(((createTextNode method)))This involves not only removing the images
-but adding a new text node to replace them. For this, we use the
-`document.createTextNode` method.
+(((createTextNode method)))Для этого надо не только удалить картинки, но и добавить новые текстовые узлы им на замену. Для этого мы используем метод `document.createTextNode`.
 
 [source,text/html]
 ----
-<p>The <img src="img/cat.png" alt="Cat"> in the
-  <img src="img/hat.png" alt="Hat">.</p>
+<p>The <img src="img/cat.png" alt="Кошка"> в
+  <img src="img/hat.png" alt="сапожках">.</p>
 
-<p><button onclick="replaceImages()">Replace</button></p>
+<p><button onclick="replaceImages()">Заменить</button></p>
 
 <script>
   function replaceImages() {
@@ -326,49 +183,31 @@ but adding a new text node to replace them. For this, we use the
 </script>
 ----
 
-(((text node)))Given a string, `createTextNode` gives us a type 3 DOM
-node (a text node), which we can insert into the document to make it
-show up on the screen.
+(((text node)))Получая строку, `createTextNode` даёт нам тип 3 узла DOM (текстовый), который мы можем вставить в документ, чтобы он был показан на экране.
 
 (((live data structure)))(((getElementsByTagName
-method)))(((childNodes property)))The loop that goes over the images
-starts at the end of the list of nodes. This is necessary because the
-node list returned by a method like `getElementsByTagName` (or a
-property like `childNodes`) is __live__. That is, it is updated as the
-document changes. If we started from the front, removing the first
-image would cause the list to lose its first element so that the
-second time the loop repeats, where `i` is 1, it would stop because
-the length of the collection is now also 1.
+method)))(((childNodes property)))Цикл по картинкам начинается в конце списка узлов. Это сделано потому, что список узлов, возвращаемый методом `getElementsByTagName` (или свойством `childNodes`) постоянно _обновляется_ при изменениях документа. Если б мы начали с начала, удаление первой картинки привело бы к потере списком первого элемента, и во время второго прохода цикла, когда `i` равно 1, он бы остановился, потому что длина списка стала бы также равняться 1.
 
-(((slice method)))If you want a _solid_ collection of nodes, as
-opposed to a live one, you can convert the collection to a real array
-by calling the array `slice` method on it.
+(((slice method)))Если вам нужно работать с _фиксированным_ списком узлов вместо _живого_, можно преобразовать его в настоящий массив при помощи метода `slice`.
 
 [source,javascript]
 ----
-var arrayish = {0: "one", 1: "two", length: 2};
+var arrayish = {0: "один", 1: "два", length: 2};
 var real = Array.prototype.slice.call(arrayish, 0);
 real.forEach(function(elt) { console.log(elt); });
-// → one
-//   two
+// → один
+//   два
 ----
 
-(((createElement method)))To create regular ((element)) nodes (type
-1), you can use the `document.createElement` method. This method takes
-a tag name and returns a new empty node of the given type.
+(((createElement method)))Для создания узлов-((элемент))ов (тип 1) можно использовать `document.createElement`. Метод принимает имя тега и возвращает новый пустой узел заданного типа.
 
 [[elt]]
-(((Popper+++,+++ Karl)))(((DOM,construction)))(((elt function)))The
-following example defines a utility `elt`, which creates an element
-node and treats the rest of its arguments as children to that node.
-This function is then used to add a simple attribution to a quote.
+(((Popper+++,+++ Karl)))(((DOM,construction)))(((elt function)))Следующий пример определяет инструмент `elt`, создающий узел-элемент и использующий остальные аргументы в качестве его детей. Эта функция потом используется для добавления дополнительной информации к цитате.
 
 [source,text/html]
 ----
 <blockquote id="quote">
-  No book can ever be finished. While working on it we learn
-  just enough to find it immature the moment we turn away
-  from it.
+  Никакая книга не может быть закончена. Во время работы над ней мы узнаём достаточно для того, чтобы найти её незрелой сразу же после того, как мы отвлеклись от неё.
 </blockquote>
 
 <script>
@@ -385,9 +224,9 @@ This function is then used to add a simple attribution to a quote.
 
   document.getElementById("quote").appendChild(
     elt("footer", "—",
-        elt("strong", "Karl Popper"),
-        ", preface to the second editon of ",
-        elt("em", "The Open Society and Its Enemies"),
+        elt("strong", "Карл Поппер"),
+        ", предисловие ко второму изданию ",
+        elt("em", "Открытое общество и его враги"),
         ", 1950"));
 </script>
 ----
@@ -400,25 +239,16 @@ image::img/blockquote.png[alt="A blockquote with attribution",width="8cm"]
 
 endif::book_target[]
 
-== Attributes ==
+== Атрибуты ==
 
-(((href attribute)))Some element ((attribute))s, such as `href` for
-links, can be accessed through a ((property)) of the same name on the
-element's ((DOM)) object. This is the case for a limited set of
-commonly used standard attributes.
+(((href attribute)))К некоторым ((атрибут))ам элементов, типа `href` у ссылок, можно получить доступ через одноимённое ((свойство)) объекта. Это возможно для ограниченного числа часто используемых стандартных атрибутов.
 
-(((data attribute)))(((getAttribute method)))(((setAttribute
-method)))But HTML allows you to set any attribute you want on nodes.
-This can be useful because it allows you to store extra information in a
-document. If you make up your own attribute names, though, such
-attributes will not be present as a property on the element's node.
-Instead, you'll have to use the `getAttribute` and `setAttribute`
-methods to work with them.
+(((data attribute)))(((getAttribute method)))(((setAttribute method)))Но HTML позволяет назначать узлам любые атрибуты. Это полезно, т.к. позволяет вам хранить дополнительную информацию в документе. Если вы придумаете свои названия атрибутов, их не будет среди свойств узла-элемента. Вместо этого вам надо будет использовать методы `getAttribute` и `setAttribute` для работы с ними.
 
 [source,text/html]
 ----
-<p data-classified="secret">The launch code is 00000000.</p>
-<p data-classified="unclassified">I have two feet.</p>
+<p data-classified="secret">Код запуска 00000000.</p>
+<p data-classified="unclassified">У кошки четыре ноги.</p>
 
 <script>
   var paras = document.body.getElementsByTagName("p");
@@ -429,15 +259,9 @@ methods to work with them.
 </script>
 ----
 
-I recommended prefixing the names of such made-up attributes with
-`data-` to ensure they do not conflict with any other
-attributes.
+Рекомендую перед именами придуманных атрибутов ставить `data-`, чтобы быть уверенным, что они не конфликтуют с любыми другими.
 
-(((programming language)))(((syntax highlighting example)))As a simple
-example, we'll write a “syntax highlighter” that looks for `<pre>`
-tags (“preformatted”, used for code and similar plaintext) with a
-`data-language` attribute and crudely tries to highlight the
-((keyword))s for that language.
+(((programming language)))(((syntax highlighting example)))В качестве простого примера мы напишем “подсветку синтаксиса”, который ищет теги `<pre>` (“preformatted”, предварительно отформатированный – используется для кода и простого текста) с атрибутом `data-language` (язык) и довольно грубо пытается подсветить ((ключевые слова)) в языке.
 
 // include_code
 
@@ -446,7 +270,7 @@ tags (“preformatted”, used for code and similar plaintext) with a
 ----
 function highlightCode(node, keywords) {
   var text = node.textContent;
-  node.textContent = ""; // Clear the node
+  node.textContent = ""; // Очистим узел
 
   var match, pos = 0;
   while (match = keywords.exec(text)) {
@@ -462,24 +286,11 @@ function highlightCode(node, keywords) {
 }
 ----
 
-(((pre (HTML tag))))(((syntax highlighting example)))(((highlightCode
-function)))The function `highlightCode` takes a `<pre>` node and a
-((regular expression)) (with the “global” option turned on) that
-matches the keywords of the programming language that the element
-contains.
+(((pre (HTML tag))))(((syntax highlighting example)))(((highlightCode function)))Функция `highlightCode` принимает узел `<pre>` и ((регулярное выражение)) (с включённой настройкой “global”), совпадающую с ключевым словом языка программирования, которое содержит элемент.
 
-(((strong (HTML tag))))(((clearing)))(((textContent property)))The
-`textContent` property is used to get all the ((text)) in the node
-and is then set to an empty string, which has the effect of emptying
-the node. We loop over all matches of the keyword expression,
-appending the text _between_ them as regular text nodes, and the text
-matched (the keywords) as text nodes wrapped in `<strong>` (bold) elements.
+(((strong (HTML tag))))(((clearing)))(((textContent property)))Свойство `textContent` используется для получения всего ((текст))а узла, а затем устанавливается в пустую строку, что приводит к очищению узла. Мы в цикле проходим по всем вхождениям выражения `keyword`, добавляем _между_ ними текст в виде простых текстовых узлов, а совпавший текст (ключевые слова) добавляем, заключая их в элементы `<strong>` (жирный шрифт).
 
-(((data attribute)))(((getElementsByTagName method)))We can
-automatically highlight all programs on the page by looping over all
-the `<pre>` elements that have a `data-language` attribute and
-calling `highlightCode` on each one with the correct regular
-expression for the language.
+(((data attribute)))(((getElementsByTagName method)))Мы можем автоматически подсветить весь код страницы, перебирая в цикле все элементы `<pre>`, у которых есть атрибут `data-language`, и вызывая на каждом `highlightCodeс` правильной регуляркой.
 
 // include_code
 
@@ -487,7 +298,7 @@ expression for the language.
 [source,javascript]
 ----
 var languages = {
-  javascript: /\b(function|return|var)\b/g /* … etc */
+  javascript: /\b(function|return|var)\b/g /* … и т.д. */
 };
 
 function highlightAllCode() {
@@ -501,12 +312,12 @@ function highlightAllCode() {
 }
 ----
 
-(((syntax highlighting example)))Here is an example:
+(((syntax highlighting example)))Вот пример:
 
 [sandbox="highlight"]
 [source,text/html]
 ----
-<p>Here it is, the identity function:</p>
+<p>А вот и она, функция идентификации:</p>
 <pre data-language="javascript">
 function id(x) { return x; }
 </pre>
@@ -522,46 +333,20 @@ image::img/highlighted.png[alt="A highlighted piece of code",width="4.8cm"]
 
 endif::book_target[]
 
-(((getAttribute method)))(((setAttribute method)))(((className
-property)))(((class attribute)))There is one commonly used attribute,
-`class`, which is a ((reserved word)) in the JavaScript language. For
-historical reasons—some old JavaScript implementations could not
-handle property names that matched keywords or reserved words—the
-property used to access this attribute is called `className`. You can
-also access it under its real name, `"class"`, by using the
-`getAttribute` and `setAttribute` methods.
+(((getAttribute method)))(((setAttribute method)))(((className property)))(((class attribute)))Есть один часто используемый атрибут, `class`, имя которого является ((ключевым словом)) в JavaScript. По историческим причинам, когда старые реализации JavaScript не умели обращаться с именами свойств, совпадавшими с ключевыми словами, этот атрибут доступен через свойство под названием `className`. Вы также можете получить к нему доступ по его настоящему имени `"class"` через методы `getAttribute` и `setAttribute`.
 
-== Layout ==
+== Расположение элементов ==
 
-(((layout)))(((block element)))(((inline element)))(((p (HTML
-tag))))(((h1 (HTML tag))))(((a (HTML tag))))(((strong (HTML tag))))You
-might have noticed that different types of elements are laid out
-differently. Some, such as paragraphs (`<p>`) or headings (`<h1>`),
-take up the whole width of the document and are rendered on separate
-lines. These are called _block_ elements. Others, such as links
-(`<a>`) or the `<strong>` element used in the previous example, are
-rendered on the same line with their surrounding text. Such elements
-are called _inline_ elements.
+(((layout)))(((block element)))(((inline element)))(((p (HTML tag))))(((h1 (HTML tag))))(((a (HTML tag))))(((strong (HTML tag))))Вы могли заметить, что разные типы элементов располагаются по-разному. Некоторые, типа параграфов `<p>` и заголовков `<h1>` растягиваются на всю ширину документа и появляются на отдельных строках. Такие элементы называют _блочными_ (_block_). Другие, как ссылки `<a>` или акцентированный текст `<strong>` появляются на одной строчке с окружающим их текстом. Они называются _встроенными_ (_inline_).
 
-(((drawing)))For any given document, browsers are able to compute a
-layout, which gives each element a size and position based on its
-type and content. This layout is then used to actually draw the
-document.
+(((drawing)))Для любого документа браузеры могут вычислить расположение элементов (раскладку), в которой у каждого элемента будет размер и положение на основе его типа и содержимого. Затем эта раскладка используется для создания внешнего вида документа.
 
-(((border (CSS))))(((offsetWidth property)))(((offsetHeight
-property)))(((clientWidth property)))(((clientHeight
-property)))(((dimensions)))The size and position of an element can be
-accessed from JavaScript. The `offsetWidth` and `offsetHeight`
-properties give you the space the element takes up in _((pixel))s_. A
-pixel is the basic unit of measurement in the browser and typically
-corresponds to the smallest dot that your screen can display.
-Similarly, `clientWidth` and `clientHeight` give you the size of the
-space _inside_ the element, ignoring border width.
+(((border (CSS))))(((offsetWidth property)))(((offsetHeight property)))(((clientWidth property)))(((clientHeight property)))(((dimensions)))Размер и положение элемента можно узнать через JavaScript. Свойства `offsetWidth` и `offsetHeight` выдают размер в _((пикселях))_, занимаемый элементом. Пиксель – основная единица измерений в браузерах, и обычно соответствует размеру минимальной точки экрана. Сходным образом, `clientWidth` и `clientHeight` дают размер _внутренней_ части элемента, не считая бордюра (или, как говорят некоторые, поребрика).
 
 [source,text/html]
 ----
 <p style="border: 3px solid red">
-  I'm boxed in
+  Я в коробочке
 </p>
 
 <script>
@@ -581,29 +366,12 @@ endif::book_target[]
 
 
 [[boundingRect]]
-(((getBoundingClientRect method)))(((position)))(((pageXOffset
-property)))(((pageYOffset property)))The most effective way to find
-the precise position of an element on the screen is the
-`getBoundingClientRect` method. It returns an object with `top`,
-`bottom`, `left`, and `right` properties, indicating the pixel
-positions of the sides of the element relative to the top left of the
-screen. If you want them relative to the whole document, you must
-add the current scroll position, found under the global `pageXOffset`
-and `pageYOffset` variables.
+(((getBoundingClientRect method)))(((position)))(((pageXOffset property)))(((pageYOffset property)))Самый эффективный способ узнать точное расположение элемента на экране – метод `getBoundingClientRect`. Он возвращает объект со свойствами `top`, `bottom`, `left`, и `right` (сверху, снизу, слева и справа), которые содержат положение элемента относительно левого верхнего угла экрана в пикселях. Если вам надо получить эти данные относительно всего документа, вам надо прибавить текущую позицию прокрутки, которая содержится в глобальных переменных `pageXOffset` и `pageYOffset`.
 
-(((offsetHeight property)))(((getBoundingClientRect
-method)))(((drawing)))(((laziness)))(((performance)))(((efficiency)))Laying
-out a document can be quite a lot of work. In the interest of speed,
-browser engines do not immediately re-layout a document every time it
-is changed but rather wait as long as they can. When a JavaScript
-program that changed the document finishes running, the browser will
-have to compute a new layout in order to display the changed document
-on the screen. When a program _asks_ for the position or size of
-something by reading properties such as `offsetHeight` or calling
-`getBoundingClientRect`, providing correct information also requires
-computing a ((layout)).
+(((offsetHeight property)))(((getBoundingClientRect method)))(((drawing)))(((laziness)))(((performance)))(((efficiency)))Разбор документа – задача сложная. В целях быстродействия браузерные движки не перестраивают документ каждый раз после его изменения, а ждут так долго. как это возможно. Когда программа JavaScript, изменившая документ, заканчивает работу, браузеру надо будет просчитать новую раскладку страницы, чтобы вывести изменённый документ на экран. Когда программа _запрашивает_ позицию или размер чего-либо, читая свойства типа `offsetHeight` или вызывая `getBoundingClientRect`, для предоставления корректной информации тоже необходимо рассчитывать ((раскладку)).
 
-(((side effect)))(((optimization)))(((benchmark)))A program that
+(((side effect)))(((optimization)))(((benchmark)))Программа, которая периодически считывает раскладку DOM и изменяет DOM, заставляет браузер много раз пересчитывать раскладку, и в связи с этим будет работать медленно. В следующем примере есть две разные программы, которые строят линию из символов _X_ шириной в 2000 пикс, и измеряют время работы.
+A program that
 repeatedly alternates between reading DOM layout information and
 changing the DOM forces a lot of layouts to happen and will
 consequently run really slowly. The following code shows an example of
@@ -619,7 +387,7 @@ characters 2,000 pixels wide and measures the time each one takes.
 
 <script>
   function time(name, action) {
-    var start = Date.now(); // Current time in milliseconds
+    var start = Date.now(); // Текущее время в миллисекундах
     action();
     console.log(name, "took", Date.now() - start, "ms");
   }
@@ -629,7 +397,7 @@ characters 2,000 pixels wide and measures the time each one takes.
     while (target.offsetWidth < 2000)
       target.appendChild(document.createTextNode("X"));
   });
-  // → naive took 32 ms
+  // → тупо заняло 32 мс
 
   time("clever", function() {
     var target = document.getElementById("two");
@@ -638,29 +406,20 @@ characters 2,000 pixels wide and measures the time each one takes.
     for (var i = 5; i < total; i++)
       target.appendChild(document.createTextNode("X"));
   });
-  // → clever took 1 ms
+  // → умно заняло 1 мс
 </script>
 ----
 
-== Styling ==
+== Стили ==
 
-(((block element)))(((inline element)))(((style)))(((strong (HTML
-tag))))(((a (HTML tag))))(((underline)))We have seen that different
-HTML elements display different behavior. Some are displayed as
-blocks, others inline. Some add styling, such as `<strong>` making its
-content ((bold)) and `<a>` making it blue and underlining it.
+(((block element)))(((inline element)))(((style)))(((strong (HTML tag))))(((a (HTML tag))))(((underline)))Мы видели, что разные элементы HTML ведут себя по-разному. Некоторые показываются в виде блоков, другие встроенные. Некоторые добавляют визуальный стиль – например, `<strong>` делает ((жирным)) текст и `<a>` делает текст подчёркнутым и синим.
 
-(((img (HTML tag))))(((default behavior)))(((style attribute)))The way
-an `<img>` tag shows an image or an `<a>` tag causes a link to be
-followed when it is clicked is strongly tied to the element type. But
-the default styling associated with an element, such as the text color
-or underline, can be changed by us. Here is an example using the `style`
-property:
+(((img (HTML tag))))(((default behavior)))(((style attribute)))Внешний вид картинки в теге `<img>` или то, что ссылка в теге `<a>` при клике открывает новую страницу, связано с типом элемента. Но основные стили, связанные с элементом, вроде цвета текста или подчёркивания, могут быть нами изменены. Вот пример использования свойства `style` (стиль):
 
 [source,text/html]
 ----
-<p><a href=".">Normal link</a></p>
-<p><a href="." style="color: green">Green link</a></p>
+<p><a href=".">Обычная ссылка</a></p>
+<p><a href="." style="color: green">Зелёная ссылка</a></p>
 ----
 
 ifdef::book_target[]
@@ -671,29 +430,18 @@ image::img/colored-links.png[alt="A normal and a green link",width="2.2cm"]
 
 endif::book_target[]
 
-(((border (CSS))))(((color (CSS))))(((CSS)))(((colon character)))A
-style attribute may contain one or more _((declaration))s_, which are
-a property (such as `color`) followed by a colon and a value (such as
-`green`). When there is more than one declaration, they must be
-separated by ((semicolon))s, as in `"color: red; border: none"`.
+(((border (CSS))))(((color (CSS))))(((CSS)))(((colon character)))Атрибут `style` может содержать одно или несколько _((объявлений))_ свойств (например, `color`), за которым следует двоеточие и значение (например, `green`). В случае нескольких объявлений они разделяются ((точкой с запятой)): `"color: red; border: none"`.
 
-(((display (CSS))))(((layout)))There are a lot of aspects that can be
-influenced by styling. For example, the `display` property controls
-whether an element is displayed as a block or an inline element.
+(((display (CSS))))(((layout)))Много всякого можно изменить при помощи стилей. Например, свойство `display` контролирует, показывается ли элемент в блочном или встроенном виде.
 
 [source,text/html]
 ----
-This text is displayed <strong>inline</strong>,
-<strong style="display: block">as a block</strong>, and
-<strong style="display: none">not at all</strong>.
+Текст показан <strong>встроенным</strong>,
+<strong style="display: block">в виде блока</strong>, и
+<strong style="display: none">вообще не виден</strong>.
 ----
 
-(((hidden element)))The `block` tag will end up on its own line since
-((block element))s are not displayed inline with the text around them.
-The last tag is not displayed at all—`display: none` prevents an
-element from showing up on the screen. This is a way to hide elements.
-It is often preferable to removing them from the document
-entirely because it makes it easy to reveal them again at a later time.
+(((hidden element)))((Блочный элемент)) выводится отдельным блоком на собственной строке, а последний вообще не виден – `display: none` отключает показ элементов. Таким образом можно прятать элементы. Обычно это предпочтительно полному удалению их из документа, потому что их легче потом при необходимости снова показать.
 
 ifdef::book_target[]
 
@@ -701,17 +449,12 @@ image::img/display.png[alt="Different display styles",width="4cm"]
 
 endif::book_target[]
 
-(((color (CSS))))(((style attribute)))JavaScript code can directly
-manipulate the style of an element through the node's `style`
-property. This property holds an object that has properties for all
-possible style properties. The values of these properties are strings,
-which we can write to in order to change a particular aspect of the
-element's style.
+(((color (CSS))))(((style attribute)))Код JavaScript может напрямую действовать на стиль элемента через свойство узла `style`. В нём содержится объект, имеющий свойства для всех свойств стилей. Их значения – строки, в которые мы можем писать для смены какого-то аспекта стиля элемента.
 
 [source,text/html]
 ----
 <p id="para" style="color: purple">
-  Pretty text
+  Красотень
 </p>
 
 <script>
@@ -721,20 +464,12 @@ element's style.
 </script>
 ----
 
-(((camel case)))(((capitalization)))(((dash character)))(((font-family
-(CSS))))Some style property names contain dashes, such as `font-family`.
-Because such property names are awkward to work with in JavaScript
-(you'd have to say `style["font-family"]`), the property names in the
-`style` object for such properties have their dashes removed and the
-letters that follow them capitalized (`style.fontFamily`).
+(((camel case)))(((capitalization)))(((dash character)))(((font-family (CSS))))Некоторые имена свойств стилей содержат дефисы, например `font-family`. Так как с ними неудобно было бы работать в JavaScript (пришлось бы писать `style["font-family"]`), названия свойств в объекте стилей пишутся без дефиса, а вместо этого в них появляются прописные буквы: `style.fontFamily`.
 
-== Cascading styles ==
+== Каскадные стили ==
 
 indexsee:[Cascading Style Sheets,CSS]
-(((rule (CSS))))(((style (HTML tag))))The styling system for HTML is called ((CSS))
-for _Cascading Style Sheets_. A _((style sheet))_ is a set of
-rules for how to style elements in a document. It can be given
-inside a `<style>` tag.
+(((rule (CSS))))(((style (HTML tag))))Система стилей в HTML называется ((CSS)) (_Cascading Style Sheets_, _каскадные таблицы стилей_). _((Таблица стилей))_ – набор стилей в документе. Его можно писать внутри тега `<style>`.
 
 [source,text/html]
 ----
@@ -744,29 +479,14 @@ inside a `<style>` tag.
     color: gray;
   }
 </style>
-<p>Now <strong>strong text</strong> is italic and gray.</p>
+<p>Теперь <strong>текст тега strong</strong> наклонный и серый.</p>
 ----
 
-(((rule (CSS))))(((font-weight (CSS))))(((overlay)))The _((cascading))_ in the name
-refers to the fact that multiple such rules are combined to
-produce the final style for an element. In the previous example, the
-default styling for `<strong>` tags, which gives them `font-weight:
-bold`, is overlaid by the rule in the `<style>` tag, which adds
-`font-style` and `color`.
+(((rule (CSS))))(((font-weight (CSS))))(((overlay)))_((Каскадные))_ означает, что несколько правил комбинируются для получения окончательного стиля документа. В примере на стиль по умолчанию для `<strong>`, который делает текст жирным, накладывается правило из тега `<style>`, по которому добавляется `font-style` и `color`.
 
-(((style (HTML tag))))(((style attribute)))When multiple rules define
-a value for the same property, the most recently read rule gets a
-higher ((precedence)) and wins. So if the rule in the `<style>`
-tag included `font-weight: normal`, conflicting with the default
-`font-weight` rule, the text would be normal, _not_ bold. Styles in a
-`style` attribute applied directly to the node have the highest
-precedence and always win.
+(((style (HTML tag))))(((style attribute)))Когда значение свойства определяется несколькими правилами, ((приоритет)) остаётся у более поздних. Если бы стиль текста в `<style>` включал правило `font-weight: normal`, конфликтующее со стилем по умолчанию, то текст был бы обычный, а _не_ жирный. Стили, которые применяются к узлу через атрибут `style`, имеют наивысший приоритет.
 
-(((uniqueness)))(((class attribute)))(((id attribute)))It is possible
-to target things other than ((tag)) names in CSS rules. A rule for
-`.abc` applies to all elements with `"abc"` in their class attributes.
-A rule for `#xyz` applies to the element with an `id` attribute of
-`"xyz"` (which should be unique within the document).
+(((uniqueness)))(((class attribute)))(((id attribute)))В CSS возможно задавать не только название ((тег))ов. Правило для `.abc` применяется ко всем элементам, у которых указан класс `"abc"`. Правило для `#xyz` применяется к элементу с атрибутом `id` равным `"xyz"` (атрибуты `id` необходимо делать уникальными для документа).
 
 [source,text/css]
 ----
@@ -778,94 +498,59 @@ A rule for `#xyz` applies to the element with an `id` attribute of
   background: blue;
   color: white;
 }
-/* p elements, with classes a and b, and id main */
+/* Элементы p, у которых указаны классы a и b, а id задан как main */
 p.a.b#main {
   margin-bottom: 20px;
 }
 ----
 
-(((rule (CSS))))The ((precedence)) rule favoring the most recently defined rule
-holds true only when the rules have the same _((specificity))_. A rule's
-specificity is a measure of how precisely it describes matching
-elements, determined by the number and kind (tag, class, or ID) of
-element aspects it requires. For example, a rule that targets `p.a` is more specific than
-rules that target `p` or just `.a`, and would thus take precedence
-over them.
+(((rule (CSS))))((Приоритет)) самых поздних правил работает, когда у правил одинаковая _((детализация))_. Это мера того, насколько точно оно описывает подходящие элементы, определяемая числом и видом (тег, класс, или идентификатор) необходимых аспектов элементов. К примеру, правило для `p.a` более детально, чем правила для `p` или просто `.a`, и будет иметь приоритет над ними.
 
-(((direct child node)))The notation `p > a {…}` applies the given
-styles to all `<a>` tags that are direct children of `<p>` tags.
-Similarly, `p a {…}` applies to all `<a>` tags inside `<p>` tags,
-whether they are direct or indirect children.
+(((direct child node)))Запись `p > a {…}` применима ко всем тегам `<a>`, находящимся внутри тега `<p>` и являющимся его прямыми потомками.
+Подобным образом, `p a {…}` применимо также ко всем тегам `<a>` внутри `<p>`, при этом неважно, является ли `<a>` прямым потомком или нет.
 
-== Query selectors ==
+== Селекторы запросов ==
 
-(((complexity)))We won't be using ((style sheet))s all that much in
-this book. Although understanding them is crucial to programming in
-the browser, properly explaining all the properties they support and the
-interaction among those properties would take two or three books.
+(((complexity)))В этой книге мы не будем часто использовать ((таблицы стилей)). Понимание их работы критично для программирования в браузере, но подробное разъяснение всех их свойств заняло бы 2-3 книги.
 
-(((domain-specific language)))The main reason I introduced
-_((selector))_ syntax--the notation used in style sheets to determine
-which elements a set of styles apply to—is that we can use this same
-mini-language as an effective way to find ((DOM)) elements.
+(((domain-specific language)))Главная причина знакомства с ними и с синтаксисом _((селектор))ов_ (записей, определяющих, к каким элементам относятся правила) – мы можем использовать тот же эффективный мини-язык для поиска элементов ((DOM)).
 
-(((querySelectorAll method)))The `querySelectorAll` method, which is defined
-both on the `document` object and on element nodes, takes a selector
-string and returns an ((array-like object)) containing all the
-elements that it matches.
+(((querySelectorAll method)))Метод `querySelectorAll`, существующий и у объекта `document`, и у элементов-узлов, принимает строку селектора и возвращает ((массивоподобный объект)), содержащий все элементы, подходящие под него.
 
 [source,text/html]
 ----
-<p>And if you go chasing
-  <span class="animal">rabbits</span></p>
-<p>And you know you're going to fall</p>
-<p>Tell 'em a <span class="character">hookah smoking
-  <span class="animal">caterpillar</span></span></p>
-<p>Has given you the call</p>
+<p>Люблю грозу в начале
+  <span class="animal">мая</span>,</p>
+<p>Когда весенний, первый гром,</p>
+<p>Как бы <span class="character">резвяся
+  <span class="animal">и играя</span></span>,</p>
+<p>Грохочет в небе голубом.</p>
 
 <script>
   function count(selector) {
     return document.querySelectorAll(selector).length;
   }
-  console.log(count("p"));           // All <p> elements
+  console.log(count("p"));           // Все элементы <p>
   // → 4
-  console.log(count(".animal"));     // Class animal
+  console.log(count(".animal"));     // Класс animal
   // → 2
-  console.log(count("p .animal"));   // Animal inside of <p>
+  console.log(count("p .animal"));   // Класс animal внутри <p>
   // → 2
-  console.log(count("p > .animal")); // Direct child of <p>
+  console.log(count("p > .animal")); // Прямой потомок <p>
   // → 1
 </script>
 ----
 
-(((live data structure)))Unlike methods such as `getElementsByTagName`,
-the object returned by `querySelectorAll` is _not_ live. It won't
-change when you change the document.
+(((live data structure)))В отличие от методов вроде `getElementsByTagName`, возвращаемый `querySelectorAll` объект _не_ интерактивный. Он не изменится, если вы измените документ.
 
-(((querySelector method)))The `querySelector` method (without the
-`All` part) works in a similar way. This one is useful if you want a
-specific, single element. It will return only the first matching
-element or null if no elements match.
+(((querySelector method)))Метод `querySelector` (без `All`) работает сходным образом. Он нужен, если вам необходим один конкретный элемент. Он вернёт только первое совпадение, или `null`, если совпадений нет.
 
 [[animation]]
-== Positioning and animating ==
+== Расположение и анимация ==
 
-(((position (CSS))))(((relative positioning)))(((top (CSS))))(((left
-(CSS))))(((absolute positioning)))The `position` style property
-influences layout in a powerful way. By default it has a value of
-`static`, meaning the element sits in its normal place in the
-document. When it is set to `relative`, the element still takes up
-space in the document, but now the `top` and `left` style properties
-can be used to move it relative to its normal place. When `position`
-is set to `absolute`, the element is removed from the normal document
-flow—that is, it no longer takes up space and may overlap with other
-elements. Also, its `top` and `left` properties can be used to
-absolutely position it relative to the top-left corner of the nearest
-enclosing element whose `position` property isn't `static`, or
-relative to the document if no such enclosing element exists.
+(((position (CSS))))(((relative positioning)))(((top (CSS))))(((left (CSS))))(((absolute positioning)))Свойство стилей `position` сильно влияет на расположение элементов. По умолчанию оно равно `static`, что означает, что элемент находится на своём обычном месте в документе. Когда оно равно `relative`, элемент всё ещё занимает место, но теперь свойства `top` и `left` можно использовать для сдвига относительно его обычного расположения. Когда оно равно `absolute`, элемент удаляется из нормального “потока” документа – то есть, он не занимает место и может накладываться на другие. Кроме того, его свойства `left` и `top` можно использовать для абсолютного позиционирования относительно левого верхнего угла ближайшего включающего его элемента, у которого `position` не равно `static`. А если такого элемента нет, тогда он позиционируется относительно документа.
 
-We can use this to create an ((animation)). The following document 
-displays a picture of a cat that floats around in an ((ellipse)):
+Мы можем использовать это для создания ((анимации)). Следующий документ показывает картинку с котом, которая двигается по ((эллипсу)):
 
 [source,text/html]
 ----
@@ -895,103 +580,40 @@ image::img/cat-animation.png[alt="A moving cat head",width="8cm"]
 
 endif::book_target[]
 
-(((top (CSS))))(((left (CSS))))(((centering)))(((relative
-positioning)))The picture is centered on the page and given a
-`position` of `relative`. We'll repeatedly update that picture's `top`
-and `left` styles in order to move it.
+(((top (CSS))))(((left (CSS))))(((centering)))(((relative positioning)))Картинка отцентрирована на странице и ей задана `position: relative`. Мы постоянно обновляем свойства `top` и `left` картинки, чтобы она двигалась.
 
 [[animationFrame]]
-(((requestAnimationFrame function)))(((drawing)))(((animation)))The
-script uses `requestAnimationFrame` to schedule the `animate` function
-to run whenever the browser is ready to repaint the screen. The
-`animate` function itself again calls `requestAnimationFrame` to
-schedule the next update. When the browser window (or tab) is active,
-this will cause updates to happen at a rate of about 60 per second,
-which tends to produce a good-looking animation.
+(((requestAnimationFrame function)))(((drawing)))(((animation)))Скрипт использует `requestAnimationFrame` для вызова функции `animate` каждый раз, когда браузер готов перерисовывать экран. Функция `animate` сама опять вызывает `requestAnimationFrame`, чтобы запланировать следующее обновление. Когда окно браузера (или закладка) активна, это приведёт к обновлениям со скорость примерно 60 раз в секунду, что позволяет добиться хорошо выглядящей анимации.
 
-(((timeline)))(((blocking)))If we just updated the DOM in a loop, the
-page would freeze and nothing would show up on the screen. Browsers do
-not update their display while a JavaScript program is running, nor do
-they allow any interaction with the page. This is why we need
-++requestAnimationFrame++—it lets the browser know that we are done
-for now, and it can go ahead and do the things that browsers do, such
-as updating the screen and responding to user actions.
+(((timeline)))(((blocking)))Если бы мы просто обновляли DOM в цикле, страница бы зависла и ничего не было бы видно. Браузеры не обновляют страницу во время работы JavaScript, и не допускают в это время работы со страницей. Поэтому нам нужна `requestAnimationFrame` – она сообщает браузеру, что мы пока закончили, и он может заниматься своими браузерными вещами, например обновлять экран и отвечать на запросы пользователя.
 
-(((smooth animation)))Our ((animation)) function is passed the current
-((time)) as an argument, which it compares to the time it saw before (the
-`lastTime` variable) to ensure the motion of the cat per millisecond
-is stable, and the animation moves smoothly. If it just moved a fixed
-amount per step, the motion would stutter if, for example, another
-heavy task running on the same computer were to prevent the function
-from running for a fraction of a second.
+(((smooth animation)))Наша функция ((анимации)) передаётся текущее ((время)) через аргументы, которое оно сравнивает с предыдущим (переменная `lastTime`), чтобы движение кота было однородным, и анимация работала плавно. Если бы мы просто передвигали её на заданный промежуток на каждом шаге, движение бы запиналось если бы, например, другая задача загрузила бы компьютер.
 
 [[sin_cos]]
-(((Math.cos function)))(((Math.sin
-function)))(((cosine)))(((sine)))(((trigonometry)))Moving in
-((circle))s is done using the trigonometry functions `Math.cos` and
-`Math.sin`. For those of you who aren't familiar with these, I'll
-briefly introduce them since we will occasionally need them in this
-book.
+(((Math.cos function)))(((Math.sin function)))(((cosine)))(((sine)))(((trigonometry)))Движение по ((круг))у осуществляется с применением тригонометрических функций `Math.cos` и `Math.sin`. Я кратко опишу их для тех, кто с ними не знаком, так как они понадобятся нам в дальнейшем.
 
-(((coordinates)))(((pi)))`Math.cos` and `Math.sin` are useful for
-finding points that lie on a circle around point (0,0) with a radius
-of one unit. Both functions interpret their argument as the position
-on this circle, with zero denoting the point on the far right of the
-circle, going clockwise until 2π (about 6.28) has taken us around the
-whole circle. `Math.cos` tells you the x-coordinate of the point that
-corresponds to the given position around the circle, while `Math.sin`
-yields the y-coordinate. Positions (or angles) greater than 2π or less than
-0 are valid—the rotation repeats so that _a_+2π refers to the same
-((angle)) as _a_.
+(((coordinates)))(((pi)))`Math.cos` и `Math.sin` полезны тогда, когда надо найти точки на окружности с центром в точке (0, 0) и радиусом в единицу. Обе функции интерпретируют свой аргумент как позицию на окружности, следуя против часовой стрелки, от нуля в самой правой точке, пока путь диной в 2π (около 6.28) не проведёт нас по кругу. `Math.cos` считает координату по оси x той точки, которая является нашей текущей позицией на окружности, а `Math.sin` выдаёт координату y. Позиции (или углы) больше, чем 2π или меньше чем 0, тоже допустимы – повороты повторяются так, что _a_+2π означает тот же самый ((угол)), что и _a_.
 
 image::img/cos_sin.svg[alt="Using cosine and sine to compute coordinates",width="6cm"]
 
-(((counter variable)))(((Math.sin function)))(((top
-(CSS))))(((Math.cos function)))(((left (CSS))))(((ellipse)))The cat
-animation code keeps a counter, `angle`, for the current angle of the
-animation and increments it in proportion to the elapsed time every
-time the `animate` function is called. It can then use this angle to
-compute the current position of the image element. The `top` style is
-computed with `Math.sin` and multiplied by 20, which is the vertical
-radius of our circle. The `left` style is based on `Math.cos` and
-multiplied by 200 so that the circle is much wider than it is high,
-resulting in an elliptic motion.
+(((counter variable)))(((Math.sin function)))(((top (CSS))))(((Math.cos function)))(((left (CSS))))(((ellipse)))Анимация кота хранит счётчик `angle` для текущего угла поворота анимации, и увеличивает его пропорционально прошедшему времени каждый раз при вызове функции `animation`. Этот угол используется для подсчёта текущей позиции элемента `image`. Стиль `top` подсчитывается через `Math.sin` и умножается на 20 – это вертикальный радиус нашего эллипса. Стиль `left` считается через `Math.cos` и умножается на 200, так что ширина эллипса сильно больше высоты.
 
-(((unit (CSS))))Note that styles usually need _units_. In this case,
-we have to append `"px"` to the number to tell the browser we are
-counting in ((pixel))s (as opposed to centimeters, “ems”, or other
-units). This is easy to forget. Using numbers without units will
-result in your style being ignored—unless the number is 0, which
-always means the same thing, regardless of its unit.
+(((unit (CSS))))Стилям обычно требуются _единицы измерения_. В нашем случае приходится добавлять `"px"` к числу, чтобы объяснить браузеру, что мы считаем в ((пикселях)) (а не в сантиметрах, “ems” или других единицах). Это легко забыть. Использование чисел без единиц измерения приведёт к игнорированию стиля – если только число не равно 0, что не зависит от единиц измерения.
 
-== Summary ==
+== Итог ==
 
-JavaScript programs may inspect and interfere with the current
-document that a browser is displaying through a data structure called
-the DOM. This data structure represents the browser's model of the
-document, and a JavaScript program can modify it to change the visible
-document.
+Программы JavaScript могут изучать и изменять текущий отображаемый браузером документ через структуру под названием DOM. Эта структура данных представляет модель документа браузера, а программа JavaScript может изменять её для изменения видимого документа.
 
-The DOM is organized like a tree, in which elements are arranged
-hierarchically according to the structure of the document. The objects
-representing elements have properties such as `parentNode` and
-`childNodes`, which can be used to navigate through this tree.
+DOM организован в виде дерева, в котором элементы расположены иерархически в соответствии со структурой документа. У объектов элементов есть свойства типа `parentNode` и `childNodes`, которые используются для ориентирования на дереве.
 
-The way a document is displayed can be influenced by _styling_, both
-by attaching styles to nodes directly and by defining rules that
-match certain nodes. There are many different style properties, such as
-`color` or `display`. JavaScript can manipulate an
-element's style directly through its `style` property.
+Внешний вид документа можно изменять через стили, либо добавляя _стили_ к узлам напрямую, либо определяя правила для каких-либо узлов. У стилей есть очень много свойств, таких, как `color` или `display`. JavaScript может влиять на стиль элемента напрямую через его свойство `style`.
 
-== Exercises ==
+== Упражнения ==
 
 [[exercise_table]]
-=== Build a table ===
+=== Строим таблицу ===
 
-(((table (HTML tag))))We built plaintext ((table))s in
-link:06_object.html#tables[Chapter 6]. HTML makes laying out tables
-quite a bit easier. An ((HTML)) table is built with the following tag
-structure:
+(((table (HTML tag))))Мы строили ((таблицы)) из простого текста в link:06_object.html#tables[главе 6]. HTML упрощает построение таблиц. Таблица в ((HTML)) строится при помощи следующих тегов:
 
 [source,text/html]
 ----
@@ -1009,29 +631,16 @@ structure:
 </table>
 ----
 
-(((tr (HTML tag))))(((th (HTML tag))))(((td (HTML tag))))For each
-_((row))_, the `<table>` tag contains a `<tr>` tag. Inside of these `<tr>` tags,
-we can put cell elements: either heading cells (`<th>`) or regular
-cells (`<td>`).
+(((tr (HTML tag))))(((th (HTML tag))))(((td (HTML tag))))Для каждой _((строки))_ в теге `<table>` содержится тег `<tr>`. Внутри него мы можем размещать ячейки: либо ячейки заголовков `<th>`, либо обычные ячейки `<td>`.
 
-(((download)))(((MOUNTAINS data set)))(((table example)))The same
-source data that was used in link:06_object.html#mountains[Chapter 6]
-is again available in the `MOUNTAINS` variable in the sandbox. It can also be http://eloquentjavascript.net/2nd_edition/code/mountains.js[downloaded]
-from the website(!book (http://eloquentjavascript.net/2nd_edition/code#13[_eloquentjavascript.net/2nd_edition/code#13_])!).
+(((download)))(((MOUNTAINS data set)))(((table example)))Те же данные, что мы использовали в link:06_object.html#mountains[главе 6], снова доступны в переменной `MOUNTAINS`. Их также можно http://eloquentjavascript.net/2nd_edition/code/mountains.js[скачать]
+с сайта(!book (http://eloquentjavascript.net/2nd_edition/code#13[_eloquentjavascript.net/2nd_edition/code#13_])!).
 
-Write a function `buildTable` that, given an array of objects that all
-have the same set of properties, builds up a DOM structure
-representing a table. The table should have a header row with the
-property names wrapped in `<th>` elements and should have one subsequent row per
-object in the array, with its property values in `<td>` elements.
+Напишите функцию `buildTable`, которая, принимая массив объектов с одинаковыми свойствами, строит структуру DOM, представляющую таблицу. У таблицы должна быть строка с заголовками, где имена свойств обёрнуты в элементы `<th>`, и должно быть по одной строчке на объект из массива, где его свойства обёрнуты в элементы `<td>`.
 
-(((Object.keys function)))The `Object.keys` function, which returns an
-array containing the property names that an object has, will probably
-be helpful here.
+(((Object.keys function)))Здесь пригодится функция `Object.keys`, возвращающая массив, содержащий имена свойств объекта.
 
-(((right-aligning)))(((text-align (CSS))))Once you have the basics
-working, right-align cells containing numbers by setting their
-`style.textAlign` property to `"right"`.
+(((right-aligning)))(((text-align (CSS))))Когда вы разберётесь с основами, выровняйте ячейки с числами по правому краю, изменив их свойство `style.textAlign` на `"right"`.
 
 ifdef::interactive_target[]
 
@@ -1040,7 +649,7 @@ ifdef::interactive_target[]
 [source,text/html]
 ----
 <style>
-  /* Defines a cleaner look for tables */
+  /* Определяет стили для красивых таблиц */
   table  { border-collapse: collapse; }
   td, th { border: 1px solid black; padding: 3px 8px; }
   th     { text-align: left; }
@@ -1048,7 +657,7 @@ ifdef::interactive_target[]
 
 <script>
   function buildTable(data) {
-    // Your code here.
+    // Ваш код.
   }
 
   document.body.appendChild(buildTable(MOUNTAINS));
@@ -1072,20 +681,11 @@ the function.
 
 !!hint!!
 
-=== Elements by tag name ===
+=== Элементы по имени тегов ===
 
-(((getElementsByTagName method)))(((recursion)))The
-`getElementsByTagName` method returns all child elements with a given
-tag name. Implement your own version of it as a regular nonmethod
-function that takes a node and a string (the tag name) as arguments
-and returns an array containing all descendant element nodes with the
-given tag name.
+(((getElementsByTagName method)))(((recursion)))Метод `getElementsByTagName` возвращает все дочерние элементы с заданным именем тега. Сделайте свою версию этого метода в виде обычной функции, которая принимает узел и строчку (имя тега) и возвращает массив, содержащий все нисходящие узлы с заданным именем тега.
 
-(((tagName property)))(((capitalization)))(((toLowerCase
-method)))(((toUpperCase method)))To find the tag name of an element,
-use its `tagName` property. But note that this will return the tag
-name in all uppercase. Use the `toLowerCase` or `toUpperCase` string
-method to compensate for this.
+(((tagName property)))(((capitalization)))(((toLowerCase method)))(((toUpperCase method)))Чтобы выяснить имя тега элемента, используйте свойство `tagName`. Заметьте, что оно возвратит имя тега в верхнем регистре. Используйте методы строк `toLowerCase` или `toUpperCase`.
 
 ifdef::interactive_target[]
 
@@ -1093,13 +693,13 @@ ifdef::interactive_target[]
 
 [source,text/html]
 ----
-<h1>Heading with a <span>span</span> element.</h1>
-<p>A paragraph with <span>one</span>, <span>two</span>
-  spans.</p>
+<h1>Заголовок с элементом <span>span</span> внутри.</h1>
+<p>Параграф с <span>раз</span>, <span>два</span> элементами
+  span.</p>
 
 <script>
   function byTagName(node, tagName) {
-    // Your code here.
+    // Ваш код.
   }
 
   console.log(byTagName(document.body, "h1").length);
@@ -1136,21 +736,13 @@ a recursive call on it to inspect its own children.
 
 !!hint!!
 
-=== The cat's hat ===
+=== Шляпа кота ===
 
-(((cat's hat (exercise))))Extend the cat ((animation)) defined
-link:13_dom.html#animation[earlier] so that both the cat and his hat
-(`<img src="img/hat.png">`) orbit at opposite sides of the ellipse.
+(((cat's hat (exercise))))Расширьте ((анимацию)) кота из link:13_dom.html#animation[примера], чтобы и кот и его шляпа `<img src="img/hat.png">` летали по противоположным сторонам эллипса.
 
-Or make the hat circle around the cat. Or alter the animation in some
-other interesting way.
+Или пусть шляпа летает вокруг кота. Или ещё что-нибудь интересное придумайте.
 
-(((absolute positioning)))(((top (CSS))))(((left (CSS))))(((position
-(CSS))))To make positioning multiple objects easier, it is probably a
-good idea to switch to absolute positioning. This means that `top` and
-`left` are counted relative to the top left of the document. To avoid
-using negative coordinates, you can simply add a fixed number of
-pixels to the position values.
+(((absolute positioning)))(((top (CSS))))(((left (CSS))))(((position (CSS))))Чтобы упростить расположение множества объектов, неплохо будет переключиться на абсолютное позиционирование. Тогда `top` и `left` будут считаться относительно левого верхнего угла документа. Чтобы не использовать отрицательные координаты, вы можете добавить заданное число пикселей к значениям `position`.
 
 ifdef::interactive_target[]
 
@@ -1164,7 +756,7 @@ ifdef::interactive_target[]
 <script>
   var cat = document.querySelector("#cat");
   var hat = document.querySelector("#hat");
-  // Your code here.
+  // Ваш код.
 </script>
 ----
 
