@@ -1,10 +1,19 @@
 \documentclass[13pt,oneside]{scrbook}
+\usepackage{xltxtra}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+\setmainfont{XCharter}
+\setromanfont{XCharter}
+\setsansfont{Liberation Sans}
+\setmonofont{Inconsolata LGC}
+\newfontfamily{\cyrillicfont}{XCharter}
+\newfontfamily{\cyrillicfontrm}{XCharter}
+\newfontfamily{\cyrillicfontsf}{Liberation Sans}
+\newfontfamily{\cyrillicfonttt}{Inconsolata LGC}
 \usepackage{natbib}
-\usepackage{charter}
-\usepackage{inconsolata}
 \usepackage{hyperref}
 \usepackage{bookmark}
-\usepackage{fontspec}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{makeidx}
@@ -20,7 +29,7 @@
 \makeatletter
 \setcounter{secnumdepth}{0}
 \setcounter{tocdepth}{1}
-\setmonofont[Scale=0.8]{Inconsolata}
+\setmonofont[Scale=0.8]{Inconsolata LGC}
 \pagestyle{plain}
 \makeatother
 
