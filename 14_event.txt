@@ -2,7 +2,7 @@
 :prev_link: 13_dom
 :next_link: 15_game
 
-= Handling Events =
+= Обработка событий =
 
 [chapterquote="true"]
 [quote,Марк Аврелий,Медитации]
