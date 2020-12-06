@@ -1,10 +1,15 @@
 \documentclass[13pt,oneside]{scrbook}
 \usepackage{natbib}
-\usepackage{charter}
-\usepackage{inconsolata}
+\usepackage{xltxtra}
+\setmainfont{XCharter}
+\setsansfont{Liberation Sans}
+\defaultfontfeatures{Mapping=tex-text}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+
 \usepackage{hyperref}
 \usepackage{bookmark}
-\usepackage{fontspec}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{makeidx}
@@ -14,13 +19,13 @@
 \setlength{\epigraphwidth}{.8\textwidth}
 \setlength{\epigraphrule}{0pt}
 
-\lstset{basicstyle=\ttfamily,xleftmargin=0.8em,breaklines=true,lineskip=-0.2em,aboveskip=0.8em,belowskip=0.8em}
+\lstset{basicstyle=\ttfamily,xleftmargin=0.8em,breaklines=true,lineskip=-0.2em,aboveskip=0.8em,belowskip=0.8em,keepspaces=true}
 \date{}
 
 \makeatletter
 \setcounter{secnumdepth}{0}
 \setcounter{tocdepth}{1}
-\setmonofont[Scale=0.8]{Inconsolata}
+\setmonofont[Scale=0.8]{Inconsolata LGC}
 \pagestyle{plain}
 \makeatother
 
