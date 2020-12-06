@@ -36,11 +36,14 @@ var deEscapeRE = new RegExp("\\\\lstinline:::((?:" + specials + ")+?):::", "g");
 var specialRE = new RegExp(specials, "g");
 function cleanLstInline(str) {
   return str.replace(deEscapeRE, function(m, content) {
-    return "\\lstinline`" + content.replace(specialRE, function(f) {
+    var inline_body = content.replace(specialRE, function(f) {
       if (f.length > 1) return escaped[f];
       else if (f == "\n") return " ";
       else return f;
-    }) + "`";
+    });
+    if (/[\u0400-\u04ff]/.test(inline_body[0]))
+      inline_body = ' ' + inline_body;
+    return "\\lstinline`" + inline_body + "`";
   });
 }
 
