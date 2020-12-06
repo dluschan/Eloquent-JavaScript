@@ -1,4 +1,4 @@
-  var allowedUnicode = /[→←“”’π½⅓¼…×βϕ≈é—]/;
+  var allowedUnicode = /[→←“”’π½⅓¼…×βϕ≈é—–«»]|[\u0400-\u04ff]/;
 function replaceUnicode(input) {
   var inCode = false;
   return input.replace(/\\(end|begin)\{lstlisting\}|([\x80-\uffff])/g, function(full, beginEnd, ch) {
