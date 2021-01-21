@@ -4,55 +4,27 @@
 :load_files: ["code/chapter/15_game.js", "code/game_levels.js", "code/chapter/16_canvas.js"]
 :zip: html include=["img/player.png", "img/sprites.png"]
 
-= Drawing on Canvas =
+= Рисование на холсте =
 
 [chapterquote="true"]
-[quote,M.C. Escher,cited by Bruno Ernst in The Magic Mirror of M.C. Escher]
+[quote,М.К. Эшер,cited by Bruno Ernst in The Magic Mirror of M.C. Escher]
 ____
-Drawing is deception.
+Рисование — это обман.
 ____
 
-(((Escher+++,+++ M.C.)))(((CSS)))(((transform (CSS))))Browsers give us
-several ways to display ((graphics)). The simplest way is to use styles to
-position and color regular ((DOM)) elements. This can
-get you quite far, as the game in the link:15_game.html#game[previous chapter]
-showed. By adding partially transparent background ((image))s to the
-nodes, we can make them look exactly the way we want. It is even
-possible to rotate or skew nodes by using the `transform` style.
+(((Escher+++,+++ M.C.)))(((CSS)))(((transform (CSS))))Браузеры позволяют нам рисовать ((графику)) разными способами. Проще всего использовать стили для расположения и расцветки стандартных элементов ((DOM)). Так можно добиться многого, как показал пример игры из link:15_game.html#game[предыдущей главы]. Добавляя частично прозрачные ((картинки)) узлам, мы можем придать им любой нужный вид. Возможно даже поворачивать или искажать узлы через стиль `transform`.
 
-But we'd be using the DOM for something that it wasn't originally
-designed for. Some tasks, such as drawing a ((line)) between
-arbitrary points, are extremely awkward to do with regular
-((HTML)) elements.
+Но такое использование DOM – не то, для чего он создавался. Некоторые задачи, типа рисования ((линии)) между двумя произвольными точками, крайне неудобно выполнять при помощи обычных элементов ((HTML)).
 
-(((SVG)))(((img (HTML tag))))There are two alternatives. The first is DOM-based
-but utilizes _Scalable Vector Graphics (SVG)_, rather than HTML
-elements. Think of SVG as a dialect for describing
-((document))s that focuses on ((shape))s rather than text. You can embed an SVG
-document in an HTML document, or you can include it
-through an `<img>` tag.
+(((SVG)))(((img (HTML tag))))Есть две альтернативы. Первая – SVG (_Scalable Vector Graphics_, или _Масштабируемая Векторная Графика_), также основанная на DOM, но без участия HTML. SVG – диалект для описания ((документ))ов, который концентрируется на ((форма))х, а не тексте. SVG можно встроить в HTML, или включить через тег `<img>`.
 
-(((clearing)))The second alternative is called a _((canvas))_. A
-canvas is a single ((DOM)) element that encapsulates a ((picture)). It
-provides a programming ((interface)) for drawing ((shape))s onto the
-space taken up by the node. The main difference between a canvas and
-an SVG picture is that in SVG the original description of the shapes
-is preserved so that they can be moved or resized at any time.
-A canvas, on the other hand, converts the shapes to ((pixel))s (colored
-dots on a raster) as soon as they are drawn and does not remember
-what these pixels represent. The only way to move a shape on a canvas
-is to clear the canvas (or the part of the canvas around the shape) and redraw it
-with the shape in a new position.
+(((clearing)))Вторая альтернатива – _((холст))_ (или _((canvas))_). Холст – это один элемент ((DOM)), в котором находится ((картинка)). Он предоставляет ((API)) для рисования ((форм)) на том месте, которое занимает элемент. Разница между холстом и SVG в том, что в SVG хранится начальное описание форм – их можно в любой момент сдвигать или менять размер. Холст же преобразовывает формы в ((пиксели)) (цветные точки растра) как только нарисует их, и не запоминает, что эти пиксели из себя представляют. Единственным способом сдвинуть фигуру на холсте является очистить холст (или ту часть, которая окружает фигуру) и перерисовать её на другом месте.
 
 == SVG ==
 
-This book will not go into ((SVG)) in detail, but I will briefly 
- explain how it works. At the
-link:16_canvas.html#graphics_tradeoffs[end of the chapter], I'll come
-back to the trade-offs that you must consider when deciding which
-((drawing)) mechanism is appropriate for a given application.
+Эта книга не углубляется детально в ((SVG)), но кратко я поясню её работу. В link:16_canvas.html#graphics_tradeoffs[конце главы] я вернусь к сравнительным недостаткам методов, которые нужно принять во внимание, выбирая механизм ((рисования)) для конкретного применения.
 
-This is an HTML document with a simple SVG ((picture)) in it:
+Вот документ HTML, содержащий простую SVG-((картинку)):
 
 [sandbox="svg"]
 [source,text/html]
@@ -65,25 +37,17 @@ This is an HTML document with a simple SVG ((picture)) in it:
 </svg>
 ----
 
-(((circle (SVG tag))))(((rect (SVG tag))))(((XML namespace)))(((XML)))(((xmlns
-attribute)))The `xmlns` attribute changes an element (and its
-children) to a different _XML namespace_. This namespace, identified
-by a ((URL)), specifies the dialect that we are currently speaking.
-The `<circle>` and `<rect>` tags, which do not exist in HTML, do have
-a meaning in SVG—they draw shapes using the style and position
-specified by their attributes.
+(((circle (SVG tag))))(((rect (SVG tag))))(((XML namespace)))(((XML)))(((xmlns attribute)))Атрибут `xmlns` меняет элемент (и его дочерние элементы) на другое _пространство имён XML_. Это пространство задаётся через ((URL)) и обозначает диалект, на котором мы сейчас говорим. Тэги `<circle>` и `<rect>`, не существующие в HTML, имеют смысл в SVG – они рисуют фигуры, используя стиль и позицию, заданные их атрибутами.
 
 ifdef::book_target[]
 
-The document is displayed like this:
+Документ отображается так:
 
 image::img/svg-demo.png[alt="An embedded SVG image",width="4.5cm"]
 
 endif::book_target[]
 
-These tags create ((DOM)) elements, just like ((HTML)) tags. For
-example, this changes the `<circle>` element to be ((color))ed cyan
-instead:
+Они создают элементы ((DOM)) так же, как тэги ((HTML)). К примеру, такой код меняет ((цвет)) элемента `<circle>` на cyan:
 
 [sandbox="svg"]
 [source,javascript]
@@ -92,33 +56,17 @@ var circle = document.querySelector("circle");
 circle.setAttribute("fill", "cyan");
 ----
 
-== The canvas element ==
+== Элемент холста canvas ==
 
-(((canvas,size)))(((canvas (HTML tag))))Canvas ((graphics)) can be drawn
-onto a `<canvas>` element. You can give such an element `width` and
-`height` attributes to determine its size in ((pixel))s.
+(((canvas,size)))(((canvas (HTML tag))))((Графику)) холста можно рисовать на элементе `<canvas>`. Ему можно задать ширину и высоту, таким образом определяя его размер в ((пикселях)).
 
-A new canvas is empty, meaning it is entirely ((transparent)) and
-thus shows up simply as empty space in the document.
+Новый холст пуст, то есть он полностью ((прозрачен)) и показывает нам пустое пространство документа.
 
-(((2d (canvas context))))(((webgl (canvas
-context))))(((OpenGL)))(((canvas,context)))(((dimensions)))The `<canvas>`
-tag is intended to support different styles of ((drawing)). To get
-access to an actual drawing ((interface)), we first need to create a
-_((context))_, which is an object whose methods provide the drawing
-interface. There are currently two widely supported drawing styles:
-`"2d"` for two-dimensional graphics and `"webgl"` for
-three-dimensional graphics through the OpenGL interface.
+(((2d (canvas context))))(((webgl (canvas context))))(((OpenGL)))(((canvas,context)))(((dimensions)))Тэг `<canvas>` поддерживает разные стили ((рисования)). Чтобы получить доступ к ((интерфейсу)) рисования, сначала нужно создать _((контекст))_ – объект, чьи методы предоставляют этот интерфейс. Сейчас есть два широко распространённых стиля рисования: `"2d"` для двумерной графики и `"webgl"` для трёхмерной графики при помощи интерфейса OpenGL.
 
-(((rendering)))(((graphics)))(((efficiency)))This book won't discuss
-WebGL. We stick to two dimensions. But if you are interested in
-three-dimensional graphics, I do encourage you to look into WebGL. It
-provides a very direct interface to modern graphics hardware and thus
-allows you to render even complicated scenes efficiently, using
-JavaScript.
+(((rendering)))(((graphics)))(((efficiency)))WebGL мы обсуждать не будем, остановимся на двух измерениях. Если вам интересны три измерения, я советую вам окунуться в мир WebGL. Он предоставляет непосредственный доступ к современному графическому железу, поэтому с его помощью можно создавать довольно сложную и эффективную графику прямо из JavaScript.
 
-(((getContext method)))(((canvas,context)))A ((context)) is created
-through the `getContext` method on the `<canvas>` element.
+(((getContext method)))(((canvas,context)))_((Контекст))_ создаётся методом `getContext` элемента `<canvas>`.
 
 [source,text/html]
 ----
@@ -133,9 +81,7 @@ through the `getContext` method on the `<canvas>` element.
 </script>
 ----
 
-After creating the context object, the example draws a red
-((rectangle)) 100 ((pixel))s wide and 50 pixels high, with its top-left
-corner at coordinates (10,10).
+После создания объекта context пример рисует ((прямоугольник)) шириной в 100 ((пикселей)) и высотой в 50, с координатами левого верхнего угла (10, 10).
 
 ifdef::book_target[]
 
@@ -143,38 +89,20 @@ image::img/canvas_fill.png[alt="A canvas with a rectangle",width="2.5cm"]
 
 endif::book_target[]
 
-(((SVG)))(((coordinates)))Just like in ((HTML)) (and SVG), the
-coordinate system that the canvas uses puts (0,0) at the top-left
-corner, and the positive y-((axis)) goes down from there. So (10,10)
-is 10 pixels below and to the right of the top-left corner.
+(((SVG)))(((coordinates)))Точно как в ((HTML)) (и SVG), используемая холстом система координат помещает точку (0, 0) в левый верхний угол, и положительная часть ((оси)) Y идёт оттуда вниз. То есть, точка (10, 10) на 10 пикселей ниже и правее верхнего левого угла.
 
 [[fill_stroke]]
-== Filling and stroking ==
+== Заливка и обводка ==
 
-(((filling)))(((stroking)))(((drawing)))(((SVG)))In the ((canvas)) interface,
-a shape can be _filled_, meaning its area is given a certain color or pattern, 
-or it can be _stroked_, which means a ((line)) is drawn along its edge. The
-same terminology is used by SVG. 
+(((filling)))(((stroking)))(((drawing)))(((SVG)))В интерфейсе ((холст))а форму можно _залить_ (или _fill_), что означает, что занимаемая ею область будет закрашена нужным цветом или шаблоном, или же можно её _обвести_ (или _stroke_) – нарисовать ((линию)) по краю области. Та же терминология используется в SVG.
 
-(((fillRect method)))(((strokeRect method)))The `fillRect` method fills
-a ((rectangle)). It takes first the x- and y-((coordinates)) of the
-rectangle's top-left corner, then its width, and then its height. A
-similar method, `strokeRect`, draws the ((outline)) of a rectangle.
+(((fillRect method)))(((strokeRect method)))Метод `fillRect` заливает ((прямоугольник)). Он принимает координаты x и y левого верхнего угла, затем ширину и высоту. Схожий метод `strokeRect` рисует ((периметр)) прямоугольника.
 
-(((property)))(((state)))Neither method takes any further parameters. 
-The color of the fill, thickness of the stroke, and so on are not
-determined by an argument to the method (as you might justly expect)
-but rather by properties of the context object.
+(((property)))(((state)))Больше у методов параметров нет. Цвет заливки, толщина обводки и другие параметры определяются не аргументами метода (как можно было бы ожидать), а свойствами объекта `context`.
 
-(((filling)))(((fillStyle property)))Setting `fillStyle` changes the way shapes are
-filled. It can be set to a string that specifies a ((color)), and any
-color understood by ((CSS)) can also be used here.
+(((filling)))(((fillStyle property)))Задав `fillStyle`, вы меняете способ, которым заливаются формы. Его можно установить в строку, обозначающую ((цвет)), и в любой цвет, который понимает ((CSS)).
 
-(((stroking)))(((line width)))(((strokeStyle property)))(((lineWidth
-property)))(((canvas)))The `strokeStyle` property works similarly but
-determines the color used for a stroked line. The width of that line
-is determined by the `lineWidth` property, which may contain any
-positive number.
+(((stroking)))(((line width)))(((strokeStyle property)))(((lineWidth property)))(((canvas)))Свойство `strokeStyle` работает так же, но определяет цвет, которым будет нарисована обводка. Толщина линии определяется свойством `lineWidth`, которое может содержать любое положительное число.
 
 [source,text/html]
 ----
@@ -190,25 +118,17 @@ positive number.
 
 ifdef::book_target[]
 
-This code draws two blue squares, using a thicker line for the second
-one.
+Этот код рисует два синих квадрата, используя более толстую линию во второй раз.
 
 image::img/canvas_stroke.png[alt="Two stroked squares",width="5cm"]
 
 endif::book_target[]
 
-(((default value)))(((canvas,size)))When no `width` or `height`
-attribute is specified, as in the previous example, a canvas element
-gets a default width of 300 pixels and height of 150 pixels.
+(((default value)))(((canvas,size)))Когда не заданы атрибуты `width` или `height`, им назначаются значения по умолчанию – 300 пикселей для ширины и 150 пикселей для высоты.
 
-== Paths ==
+== Контуры ==
 
-(((path,canvas)))(((interface,design)))(((canvas,path)))A path is a
-sequence of ((line))s. The 2D canvas interface takes a peculiar
-approach to describing such a path. It is done entirely through
-((side effect))s. Paths are not values that can be stored and
-passed around. Instead, if you want to do something with a path, you
-make a sequence of method calls to describe its shape.
+(((path,canvas)))(((interface,design)))(((canvas,path)))Контур – последовательность ((линий)). Двумерный холст имеет странный подход к описанию контуров. Всё делается через ((побочные эффекты)). Контуры – не значения, которые можно хранить или передавать. Вместо этого, если вам что-то надо сделать с контуром, вы создаёте последовательность вызовов метода для описания его формы.
 
 [source,text/html]
 ----
@@ -224,29 +144,17 @@ make a sequence of method calls to describe its shape.
 </script>
 ----
 
-(((canvas)))(((stroke method)))(((lineTo method)))(((moveTo
-method)))(((shape)))This example creates a path with a number of
-horizontal ((line)) segments and then strokes it using the `stroke`
-method. Each segment created with `lineTo` starts at the path's
-_current_ position. That position is usually the end of the last segment, 
-unless `moveTo` was called. In that case, the next segment would start
-at the position passed to `moveTo`.
+(((canvas)))(((stroke method)))(((lineTo method)))(((moveTo method)))(((shape)))Пример создаёт контур из нескольких горизонтальных ((отрезков)), и затем обводит их методом `stroke`. Каждый сегмент, созданный через `lineTo`, начинается с _текущей_ позиции на контуре. Эта позиция – обычно конец предыдущего сегмента, если только не было вызова `moveTo`. В последнем случае следующий сегмент начнётся с позиции, заданной в `moveTo`.
 
 ifdef::book_target[]
 
-The path described by the previous program looks like this:
+Контур описанный в предыдущей программе выглядит так:
 
 image::img/canvas_path.png[alt="Stroking a number of lines",width="2.1cm"]
 
 endif::book_target[]
 
-(((path,canvas)))(((filling)))(((path,closing)))(((fill method)))When
-filling a path (using the `fill` method), each ((shape)) is filled
-separately. A path can contain multiple shapes—each `moveTo` motion
-starts a new one. But the path needs to be _closed_ (meaning its start and 
-end are in the same position) before it can be filled. If the path is not 
-already closed, a line is added from its end to its
-start, and the shape enclosed by the completed path is filled.
+(((path,canvas)))(((filling)))(((path,closing)))(((fill method)))При заливке контура каждая из ((форм)) заливается отдельно. Контур может содержать несколько форм – каждое движение `moveTo` начинает новую. Но контур должен быть _закрытым_ (начало и конец находятся на одном месте), прежде чем его можно будет закрасить. Если контур не закрыт, от его конца до начала добавляется линия, и заливается форма, очерченная закрытым контуром.
 
 [source,text/html]
 ----
@@ -261,10 +169,7 @@ start, and the shape enclosed by the completed path is filled.
 </script>
 ----
 
-This example draws a filled triangle. Note that only two of the triangle's
-sides are explicitly drawn. The third, from the bottom-right corner
-back to the top, is implied and won't be there when you stroke the
-path.
+Пример рисует закрашенный треугольник. Заметьте, что непосредственно были нарисованы только две стороны. Третья, от правого нижнего угла обратно к верхней вершине, подразумевается – она не будет закрашена при обводке контура.
 
 ifdef::book_target[]
 
@@ -272,25 +177,13 @@ image::img/canvas_triangle.png[alt="Filling a path",width="2.2cm"]
 
 endif::book_target[]
 
-(((stroke method)))(((closePath
-method)))(((path,closing)))(((canvas)))You could also use the `closePath` method
-to explicitly close a path by adding an actual ((line)) segment back to
-the path's start. This segment _is_ drawn when stroking the path.
+(((stroke method)))(((closePath method)))(((path,closing)))(((canvas)))Также можно использовать метод `closePath`, чтобы принудительно закрыть контур, добавив реальный ((отрезок)) до начала контура. Этот отрезок _будет_ закрашен вызовом метода `stroke`.
 
-== Curves ==
+== Кривые ==
 
-(((path,canvas)))(((canvas)))(((drawing)))A path may also contain ((curve))d
-((line))s. These are, unfortunately, a bit more involved to draw than
-straight lines.
+(((path,canvas)))(((canvas)))(((drawing)))Контур может состоять из ((кривых)). Их рисовать посложнее, нежели прямые.
 
-(((quadraticCurveTo method)))The `quadraticCurveTo` method draws a
-curve to a given point. To determine the curvature of the line, the method is
-given a ((control point)) as well as a destination point. 
-Imagine this control point as _attracting_ the line, giving the line its
-curve. The line won't go through the control point. Rather, the
-direction of the line at its start and end points will be such that it
-aligns with the line from there to the control point. The following
-example illustrates this:
+(((quadraticCurveTo method)))Метод `quadraticCurveTo` рисует кривую до нужной точки. Для определения кривизны методу даётся ((контрольная точка)) вместе с точкой назначения. Представьте, что контрольная точка как бы _притягивает_ линию, задавая кривой кривизну. Линия не проходит через контрольную точку. Вместо этого направления линии в её начальной и конечной точках будут стремиться к контрольной точке. Следующий пример иллюстрирует это:
 
 [source,text/html]
 ----
@@ -309,24 +202,15 @@ example illustrates this:
 
 ifdef::book_target[]
 
-It produces a path that looks like this:
+Он создает контур, который выглядит следующим образом:
 
 image::img/canvas_quadraticcurve.png[alt="A quadratic curve",width="2.3cm"]
 
 endif::book_target[]
 
-(((stroke method)))We draw a ((quadratic curve)) from the left to the
-right, with (60,10) as control point, and then draw two ((line))
-segments going through that control point and back to the start of
-the line. The result somewhat resembles a _((Star Trek))_ insignia. You
-can see the effect of the control point: the lines leaving the lower
-corners start off in the direction of the control point and then
-((curve)) toward their target.
+(((stroke method)))Рисуем слева направо ((квадратичную кривую)), у которой контрольная точка задана как (60, 10), а затем рисуем два ((отрезка)), проходящие через контрольную точку и обратно в начало линии. Результат напоминает эмблему _((Звёздного пути))_. Можно увидеть действие контрольной точки: линия, выходящая из начальной и конечной точек, начинается по направлению к контрольной точке, а затем ((загибается)).
 
-(((canvas)))(((bezierCurveTo method))) The `bezierCurveTo` method draws a
-similar kind of curve. Instead of a single ((control point)), this one
-has two—one for each of the ((line))'s endpoints. Here is a similar sketch to
-illustrate the behavior of such a curve:
+(((canvas)))(((bezierCurveTo method)))Метод `bezierCurve` рисует схожую кривую. Вместо одной ((контрольной точки)) у неё есть две – по одной на каждый из концов ((кривой)). Вот похожий рисунок для иллюстрации поведения такой кривой:
 
 [source,text/html]
 ----
@@ -344,9 +228,7 @@ illustrate the behavior of such a curve:
 </script>
 ----
 
-The two control points specify the direction at both ends of the
-curve. The further they are away from their corresponding point, the
-more the curve will “bulge” in that direction.
+Две контрольные точки задают направления обоих концов кривой. Чем они дальше от начала или конца, тем сильнее кривая будет “выпучиваться” в их направлении.
 
 ifdef::book_target[]
 
@@ -354,23 +236,9 @@ image::img/canvas_beziercurve.png[alt="A bezier curve",width="2.2cm"]
 
 endif::book_target[]
 
-(((trial and error)))Such ((curve))s can be hard to work with—it's
-not always clear how to find the ((control point))s that provide the
-((shape)) you are looking for. Sometimes you can compute
-them, and sometimes you'll just have to find a suitable value by trial
-and error.
+(((trial and error)))С этими ((кривыми)) сложновато работать – не всегда понятно, как искать ((контрольные точки)), которые приведут к нужной вам ((форме)). Иногда их можно вычислить, иногда приходится подбирать методом проб и ошибок.
 
-(((rounding)))(((canvas)))(((arcTo method)))(((arc)))__Arcs__—fragments of a 
-((circle))—are easier to reason about. The `arcTo` method  
-takes no less than five arguments. The first four arguments act
-somewhat like the arguments to ++quadraticCurveTo++. The first pair
-provides a sort of ((control point)), and the second pair gives the
-line's destination. The fifth argument provides the ((radius)) of the
-arc. The method will conceptually project a corner—a line going to the
-control point and then to the destination point—and round the corner's point so
-that it forms part of a circle with the given radius. The `arcTo` method then draws
-the rounded part, as well as a line from the starting position to the
-start of the rounded part.
+(((rounding)))(((canvas)))(((arcTo method)))(((arc)))_Дуги_, фрагменты ((круг))ов, легче в обращении. Метод `arcTo` принимает целых пять аргументов. Первые четыре – похожи на аргументы `quadraticCurveTo`. Первая пара задаёт что-то вроде ((контрольной точки)), вторая – место назначения кривой. Пятый задаёт ((радиус)) дуги. Метод создаёт скруглённый угол – линию, идущую к контрольной точке, а затем к точке назначения – и скругляет угол заданным радиусом. Метод `arcTo` рисует круглую часть, а также линию от точки старта до начала закруглённой части.
 
 [source,text/html]
 ----
@@ -390,30 +258,17 @@ start of the rounded part.
 
 ifdef::book_target[]
 
-This produces two rounded corners with different radii.
+Этот пример рисует два скруглённых угла с разными радиусами.
 
 image::img/canvas_arc.png[alt="Two arcs with different radii",width="2.3cm"]
 
 endif::book_target[]
 
-(((canvas)))(((arcTo method)))(((lineTo method)))The `arcTo` method
-won't draw the line from the end of the rounded part to the goal
-position, though the word _to_ in its name would suggest it does. You
-can follow up with a call to `lineTo` with the same goal coordinates
-to add that part of the line.
+(((canvas)))(((arcTo method)))(((lineTo method)))`arcTo` не рисует линию от конца закруглённой части до точки назначения, несмотря _на_ своё название. Её можно закончить через `lineTo` с такими же координатами.
 
-(((arc method)))(((arc)))To draw a ((circle)), you could use four
-calls to `arcTo` (each turning 90 degrees). But the `arc` method
-provides a simpler way. It takes a pair of ((coordinates)) for the
-arc's center, a radius, and then a start and end angle.
+(((arc method)))(((arc)))Чтобы нарисовать ((круг)), можно сделать четыре вызова `arcTo`, где каждый повёрнут относительно другого на 90 градусов. Но метод `arc` предоставляет способ проще. Он принимает пару ((координат)) центра дуги, радиус и начальный и конечный углы.
 
-(((pi)))(((Math.PI constant)))Those last two parameters make it
-possible to draw only part of circle. The ((angle))s are measured in
-((radian))s, not ((degree))s. This means a full ((circle)) has an
-angle of 2π, or `2 * Math.PI`, which is about 6.28. The angle starts counting at
-the point to the right of the circle's center and goes clockwise from
-there. You can use a start of 0 and an end bigger than 2π (say, 7)
-to draw a full circle.
+(((pi)))(((Math.PI constant)))Два последних параметра могут помочь в рисовании части круга. ((Углы)) измеряются в ((радиан))ах, а не ((градус))ах. Это значит, что полный ((круг)) имеет угол в 2π, или `2 * Math.PI`, что примерно равно 6.28. Угол начинает отсчёт от точки справа от центра, и идёт по часовой стрелки. Чтобы нарисовать полный круг, можно задать начало в 0, а конец больше 2π (к примеру, 7).
 
 [source,text/html]
 ----
@@ -429,12 +284,7 @@ to draw a full circle.
 </script>
 ----
 
-(((moveTo method)))(((arc method)))(((path, canvas)))The resulting picture
-contains a ((line)) from the right of the full circle (first call to
-`arc`) to the right of the quarter-((circle)) (second call). Like other
-path-drawing methods, a line drawn with `arc` is connected to the
-previous path segment by default. You'd have to call `moveTo` or
-start a new path if you want to avoid this.
+(((moveTo method)))(((arc method)))(((path, canvas)))На картинке в результате будет ((линия)) справа от круга (первый вызов `arc`), до правой части четверти ((круга)) (второй вызов). Как и другие методы рисования контуров, линия дуги соединена с предыдущим сегментом контура. Для начала рисования нового контура надо вызвать `moveTo`.
 
 ifdef::book_target[]
 
@@ -443,14 +293,11 @@ image::img/canvas_circle.png[alt="Drawing a circle",width="4.9cm"]
 endif::book_target[]
 
 [[pie_chart]]
-== Drawing a pie chart ==
+== Рисуем круговую диаграмму ==
 
-(((pie chart example)))Imagine you've just taken a ((job)) at
-EconomiCorp, Inc., and your first assignment is to draw a pie chart of
-their customer satisfaction ((survey)) results.
+(((pie chart example)))Представьте, что вы получили ((работу)) в ООО «Экономика для всех», и вашим первым заданием будет нарисовать круговую диаграмму удовлетворённости клиентов согласно результатам ((опрос))а.
 
-The `results` variable contains an array of objects that represent the
-survey responses.
+Переменная `result` содержит массив объектов, представляющих результаты.
 
 // include_code
 
@@ -465,12 +312,7 @@ var results = [
 ];
 ----
 
-(((pie chart example)))To draw a pie chart, we draw a number of pie
-slices, each made up of an ((arc)) and a pair of ((line))s to the center
-of that arc. We can compute the ((angle)) taken up by each arc by dividing
-a full circle (2π) by the total number of responses and then
-multiplying that number (the angle per response) by the number of
-people who picked a given choice.
+(((pie chart example)))Чтобы нарисовать диаграмму, мы рисуем несколько секторов, каждый из которых делается из ((дуги)) и пары ((линий)) от центра. ((Угол)) мы вычисляем, деля полный круг (2π) на общее количество отзывов, и умножая на количество людей, выбравших данный вариант ответа.
 
 [sandbox="pie"]
 [source,text/html]
@@ -500,22 +342,17 @@ people who picked a given choice.
 
 ifdef::book_target[]
 
-This draws the following chart:
+Это рисует следующую диаграмму:
 
 image::img/canvas_pie_chart.png[alt="A pie chart",width="5cm"]
 
 endif::book_target[]
 
-But a chart that doesn't tell us what it means isn't very helpful. We
-need a way to draw text to the ((canvas)).
+Но диаграмма не расшифровывает значения секторов – это неудобно. Нам надо как-то нарисовать на ((холст))е текст.
 
 == Text ==
 
-(((stroking)))(((filling)))(((fillColor property)))(((fillText
-method)))(((strokeText method)))A 2D canvas drawing context provides
-the methods `fillText` and `strokeText`. The latter can be useful for
-outlining letters, but usually `fillText` is what you need. It will
-fill the given ((text)) with the current `fillColor`.
+(((stroking)))(((filling)))(((fillColor property)))(((fillText method)))(((strokeText method)))У контекста двумерного холста есть методы `fillText` и `strokeText`. Последний можно использовать для обведённых букв, но обычно используется `fillText`. Он заполняет заданный ((текст)) цветом `fillColor`.
 
 [source,text/html]
 ----
@@ -524,48 +361,21 @@ fill the given ((text)) with the current `fillColor`.
   var cx = document.querySelector("canvas").getContext("2d");
   cx.font = "28px Georgia";
   cx.fillStyle = "fuchsia";
-  cx.fillText("I can draw text, too!", 10, 50);
+  cx.fillText("Я и текст могу рисовать!", 10, 50);
 </script>
 ----
 
-You can specify the size, style, and ((font)) of the text with the
-`font` property. This example just gives a font size and family name.
-You can add `italic` or `bold` to the start of the string to select a
-style.
+Можно задать размер, стиль и ((шрифт)) текста через свойство `font`. В примере задаётся только размер и шрифт. Можно добавить наклон (`italic`) и жирность (`bold`) в начале строки.
 
-(((fillText method)))(((strokeText method)))(((textAlign
-property)))(((textBaseline property)))The last two arguments to
-`fillText` (and `strokeText`) provide the position at which the font
-is drawn. By default, they indicate the position of the start of the
-text's alphabetic baseline, which is the line that letters “stand” on, not
-counting hanging parts in letters like _j_ or _p_. You can change the horizontal
-position by setting the `textAlign` property to `"end"`
-or `"center"` and the vertical position by setting `textBaseline` to
-`"top"`, `"middle"`, or `"bottom"`.
+(((fillText method)))(((strokeText method)))(((textAlign property)))(((textBaseline property)))Два последних аргумента `fillText` (и `strokeText`) задают позицию, с которой начинается текст. По умолчанию это начало линии, на которой “стоят” буквы – не считая свисающих частей букв типа _р_ и _у_. Можно менять позицию по горизонтали, задавая свойству `textAlign` значения `"end"` или `"center"`, а по вертикали – задавая `textBaseline` `"top"`, `"middle"` или `"bottom"`.
 
-(((pie chart example)))We will come back to our pie chart, and the
-problem of ((label))ing the slices, in the
-link:16_canvas.html#exercise_pie_chart[exercises] at the end of the
-chapter.
+(((pie chart example)))Мы вернёмся к нашей круговой диаграмме и проблеме ((маркировки)) секторов в link:16_canvas.html#exercise_pie_chart[упражнениях] в конце главы.
 
-== Images ==
+== Изображения ==
 
-(((vector graphics)))(((bitmap graphics)))In computer ((graphics)), a
-distinction is often made between _vector_ graphics and _bitmap_
-graphics. The first is what we have been doing so far in this
-chapter—specifying a picture by giving a logical description of
-((shape))s. Bitmap graphics, on the other hand, don't specify actual
-shapes but rather work with ((pixel)) data (rasters of colored dots).
+(((vector graphics)))(((bitmap graphics)))В компьютерной ((графике)) проводится различие между _векторной_ и _растровой_ графикой. Первая – то, чем мы занимались в этой главе, рисование при помощи логического описания ((фигур)). Вторая – не задаёт фигуры, а работает на уровне ((пикселей)).
 
-(((load event)))(((event handling)))(((img (HTML tag))))(((drawImage
-method)))The `drawImage` method allows us to draw ((pixel)) data onto
-a ((canvas)). This pixel data can originate from an `<img>` element or
-from another canvas, and neither has to be visible in the actual
-document. The following example creates a detached `<img>` element and
-loads an image file into it. But it cannot immediately start drawing
-from this picture because the browser may not have fetched it yet. To
-deal with this, we register a `"load"` event handler and do the
-drawing after the image has loaded.
+(((load event)))(((event handling)))(((img (HTML tag))))(((drawImage method)))Метод `drawImage` позволяет выводить на ((холст)) ((пиксель))ные данные. Они могут быть взяты из элемента `<img>` или с другого холста, которые не обязательно видны в самом документе. Следующий пример создаёт элемент `<img>` и загружает в него файл изображения. Но он не может сразу начать рисовать при помощи этой картинки, потому что браузер мог не успеть её подгрузить. Для этого мы регистрируем обработчик события `"load"` и рисуем после загрузки.
 
 [source,text/html]
 ----
@@ -581,35 +391,19 @@ drawing after the image has loaded.
 </script>
 ----
 
-(((drawImage method)))(((scaling)))By default, `drawImage` will draw
-the image at its original size. You can also give it two additional
-arguments to dictate a different width and height.
+(((drawImage method)))(((scaling)))По умолчанию `drawImage` нарисует картинку оригинального размера. Ему можно задать два дополнительных параметра для изменения ширины и высоты.
 
-When `drawImage` is given _nine_ arguments, it can be used to draw
-only a fragment of an image. The second through fifth arguments indicate the
-rectangle (x, y, width, and height) in the source image that should be
-copied, and the sixth to ninth arguments give the rectangle (on the
-canvas) into which it should be copied.
+Когда `drawImage` задано _девять_ аргументов, её можно использовать для рисования части изображения. Со второго по пятый аргументы обозначают прямоугольник (x, y, ширина и высота) в исходной картинке, который надо скопировать. С шестого по девятый – прямоугольник на холсте, куда его надо скопировать.
 
-(((player character)))(((pixel art)))This can be used to pack multiple
-_((sprite))s_ (image elements) into a single image file and then 
-draw only the part you need. For example, we have this picture containing a
-game character in multiple ((pose))s:
+(((player character)))(((pixel art)))Это можно использовать, чтобы упаковывать несколько _((спрайт))ов_ (элементов картинки или кадров анимации) в один файл изображения, и рисовать только нужные его части. К примеру, есть у нас картинка игрового персонажа в разных ((поза))х:
 
 image::img/player_big.png[alt="Various poses of a game character",width="6cm"]
 
-By alternating which pose we draw, we can show an ((animation)) that
-looks like a walking character.
+Перебирая позы, мы можем вывести ((анимацию)) идущего персонажа.
 
-(((fillRect method)))(((clearRect method)))(((clearing)))To animate
-the ((picture)) on a ((canvas)), the `clearRect` method is useful. It
-resembles `fillRect`, but instead of coloring the rectangle, it makes
-it ((transparent)), removing the previously drawn pixels.
+(((fillRect method)))(((clearRect method)))(((clearing)))Для анимации на ((холсте)) пригодится метод `clearRect`. Он напоминает `fillRect`, но вместо окраски прямоугольника он делает его ((прозрачным)), удаляя предыдущие пиксели.
 
-(((setInterval function)))(((img (HTML tag))))We know that each
-_((sprite))_, each subpicture, is 24 ((pixel))s wide and 30 pixels
-high. The following code loads the image and then sets up an interval
-(repeated timer) to draw the next _((frame))_:
+(((setInterval function)))(((img (HTML tag))))Мы знаем, что каждый _((спрайт))_ шириной 24 и высотой 30 ((пикселей)). Следующий код загружает картинку и задаёт интервал (повторяющийся таймер) для рисования следующих _((кадр))ов_:
 
 [source,text/html]
 ----
@@ -634,23 +428,14 @@ high. The following code loads the image and then sets up an interval
 </script>
 ----
 
-(((remainder operator)))(((% operator)))The `cycle` variable tracks
-our position in the ((animation)). Each ((frame)), it is incremented
-and then clipped back to the 0 to 7 range by using the remainder
-operator. This variable is then used to compute the x-coordinate that
-the sprite for the current pose has in the picture.
+(((remainder operator)))(((% operator)))Переменная `cycle` отслеживает позицию в ((анимации)). Каждый ((кадр)) она увеличивается и по достижению 7 начинает сначала, используя оператор деления с остатком. Она используется для подсчёта координаты x, на которой в изображении находится спрайт с нужной позой.
 
-== Transformation ==
+== Преобразования ==
 
 indexsee:[flipping,mirroring]
-(((transformation)))(((mirroring)))But what if we want our character to
-walk to the left instead of to the right? We could add another set of
-sprites, of course. But we can also instruct the ((canvas)) to draw
-the picture the other way round.
+(((transformation)))(((mirroring)))А что, если нам надо, чтобы персонаж шёл влево, а не вправо? Мы могли бы добавить ещё один набор спрайтов. Но мы также можем сказать ((холст))у, чтоб он рисовал картинку зеркально.
 
-(((scale method)))(((scaling)))Calling the `scale` method will cause
-anything drawn after it to be scaled. This method takes two parameters, one to
-set a horizontal scale and one to set a vertical scale.
+(((scale method)))(((scaling)))Вызов метода `scale` приведёт к тому, что все последующие рисунки будут масштабированы. Он принимает два параметра – масштаб по горизонтали и по вертикали.
 
 [source,text/html]
 ----
@@ -667,52 +452,25 @@ set a horizontal scale and one to set a vertical scale.
 
 ifdef::book_target[]
 
-Due to the call to `scale`, the circle is drawn three times as wide
-and half as high.
+Из-за вызова `scale` круг рисуется в три раза шире и вдвое ниже.
 
 image::img/canvas_scale.png[alt="A scaled circle",width="6.6cm"]
 
 endif::book_target[]
 
-(((mirroring)))Scaling will cause everything about the drawn image, including the
-((line width)), to be stretched out or squeezed together as specified.
-Scaling by a negative amount will flip the picture around. The
-flipping happens around point (0,0), which means it will also
-flip the direction of the coordinate system. When a horizontal scaling
-of -1 is applied, a shape drawn at x position 100 will end up at what
-used to be position -100.
+(((mirroring)))Масштабирование растягивает или сжимает все параметры картинки, включая ((ширину линии)) по заданным параметрам. Масштабирование с отрицательным параметром переворачивает картинку зеркально. Переворот происходит вокруг точки (0, 0), что означает, что направление системы координат тоже поменяется. При применении горизонтального масштаба -1, форма, нарисованная на позиции x = 100, будет нарисована там, где раньше была позиция -100.
 
-(((drawImage method)))So to turn a picture around, we can't simply
-add `cx.scale(-1, 1)` before the call to `drawImage` since that would
-move our picture outside of the ((canvas)), where it won't be visible.
-You could adjust the ((coordinates)) given to
-`drawImage` to compensate for this by drawing the image at x position -50
-instead of 0. Another solution, which doesn't require the code that does
-the drawing to know about the scale change, is to adjust the ((axis))
-around which the scaling happens.
+(((drawImage method)))Значит, для отзеркаливания картинки мы не можем просто добавить `cx.scale(-1, 1)` перед вызовом `drawImage` – наша картинка уедет с ((холст))а и не будет видна. Можно было бы подправить ((координаты)), передаваемые в `drawImage`, чтобы компенсировать это, нарисовав изображение в координате -50 по оси x вместо 0. Другой вариант действий, когда код рисования ничего не знает про масштабирование, заключается в изменении направления ((оси)).
 
-(((rotate method)))(((translate method)))(((transformation)))There are several 
-other methods besides `scale` that influence the coordinate system for a ((canvas)).
-You can rotate subsequently drawn shapes with the `rotate` method and move them with the
-`translate` method. The interesting—and confusing—thing is that these
-transformations _stack_, meaning that each one happens relative to the
-previous transformations.
+(((rotate method)))(((translate method)))(((transformation)))Есть несколько других методов кроме масштабирования, влияющих на координатную систему ((холст))а. Нарисованные формы можно поворачивать методом `rotate` и сдвигать методом `translate`. Интересно, что все трансформации _накапливаются_, то есть каждая последующая происходит относительно предыдущих.
 
-(((rotate method)))(((translate method)))So if we translate by
-10 horizontal pixels twice, everything will be drawn 20 pixels to the
-right. If we first move the center of the coordinate system to (50,50)
-and then rotate by 20 ((degree))s (0.1π in ((radian))s), that rotation
-will happen _around_ point (50,50).
+(((rotate method)))(((translate method)))Значит, если мы дважды сдвинем изображение на 10 пикселей по горизонтали, то всё будет нарисовано на 20 пикселей правее. Если мы сначала сдвинем начало отсчёта на (50, 50), а затем повернём всё на 20 ((градус))ов (0.1π ((радиан))), поворот произойдёт _вокруг_ точки (50, 50).
 
 image::img/transform.svg[alt="Stacking transformations",width="9cm"]
 
-(((coordinates)))But if we _first_ rotate by 20 degrees and _then_
-translate by (50,50), the translation will happen in the rotated
-coordinate system and thus produce a different orientation. The order
-in which transformations are applied matters.
+(((coordinates)))А если мы _сначала_ повернём всё на 20 градусов, а уже _затем_ сдвинем на (50, 50), то преобразование случится в повёрнутой системе координат, что приведёт к иному результату. Порядок преобразований имеет значение.
 
-(((axis)))(((mirroring)))To flip a picture around the vertical line at a given x
-position, we can do the following:
+(((axis)))(((mirroring)))Чтобы отзеркалить картинку относительно вертикали на заданной позиции x, мы делаем следующее:
 
 // include_code
 
@@ -725,26 +483,13 @@ function flipHorizontally(context, around) {
 }
 ----
 
-(((flipHorizontally method)))We move the y-((axis)) to where we
-want our ((mirror)) to be, apply the mirroring, and finally move
-the y-axis back to its proper place in the mirrored universe. The
-following picture explains why this works:
+(((flipHorizontally method)))Мы сдвигаем ((ось)) y туда, где нам нужно расположить наше ((зеркало)), проводим отзеркаливание, и сдвигаем ось y обратно на полагающееся место в зеркальной вселенной. Следующий рисунок объясняет, как это работает:
 
 image::img/mirror.svg[alt="Mirroring around a vertical line",width="8cm"]
 
-(((translate method)))(((scale
-method)))(((transformation)))(((canvas)))This shows the coordinate
-systems before and after mirroring across the central line. If we draw a
-triangle at a positive x position, it would, by default, be in the
-place where triangle 1 is. A call to `flipHorizontally` first does a
-translation to the right, which gets us to triangle 2. It then scales,
-flipping the triangle back to position 3. This is not where it should
-be, if it were mirrored in the given line. The second `translate` call
-fixes this—it “cancels” the initial translation and makes triangle 4
-appear exactly where it should.
+(((translate method)))(((scale method)))(((transformation)))(((canvas)))Тут показаны системы координат до и после отзеркаливания относительно центральной линии. Если мы нарисуем треугольник в положительной полуплоскости относительно y, он будет находиться на месте треугольника 1. Вызов `flipHorizontally` сначала сдвигает его вправо, на место треугольника 2. Затем происходит масштабирование, и треугольник оказывается на месте 3. Он должен быть не там, если нам надо отзеркалить его относительно заданной линии. Второй вызов `translate` исправляет это – он “отменяет” изначальный сдвиг и помещает треугольник на позицию 4.
 
-We can now draw a mirrored character at position (100,0) by flipping
-the world around the character's vertical center.
+Теперь можно нарисовать отзеркаленного персонажа на позиции (100, 0), перевернув мир относительно вертикали изображения персонажа.
 
 [source,text/html]
 ----
@@ -762,38 +507,17 @@ the world around the character's vertical center.
 </script>
 ----
 
-== Storing and clearing transformations ==
+== Хранение и очистка преобразований ==
 
-(((side effect)))(((canvas)))(((transformation)))Transformations stick
-around. Everything else we draw after ((drawing)) that mirrored
-character would also be mirrored. That might be a problem.
+(((side effect)))(((canvas)))(((transformation)))Преобразования накапливаются. Всё, что мы рисуем после ((рисования)) отзеркаленного персонажа, также будет зеркальным. Это может стать проблемой.
 
-It is possible to save the current transformation, do some drawing and
-transforming, and then restore the old transformation. This is usually
-the proper thing to do for a function that needs to temporarily
-transform the coordinate system. First, we save whatever transformation the code that
-called the function was using. Then, the function does its thing (on top of the
-existing transformation), possibly adding more transformations. And finally, we
-revert to the transformation that we started with.
+Возможно сохранить текущее преобразование, порисовать что-то с преобразованием, а затем вернуть старое состояние. Так должна поступать функция, делающая временное преобразование системы координат. Сначала мы сохраняем то преобразование, которое использовал код, вызвавший эту функцию. Затем функция отрабатывает на основе преобразований, проведённых на этот момент, и, возможно, добавляет новые. И в конце мы возвращаем преобразования к началу.
 
-(((save method)))(((restore method)))The `save` and `restore` methods
-on the 2D ((canvas)) context perform this kind of ((transformation))
-management. They conceptually keep a stack of transformation
-((state))s. When you call `save`, the current state is pushed onto the
-stack, and when you call `restore`, the state on top of the stack is
-taken off and used as the context's current transformation.
+(((save method)))(((restore method)))Этим занимаются методы `save` и `restore` контекста двумерного ((холст))а. По сути, они хранят стек ((состояний)) преобразований. При вызове `save` в стек добавляется текущее состояние, а при `restore` извлекается состояние сверху стека и применяется в качестве текущего контекста всех преобразований.
 
-(((branching recursion)))(((fractal
-example)))(((recursion)))The `branch` function in the following example 
-illustrates what you can do with a function that changes the
-transformation and then calls another function (in this case itself),
-which continues drawing with the given transformation.
+(((branching recursion)))(((fractal example)))(((recursion)))Функция `branch` в примере показывает, что можно сделать с функцией, которая выполняет преобразования и вызывает другую функцию (в данном случае, саму себя), которая продолжает рисовать с заданными преобразованиями.
 
-This function draws a treelike shape by drawing a line,
-moving the center of the coordinate system to the end of the line, and calling
-itself twice—first rotated to the left and then rotated to the
-right. Every call reduces the length of the branch drawn, and the
-recursion stops when the length drops below 8.
+Функция рисует древовидную структуру, рисуя линию, потом передвигая центр координат на конец линии, и вызывая себя затем дважды – сначала, повернув влево, а затем вправо. Каждый вызов уменьшает длину ветви, и рекурсия останавливается, когда длина падает меньше 8.
 
 [source,text/html]
 ----
@@ -818,41 +542,22 @@ recursion stops when the length drops below 8.
 
 ifdef::book_target[]
 
-The result is a simple fractal.
+В результате получается простой фрактал.
 
 image::img/canvas_tree.png[alt="A recursive picture",width="5cm"]
 
 endif::book_target[]
 
-(((save method)))(((restore method)))(((canvas)))(((rotate method)))If
-the calls to `save` and `restore` were not there, the second recursive
-call to `branch` would end up with the position and rotation created
-by the first call. It wouldn't be connected to the current branch but
-rather to the innermost, rightmost branch drawn by the first call. The
-resulting shape might also be interesting, but it is definitely not a
-tree.
+(((save method)))(((restore method)))(((canvas)))(((rotate method)))Если бы не было вызовов `save` и `restore`, второй рекурсивный вызов `branch` начинал бы с позиции и поворота, созданных первым. Он был бы соединён не с текущей веткой, а внутренней правой веткой, нарисованной первым вызовом. В результате получается тоже интересная форма, но уже не древовидная.
 
 [[canvasdisplay]]
-== Back to the game ==
+== Назад к игре ==
 
-(((drawImage method)))We now know enough about ((canvas)) drawing to
-start working on a ((canvas))-based ((display)) system for the
-((game)) from the link:15_game.html#game[previous chapter]. The new
-display will no longer be showing just colored boxes. Instead, we'll
-use `drawImage` to draw pictures that represent the game's elements.
+(((drawImage method)))Теперь мы знаем о ((холст))е достаточно, чтобы начать разработку ((графической системы)) для ((игры)) из link:15_game.html#game[предыдущей главы]. Новая система не будет показывать только цветные квадратики. Мы будем использовать `drawImage` для рисования картинок, представляющих элементы игры.
 
-(((CanvasDisplay type)))(((DOMDisplay type)))We will define an object
-type `CanvasDisplay`, supporting the same ((interface)) as
-`DOMDisplay` from link:15_game.html#domdisplay[Chapter 15], namely, the
-methods `drawFrame` and `clear`.
+(((CanvasDisplay type)))(((DOMDisplay type)))Мы определим тип объекта `CanvasDisplay`, который будет поддерживать тот же ((интерфейс)), что и `DOMDisplay` из link:15_game.html#domdisplay[главы 15], а именно, методы `drawFrame` and `clear`.
 
-(((state)))This object keeps a little more information than
-`DOMDisplay`. Rather than using the scroll position of its DOM
-element, it tracks its own ((viewport)), which tells us what part of
-the level we are currently looking at. It also tracks ((time)) and
-uses that to decide which ((animation)) ((frame)) to use. And finally,
-it keeps a `flipPlayer` property so that even when the player is
-standing still, it keeps facing the direction it last moved in.
+(((state)))Объект хранит немного больше информации, чем `DOMDisplay`. Вместо использования позиции прокрутки элемента DOM, он отслеживает ((окно просмотра)), которое сообщает, какую часть уровня мы сейчас видим. Также он отслеживает ((время)) и использует это, чтобы решить, какой ((кадр)) ((анимации)) показывать. И ещё он хранит свойство `flipPlayer`, чтобы даже когда игрок стоял на месте, он был повёрнут в ту сторону, в которую шёл в последний раз.
 
 // include_code
 
@@ -885,12 +590,7 @@ CanvasDisplay.prototype.clear = function() {
 };
 ----
 
-(((CanvasDisplay type)))The `animationTime` counter is the reason we
-passed the step size to `drawFrame` in
-link:15_game.html#domdisplay[Chapter 15], even though `DOMDisplay`
-does not use it. Our new `drawFrame` function uses the counter to track time
-so that it can switch between ((animation)) ((frame))s based on the
-current time.
+(((CanvasDisplay type)))В link:15_game.html#domdisplay[главе 15] мы передавали размер шага в `drawFrame` из-за счётчика `animationTime`, несмотря на то, что `DOMDisplay` его не использовал. Наша новая функция `drawFrame` использует его для отсчёта времени, чтобы переключаться между ((кадр))ами ((анимации)) в зависимости от текущего времени.
 
 // include_code
 
@@ -907,21 +607,11 @@ CanvasDisplay.prototype.drawFrame = function(step) {
 };
 ----
 
-(((scrolling)))Other than tracking time, the method updates the
-((viewport)) for the current player position, fills the whole canvas
-with a background color, and draws the ((background)) and ((actor))s
-onto that. Note that this is different from the approach in
-link:15_game.html#domdisplay[Chapter 15], where we drew the background
-once and scrolled the wrapping DOM element to move it.
+(((scrolling)))Кроме отслеживания времени, метод обновляет ((окно просмотра)) текущей позиции игрока, заполняет холст цветом фона, и рисует ((фон)) и ((актёр))ов. Заметьте, что всё происходит не так, как в link:15_game.html#domdisplay[главе 15], где мы рисовали фон один раз, а затем прокручивали элемент-обёртку DOM для перемещения по нему.
 
-(((clearing)))Because shapes on a canvas are just ((pixel))s, after we
-draw them, there is no way to move them (or remove them). The only way
-to update the canvas display is to clear it and redraw the scene.
+(((clearing)))Так как фигуры на холсте – всего лишь ((пиксели)), после их отрисовки их нельзя сдвинуть (или убрать). Единственным способом обновить холст будет очистить его и перерисовать сцену.
 
-(((CanvasDisplay type)))The `updateViewport` method is similar to
-`DOMDisplay`'s `scrollPlayerIntoView` method. It checks whether the
-player is too close to the edge of the screen and moves the
-((viewport)) when this is the case.
+(((CanvasDisplay type)))Метод `updateViewport` похож на метод `scrollPlayerIntoView` из `DOMDisplay`. Он проверяет, не находится ли игрок слишком близко к краю экрана и двигает ((окно просмотра)), если это случается.
 
 // include_code
 
@@ -946,15 +636,9 @@ CanvasDisplay.prototype.updateViewport = function() {
 };
 ----
 
-(((boundary)))(((Math.max function)))(((Math.min function)))(((clipping)))The calls
-to `Math.max` and `Math.min` ensure that the viewport does
-not end up showing space outside of the level. `Math.max(x, 0)`
-ensures that the resulting number is not less than zero.
-`Math.min`, similarly, ensures a value stays below a given bound.
+(((boundary)))(((Math.max function)))(((Math.min function)))(((clipping)))Вызовы `Math.max` и `Math.min` гарантируют, что окно просмотра не будет показывать пространство за пределами уровня. `Math.max(x, 0)` гарантирует, что итоговое число не меньше нуля. Сходным образом `Math.min` гарантирует, что значение не превысит заданную границу.
 
-When ((clearing)) the display, we'll use a slightly different
-((color)) depending on whether the game is won (brighter) or lost
-(darker).
+При ((очистке)) дисплея мы используем другой ((цвет)), в зависимости от того, выиграна игра или проиграна.
 
 // include_code
 
@@ -973,10 +657,7 @@ CanvasDisplay.prototype.clearDisplay = function() {
 };
 ----
 
-(((Math.floor function)))(((Math.ceil function)))(((rounding)))To draw the
-background, we run through the tiles that are visible in the current
-viewport, using the same trick used in `obstacleAt` in the
-link:15_game.html#viewport[previous chapter].
+(((Math.floor function)))(((Math.ceil function)))(((rounding)))Для рисования фона мы пробегаемся по клеткам, видимым в текущем окне просмотра, используя тот же фокус, что и в `obstacleAt` в link:15_game.html#viewport[предыдущей главе].
 
 // include_code
 
@@ -1008,43 +689,17 @@ CanvasDisplay.prototype.drawBackground = function() {
 };
 ----
 
-(((drawImage method)))(((sprite)))(((tile)))Tiles that are not empty (null)
-are drawn with `drawImage`. The `otherSprites` image contains the
-pictures used for elements other than the player. It contains, from
-left to right, the wall tile, the lava tile, and the sprite for a
-coin.
+(((drawImage method)))(((sprite)))(((tile)))Непустые клетки (`null`) рисуются через `drawImage`. Изображение `otherSprites` содержит картинки для элементов, не относящихся к игроку. Слева направо — это стена, лава и монетка.
 
 image::img/sprites_big.png[alt="Sprites for our game",width="1.4cm"]
 
-(((scaling)))Background tiles are 20 by 20 pixels, since we will use
-the same scale that we used in `DOMDisplay`. Thus, the offset for lava
-tiles is 20 (the value of the `scale` variable), and the offset for
-walls is 0.
+(((scaling)))Клетки фона 20 на 20 пикселей, так как мы используем ту же шкалу, что была в DOMDisplay. Значит, сдвиг клеток лавы 20 (значение переменной `scale`), а сдвиг стен 0.
 
-(((drawing)))(((load event)))(((drawImage method)))We don't bother
-waiting for the sprite image to load. Calling
-`drawImage` with an image that hasn't been loaded yet will simply do
-nothing. Thus, we might fail to draw the game properly for the first
-few ((frame))s, while the image is still loading, but that is not a
-serious problem. Since we keep updating the screen, the correct scene
-will appear as soon as the loading finishes.
+(((drawing)))(((load event)))(((drawImage method)))Мы не ждём загрузки спрайта. Вызов `drawImage` с незагруженной пока картинкой ничего не сделает. Поэтому, на нескольких первых ((кадр))ах игра может быть отрисована неверно, но это не так уж критично. Так как мы обновляем экран, правильная сцена появится сразу после окончания загрузки.
 
-(((player character)))(((animation)))(((drawing)))The ((walking))
-character shown earlier will be used to represent the player. The
-code that draws it needs to pick the right ((sprite)) and direction
-based on the player's current motion. The first eight sprites contain a
-walking animation. When the player is moving along a floor, we cycle
-through them based on the display's `animationTime` property. This is
-measured in seconds, and we want to switch frames 12 times per
-second, so the ((time)) is multiplied by 12 first. When the player is
-standing still, we draw the ninth sprite. During jumps, which are
-recognized by the fact that the vertical speed is not zero, we use the
-tenth, rightmost sprite.
+(((player character)))(((animation)))(((drawing)))Наш ((шагающий)) персонаж будет использован в качестве игрока. Код его отрисовки должен выбирать правильный ((спрайт)) и направление, зависящее от текущего движения игрока. Первые восемь спрайтов содержат анимацию ходьбы. Когда игрок передвигается по полу, мы перебираем их в зависимости от свойства `animationTime` объекта `display`. Оно измеряется в секундах, а нам надо менять кадры 12 раз в секунду, поэтому мы умножаем ((время)) на 12. Когда игрок стоит, мы рисуем девятый спрайт. В прыжках, которые мы распознаём по тому, что вертикальная скорость отлична от нуля, мы рисуем десятый, самый правый спрайт.
 
-(((flipHorizontally function)))(((CanvasDisplay type)))Because the
-((sprite))s are slightly wider than the player object—24 instead of 16
-pixels, to allow some space for feet and arms—the method has to adjust
-the x-coordinate and width by a given amount (`playerXOverlap`).
+(((flipHorizontally function)))(((CanvasDisplay type)))Поскольку ((спрайт))ы чуть шире объекта игрока – 24 пикселя вместо 16, чтобы было место для рук и ног, метод должен подправлять координату x и ширину на заданное число (`playerXOverlap`).
 
 // include_code
 
@@ -1080,8 +735,7 @@ CanvasDisplay.prototype.drawPlayer = function(x, y, width,
 };
 ----
 
-The `drawPlayer` method is called by `drawActors`, which is responsible for
-drawing all the actors in the game.
+Метод `drawPlayer` вызывается через `drawActors`, который рисует всех актёров в игре.
 
 // include_code
 
@@ -1106,19 +760,13 @@ CanvasDisplay.prototype.drawActors = function() {
 };
 ----
 
-When ((drawing)) something that is not the ((player)), we look at its
-type to find the offset of the correct sprite. The ((lava)) tile is
-found at offset 20, and the ((coin)) sprite is found at 40 (two times `scale`).
+При ((отрисовке)) чего-либо кроме ((игрок))а мы смотрим на его тип, чтобы найти смещение для нужного спрайта. ((Лава)) находится по смещению 20, ((монета)) – 40.
 
-(((viewport)))We have to subtract the viewport's position when
-computing the actor's position since (0,0) on our ((canvas))
-corresponds to the top left of the viewport, not the top left of the
-level. We could also have used `translate` for this. Either way works.
+(((viewport)))Нужно вычитать позицию окна просмотра при подсчёте позиции актёра, так как точка (0, 0) нашего ((холст))а соответствует левой верхней точке окна просмотра, а не левой верхней точке уровня. Ещё мы могли бы использовать для этой цели `translate`.
 
 ifdef::interactive_target[]
 
-(((GAME_LEVELS data set)))(((game,with canvas)))The tiny document
-shown next plugs the new display into `runGame`:
+(((GAME_LEVELS data set)))(((game,with canvas)))Следующий маленький документ подключает новый `display` в `runGame`:
 
 // start_code
 
@@ -1137,133 +785,70 @@ endif::interactive_target[]
 
 ifdef::book_target[]
 
-(((game,screenshot)))That concludes the new ((display)) system. The
-resulting game looks something like this:
+(((game,screenshot)))На этом новая система ((отображения)) завершена. В результате игра выглядит примерно так:
 
 image::img/canvas_game.png[alt="The game as shown on canvas",width="8cm"]
 
 endif::book_target[]
 
 [[graphics_tradeoffs]]
-== Choosing a graphics interface ==
+== Выбор графического интерфейса ==
 
-Whenever you need to generate graphics in the browser, you can choose
-between plain ((HTML)), ((SVG)), and ((canvas)). There is no single
-_best_ approach that works in all situations. Each option has
-strengths and weaknesses.
+Когда вам нужно создавать графику в браузере, у вас есть выбор – ((HTML)), ((SVG)) и ((холст)). Не существует _идеального_ подхода для всех ситуаций. У каждого варианта есть плюсы и минусы.
 
-(((text wrapping)))Plain HTML has the advantage of being simple. It
-also integrates well with ((text)). Both SVG and canvas allow you to
-draw text, but they won't help you position that text or wrap it
-when it takes up more than one line. In an HTML-based picture, it is
-easy to include blocks of text.
+(((text wrapping)))Чистый HTML прост. Он хорошо сочетается с ((текст))ом. SVG и холст позволяют рисовать текст, но не помогают в его расположении и не делают переносов, когда он занимает более одной линии. В HTML просто включать блоки текста.
 
-(((zooming)))(((SVG)))SVG can be used to produce ((crisp)) ((graphics))
-that look good at any zoom level. It is more difficult to use than
-plain HTML but also much more powerful.
+(((zooming)))(((SVG)))SVG можно использовать для создания ((чёткой)) ((графики)), которая выглядит хорошо при любом увеличении. Он сложнее обычного HTML, но и гораздо мощнее.
 
-(((DOM)))(((SVG)))(((event handling)))Both SVG and HTML build up a
-((data structure)) (the DOM) that represents the picture. This makes
-it possible to modify elements after they are drawn. If you need to
-repeatedly change a small part of a big ((picture)) in response to
-what the user is doing or as part of an ((animation)), doing it in a 
-canvas can be needlessly expensive. The DOM also allows us to register
-mouse event handlers on every element in the picture (even on shapes
-drawn with SVG). You can't do that with canvas.
+(((DOM)))(((SVG)))(((event handling)))SVG и HTML строят ((структуру данных)) (DOM), которая представляет картинку. Это позволяет изменять элементы после того, как они нарисованы. Если вам надо периодически менять небольшую часть большой ((картинки)) в ответ на действия пользователя или в качестве ((анимации)), на холсте это будет делать очень затратно. DOM позволяет регистрировать обработчики событий мыши на любом элементе картинки (даже на формах, нарисованных через SVG). С холстом это не пройдёт.
 
-(((performance)))(((optimization)))But ((canvas))’s ((pixel))-oriented
-approach can be an advantage when drawing a huge amount of tiny
-elements. The fact that it does not build up a data structure but
-only repeatedly draws onto the same pixel surface gives canvas a
-lower cost per shape.
+(((performance)))(((optimization)))Но ((пиксель))ный подход ((холст))а имеет преимущество при рисовании большого количества небольших элементов. Он не строит структуру данных, а просто рисует на той же самой поверхности пиксели, что снижает затратность в пересчёте на фигуры.
 
-(((ray tracer)))There are also effects, such as rendering a scene one
-pixel at a time (for example, using a ray tracer) or postprocessing
-an image with JavaScript (blurring or distorting it), that can only be
-realistically handled by a ((pixel))-based technique.
+(((ray tracer)))Есть ещё факторы, типа создания сцены попиксельно (например, при использовании трассировки лучей) или постобработка картинки в JavaScript (размытие или искажение), которые можно сделать только при помощи по((пиксель))ного рисования.
 
-In some cases, you may want to combine several of these
-techniques. For example, you might draw a ((graph)) with ((SVG)) or
-((canvas)) but show ((text))ual information by positioning an
-((HTML)) element on top of the picture.
+В некоторых случаях можно комбинировать эти техники. Например, можно нарисовать ((граф)) через ((SVG)) или ((холст)), а ((текст))овую информацию показывать, позиционируя элементы ((HTML)) поверх картинки.
 
-(((display)))For nondemanding applications, it really doesn't matter
-much which interface you choose. The
-link:16_canvas.html#canvasdisplay[second display] we built for our
-game in this chapter could have been implemented using any of these
-three ((graphics)) technologies since it does not need to draw text,
-handle mouse interaction, or work with an extraordinarily large amount
-of elements.
+(((display)))Для непривередливых приложений неважно, какой вы используете интерфейс. link:16_canvas.html#canvasdisplay[Второй дисплей], построенный нами для нашей игры, можно сделать любым из трёх ((графических)) способов, так как он не выводит текст и не обрабатывает нажатия мыши, и не обслуживает огромное количество элементов.
 
-== Summary ==
+== Итог ==
 
-In this chapter, we discussed techniques for drawing graphics in the
-browser, focusing on the `<canvas>` element.
+В этой главе мы обсудили техники рисования графики в браузере, сконцентрировавшись на элементе `<canvas>`.
 
-A canvas node represents an area in a document that our program may
-draw on. This drawing is done through a drawing context object,
-created with the `getContext` method.
+Узел холста представляет область документа, где программа может рисовать. Это делается через объект контекста, создаваемый методом `getContext`.
 
-The 2D drawing interface allows us to fill and stroke various shapes.
-The context's `fillStyle` property determines how shapes are filled. The
-`strokeStyle` and `lineWidth` properties control the way lines are drawn.
+Интерфейс двумерного рисования позволяет закрашивать и обводить разные фигуры. Свойство `fillStyle` задаёт заливку форм. Свойства `strokeStyle` и `lineWidth` управляют тем, как рисуются линии.
 
-Rectangles and pieces of text can be drawn with a single method call.
-The `fillRect` and `strokeRect` methods draw rectangles, and the 
-`fillText` and `strokeText` methods draw text. To create custom shapes, 
-we must first build up a path.
+Прямоугольники и куски текста можно рисовать одним вызовом метода. Методы `fillRect` и `strokeRect` рисуют прямоугольники, а `fillText` и `strokeText` выводят текст. Для создания произвольных форм нам нужно строить контуры.
 
-(((stroking)))(((filling)))Calling `beginPath` starts a new path. A
-number of other methods add lines and curves to the current path. For
-example, `lineTo` can add a straight line. When a path is
-finished, it can be filled with the `fill` method or stroked with the
-`stroke` method.
+(((stroking)))(((filling)))Вызов `beginPath` начинает контур. Несколько методов добавляют к нему линии и кривые. Например, `lineTo` добавляет прямую. Когда контур закончен, его можно заполить методом `fill` или обвести методом `stroke`.
 
-Moving pixels from an image or another canvas onto our canvas is done
-with the `drawImage` method. By default, this method draws the whole
-source image, but by giving it more parameters, you can copy
-a specific area of the image. We used this for our game by copying individual
-poses of the game character out of an image that contained many
-such poses.
+Перемещение пикселей с картинки или другого холста на наш делается методом `drawImage`. По умолчанию, он рисует всю исходную картинку, но с большим количеством параметров вы можете скопировать нужный участок изображения. В нашей игре мы использовали эту возможность, копируя разные позы игрового персонажа из частей картинки, содержавшей много поз.
 
-Transformations allow you to draw a shape in multiple orientations. 
-A 2D drawing context has a current transformation that can be changed
-with the `translate`, `scale`, and `rotate` methods. These will affect
-all subsequent drawing operations. A transformation state can be saved
-with the `save` method and restored with the `restore` method.
+Перемещения позволяют рисовать форму, ориентированную по-разному. Двумерный контекст хранит текущее преобразование, которое можно менять через методы `translate`, `scale` и `rotate`. Это повлияет на все остальные операции рисования. Текущее состояние преобразований можно сохранить методом `save` и восстановить методом `restore`.
 
-When drawing an animation on a canvas, the `clearRect` method can be
-used to clear part of the canvas before redrawing it.
+При рисовании анимаций на холсте можно использовать метод `clearRect` для очистки части холста перед перерисовкой.
 
-== Exercises ==
+== Упражнения ==
 
-=== Shapes ===
+=== Фигуры ===
 
-(((shapes (exercise))))Write a program that draws the following
-((shape))s on a ((canvas)):
+(((shapes (exercise))))Напишите программу, рисующую на холсте следующие ((фигуры)):
 
-1. A ((trapezoid)) (a ((rectangle)) that is wider on one side)
+1. ((Трапецию)) (((прямоугольник)), который с одной стороны шире)
 
-2. (((rotation)))A red ((diamond)) (a rectangle rotated 45 degrees or ¼π radians)
+2. (((rotation)))Красный ((ромб)) (прямоугольник повёрнутый на 45 градусов или ¼π радиан)
 
-3. A zigzagging ((line))
+3. ((Зигзаг))
 
-4. A ((spiral)) made up of 100 straight line segments
+4. ((Спираль)) из 100 отрезков
 
-5. A yellow ((star))
+5. Жёлтую ((звезду))
 
 image::img/exercise_shapes.png[alt="The shapes to draw",width="8cm"]
 
-When drawing the last two, you may want to refer to the
-explanation of `Math.cos` and `Math.sin` in
-link:13_dom.html#sin_cos[Chapter 13], which describes how to get
-coordinates on a circle using these functions.
+Рисуя две последних, консультируйтесь с описаниями функций `Math.cos` и `Math.sin` из link:13_dom.html#sin_cos[главы 13], которая описывает получение координат на круге с их использованием.
 
-(((readability)))(((hard-coding)))I recommend creating a function for
-each shape. Pass the position, and optionally other properties,
-such as the size or the number of points, as parameters. The
-alternative, which is to hard-code numbers all over your code, tends
-to make the code needlessly hard to read and modify.
+(((readability)))(((hard-coding)))Рекомендую для каждой фигуры сделать функцию. Передавайте позицию и другие свойства, вроде размера или количества точек, как параметры. Вариант со вписыванием нужных чисел прямо в код обычно труднее читать и изменять.
 
 ifdef::interactive_target[]
 
@@ -1275,7 +860,7 @@ ifdef::interactive_target[]
 <script>
   var cx = document.querySelector("canvas").getContext("2d");
 
-  // Your code here.
+  // Ваш код.
 </script>
 ----
 
@@ -1318,19 +903,12 @@ the center as the control point.
 !!hint!!
 
 [[exercise_pie_chart]]
-=== The pie chart ===
+=== Круговая диаграмма ===
 
 (((label)))(((text)))(((pie chart
-example)))link:16_canvas.html#pie_chart[Earlier] in the chapter, we
-saw an example program that drew a pie chart. Modify this program so
-that the name of each category is shown next to the slice that
-represents it. Try to find a pleasing-looking way to automatically
-position this text, which would work for other data sets as well. You
-may assume that categories are no smaller than 5 percent (that is, there won't be
-a bunch of tiny ones next to each other).
+example)))link:16_canvas.html#pie_chart[Ранее] мы видели пример программы для рисования круговой диаграммы. Поменяйте её, чтобы имя каждой категории было показано рядом с куском, который её представляет. Попробуйте отыскать симпатичный вариант автоматического позиционирования текста, который бы работал и на других наборах данных. Можно предположить, что нет категории меньше 5% (чтобы текст не громоздился друг на друга).
 
-You might again need `Math.sin` and `Math.cos`, as described in the
-previous exercise.
+Вам снова могут понадобиться `Math.sin` и `Math.cos`.
 
 ifdef::interactive_target[]
 
@@ -1347,7 +925,7 @@ ifdef::interactive_target[]
 
   var currentAngle = -0.5 * Math.PI;
   var centerX = 300, centerY = 150;
-  // Add code to draw the slice labels in this loop.
+  // Добавьте код для вывода меток.
   results.forEach(function(result) {
     var sliceAngle = (result.count / total) * 2 * Math.PI;
     cx.beginPath();
@@ -1401,14 +979,9 @@ which side of the circle we are on.
 
 !!hint!!
 
-=== A bouncing ball ===
+=== Прыгающий мячик ===
 
-(((animation)))(((requestAnimationFrame function)))(((bouncing)))Use
-the `requestAnimationFrame` technique that we saw in
-link:13_dom.html#animationFrame[Chapter 13] and
-link:15_game.html#runAnimation[Chapter 15] to draw a ((box)) with a
-bouncing ((ball)) in it. The ball moves at a constant
-((speed)) and bounces off the box's sides when it hits them.
+(((animation)))(((requestAnimationFrame function)))(((bouncing)))Используйте технику `requestAnimationFrame` из link:13_dom.html#animationFrame[главы 13] и link:15_game.html#runAnimation[главы 15] для рисования ((прямоугольника)) с прыгающим внутри ((мяч))ом. Мяч двигается с постоянной ((скорость))ю и отскакивает от сторон прямоугольника при соударении.
 
 ifdef::interactive_target[]
 
@@ -1430,7 +1003,7 @@ ifdef::interactive_target[]
   requestAnimationFrame(frame);
 
   function updateAnimation(step) {
-    // Your code here.
+    // Ваш код.
   }
 </script>
 ----
@@ -1460,25 +1033,13 @@ using the new position.
 
 !!hint!!
 
-=== Precomputed mirroring ===
+=== Предварительно рассчитанное отзеркаливание ===
 
-(((optimization)))(((bitmap graphics)))(((mirror)))One unfortunate
-thing about ((transformation))s is that they slow down drawing of
-bitmaps. For vector graphics, the effect is less serious since 
-only a few points (for example, the center of a circle) need to be
-transformed, after which drawing can happen as normal. For a bitmap
-image, the position of each ((pixel)) has to be transformed, and
-though it is possible that ((browser))s will get more clever about
-this in the ((future)), this currently causes a measurable increase in
-the time it takes to draw a bitmap.
+(((optimization)))(((bitmap graphics)))(((mirror)))((Преобразования)), к сожалению, замедляют рисование растровых изображений. Для векторной графики эффект не так заметен, потому что преобразованиям подвергаются всего лишь несколько точек, после чего рисование продолжается как обычно. Для растра позиция каждого ((пикселя)) должна быть преобразована, и хотя возможно, что ((браузер))ы в ((будущем)) будут делать это по-умному, это приводит к ненужному увеличению времени на отрисовку растра.
 
-In a game like ours, where we are drawing only a single transformed
-sprite, this is a nonissue. But imagine that we need to draw hundreds
-of characters or thousands of rotating particles from an explosion.
+В нашей игре, где есть всего один преобразуемый спрайт, это не проблема. Но представьте, что вам надо рисовать сотни персонажей или тысячи вращающихся частиц от взрыва.
 
-Think of a way to allow us to draw an inverted character without
-loading additional image files and without having to make transformed
-`drawImage` calls every frame.
+Подумайте, как можно было бы рисовать инвертированного персонажа без подгрузок дополнительных файлов и без постоянных преобразований вызовов `drawImage`.
 
 !!hint!!
 
