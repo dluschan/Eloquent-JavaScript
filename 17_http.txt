@@ -6,38 +6,25 @@
 = HTTP =
 
 [chapterquote="true"]
-[quote,Tim Berners-Lee,The World Wide Web: A very short personal history]
+[quote,Тим Бернес-Ли,Всемирная паутина: Очень короткая личная история]
 ____
-The dream behind the Web is of a common information space in which we
-communicate by sharing information. Its universality is essential: the
-fact that a hypertext link can point to anything, be it personal,
-local or global, be it draft or highly polished.
+Мечта, ради которой создавалась Сеть – это общее информационное пространство, в котором мы общаемся, делясь информацией. Его универсальность является его неотъемлемой частью: ссылка в гипертексте может вести куда угодно, будь то персональная, локальная или глобальная информация, черновик или выверенный текст.
 ____
 
-(((Berners-Lee+++,+++ Tim)))(((World Wide Web)))(((HTTP)))The
-_Hypertext Transfer Protocol_, already mentioned in
-link:12_browser.html#web[Chapter 12], is the mechanism through which
-data is requested and provided on the ((World Wide Web)). This chapter
-describes the ((protocol)) in more detail and explains the way ((browser))
-JavaScript has access to it.
+(((Berners-Lee+++,+++ Tim)))(((World Wide Web)))(((HTTP)))_Протокол передачи гипертекста_ (или _Hypertext Transfer Protocol_), уже упомянутый в link:12_browser.html#web[главе 12], представляет собой механизм, посредством которого данные запрашиваются и предоставляются во ((всемирной паутине)) (или ((World Wide Web))). В этой главе более подробно описывается ((протокол)) и объясняется, каким образом JavaScript в ((браузер))е имеет к нему доступ.
 
-== The protocol ==
+== Протокол ==
 
-(((IP address)))If you type _eloquentjavascript.net/17_http.html_ into
-your browser's ((address bar)), the ((browser)) first looks up the
-((address)) of the server associated with _eloquentjavascript.net_
-and tries to open a ((TCP)) ((connection)) to it on ((port)) 80, the
-default port for ((HTTP)) traffic. If the ((server)) exists and
-accepts the connection, the browser sends something like this:
+(((IP address)))Если в ((адресной строке)) браузера набрать _eloquentjavascript.net/17_http.html_, ((браузер)) сначала распознает ((адрес)) сервера, связанный с именем _eloquentjavascript.net_ и попробует открыть ((TCP)) ((соединение)) по 80 ((порт))у – порт для ((HTTP)) по умолчанию. Если ((сервер)) существует и принимает соединение, браузер отправляет что-то вроде:
 
 [source,http]
 ----
 GET /17_http.html HTTP/1.1
 Host: eloquentjavascript.net
-User-Agent: Your browser's name
+User-Agent: Название браузера
 ----
 
-Then the server responds, through that same connection.
+Сервер отвечает по тому же соединению.
 
 [source,http]
 ----
@@ -47,64 +34,35 @@ Content-Type: text/html
 Last-Modified: Wed, 09 Apr 2014 10:48:09 GMT
 
 <!doctype html>
-... the rest of the document
+... остаток документа
 ----
 
-The browser then takes the part of the ((response)) after the blank
-line and displays it as an ((HTML)) document.
+Браузер берёт ту часть ((ответ))а, что идёт после пустой строкой и показывает её в виде ((HTML))-документа.
 
-(((HTTP)))The information sent by the client is called the
-_((request))_. It starts with this line:
+(((HTTP)))Информация, отправленная клиентом, называется _((запрос))ом_. Он начинается со строки:
 
 [source,http]
 ----
 GET /17_http.html HTTP/1.1
 ----
 
-(((DELETE method)))(((PUT method)))(((GET method)))The first word is
-the _((method))_ of the ((request)). `GET` means that we want to _get_
-the specified resource. Other common methods are `DELETE` to delete a
-resource, `PUT` to replace it, and `POST` to send information to it.
-Note that the ((server)) is not obliged to carry out every request it
-gets. If you walk up to a random website and tell it to `DELETE` its
-main page, it'll probably refuse.
+(((DELETE method)))(((PUT method)))(((GET method)))Первое слово – _((метод))_ ((запрос))а. `GET` означает, что нам нужно _получить_ определённый ресурс. Другие распространённые методы – `DELETE` для удаления, `PUT` для замещения и `POST` для отправки информации. Заметьте, что ((сервер)) не обязан выполнять каждый полученный запрос. Если вы выберете случайный сайт и скажете ему `DELETE` главную страницу – он, скорее всего, откажется.
 
-(((path,URL)))(((Twitter)))The part after the ((method)) name is the path of the
-((resource)) the request applies to. In the simplest case, a resource
-is simply a ((file)) on the ((server)), but the protocol doesn't
-require it to be. A resource may be anything that can be transferred _as if_
-it is a file. Many servers generate the responses they produce on the
-fly. For example, if you open
-http://twitter.com/marijnjh[_twitter.com/marijnjh_], the server looks
-in its database for a user named _marijnjh_, and if it finds one, it
-will generate a profile page for that user.
+(((path,URL)))(((Twitter)))Часть после названия ((метод))а – путь к ((ресурс))у, к которому отправлен запрос. В простейшем случае, ресурс – просто ((файл)) на ((сервер))е, но протокол не ограничивается этой возможностью. Ресурс может быть чем угодно, что можно передать _в качестве_ файла. Многие серверы создают ответы на лету. К примеру, если вы откроете http://twitter.com/marijnjh[_twitter.com/marijnjh_], сервер посмотрит в базе данных пользователя _marijnjh_, и если найдёт – создаст страницу профиля этого пользователя.
 
-After the resource path, the first line of the request mentions
-`HTTP/1.1` to indicate the ((version)) of the ((HTTP)) ((protocol))
-it is using.
+После пути к ресурсу первая строка запроса упоминает `HTTP/1.1`, чтобы сообщить о ((версии)) ((HTTP)) – ((протокол))а, которую она использует.
 
-(((status code)))The server's ((response)) will start with a version
-as well, followed by the status of the response, first as a
-three-digit status code and then as a human-readable string.
+(((status code)))((Ответ)) сервера также начинается с версии протокола, за которой идёт статус ответа – сначала код из трёх цифр, затем строчка.
 
 [source,http]
 ----
 HTTP/1.1 200 OK
 ----
 
-(((200 (HTTP status code))))(((error response)))(((404 (HTTP status
-code))))Status codes starting with a 2 indicate that the request succeeded.
-Codes starting with 4 mean there was something wrong with the
-((request)). 404 is probably the most famous HTTP status code—it means
-that the resource that was requested could not be found. Codes that
-start with 5 mean an error happened on the ((server)) and the request
-is not to blame.
+(((200 (HTTP status code))))(((error response)))(((404 (HTTP status code))))Коды статуса, начинающиеся с 2, обозначают успешные запросы. Коды, начинающиеся с 4, означают, что что-то пошло не так. Код 404 – самый знаменитый статус HTTP, обозначающий, что запрошенный ресурс не найден. Коды, начинающиеся с 5, обозначают, что на ((сервер))е произошла ошибка, но не по вине запроса.
 
 [[headers]]
-(((HTTP)))The first line of a request or response may be followed by
-any number of _((header))s_. These are lines in the form “name: value”
-that specify extra information about the request or response. These
-headers were part of the example ((response)):
+(((HTTP)))За первой строкой запроса или ответа может идти любое число строк _((заголовка))_. Это строки в виде “имя: значение”, которые обозначают дополнительную информацию о запросе или ответе. Эти заголовки были частью ((ответ))а в примере:
 
 ----
 Content-Length: 65585
@@ -112,87 +70,42 @@ Content-Type: text/html
 Last-Modified: Wed, 09 Apr 2014 10:48:09 GMT
 ----
 
-(((Content-Length header)))(((Content-Type header)))(((Last-Modified
-header)))This tells us the size and type of the response document. In
-this case, it is an HTML document of 65,585 bytes. It also tells us when
-that document was last modified.
+(((Content-Length header)))(((Content-Type header)))(((Last-Modified header)))Тут определяется размер и тип документа, полученного в ответ. В данном случае это HTML-документ размером 65585 байт. Также тут указано, когда документ был изменён последний раз.
 
-(((Host header)))(((domain)))For the most part, a client or server 
-decides which ((header))s to include in a ((request)) or ((response)), 
-though a few headers are required. For example, the `Host` header,
-which specifies the hostname, should be included in a request
-because a ((server)) might be serving multiple hostnames on a single
-((IP address)), and without that header, the server won't know which host the
-client is trying to talk to.
+(((Host header)))(((domain)))По большей части клиент или сервер определяют, какие ((заголовки)) необходимо включать в ((запрос)) или ((ответ)), хотя некоторые заголовки обязательны. К примеру, `Host`, обозначающий имя хоста, должен быть включён в запрос, потому что один ((сервер)) может обслуживать много имён хостов на одном ((IP-адресе)), и без этого заголовка сервер не узнает, с каким хостом клиент пытается общаться.
 
-(((GET method)))(((DELETE method)))(((PUT method)))(((POST
-method)))(((body (HTTP))))After the headers, both requests and
-responses may include a blank line followed by a _body_, which
-contains the data being sent. `GET` and `DELETE` requests don't send
-along any data, but `PUT` and `POST` requests do.
-Similarly, some response types, such as error responses, do not
-require a body.
+(((GET method)))(((DELETE method)))(((PUT method)))(((POST method)))(((body (HTTP))))После заголовков, как запрос, так и ответ могут указать пустую строку, за которой следует _тело_, содержащее передаваемые данные. Запросы `GET` и `DELETE` не пересылают дополнительных данных, а `PUT` и `POST` пересылают. Некоторые ответы, например, сообщения об ошибке, не требуют наличия тела.
 
-== Browsers and HTTP ==
+== Браузер и HTTP ==
 
-(((HTTP)))As we saw in the example, a ((browser)) will make a request
-when we enter a ((URL)) in its ((address bar)). When the resulting
-HTML page references other files, such as ((image))s and JavaScript
-((file))s, those are also fetched.
+(((HTTP)))Как мы видели в примере, ((браузер)) отправляет запрос, когда мы вводим ((URL)) в ((адресную строку)). Когда в полученном HTML документе содержатся упоминания других файлов, такие, как ((картинки)) или ((файл))ы JavaScript, они тоже запрашиваются с сервера.
 
-(((parallelism)))A moderately complicated ((website)) can easily
-include anywhere from 10 to 200 ((resource))s. To be able to
-fetch those quickly, browsers will make several requests
-simultaneously, rather than waiting for the responses one at a time.
-(((GET method)))Such documents are always fetched using `GET`
-((request))s.
+(((parallelism)))((Веб-сайт)) средней руки легко может содержать от 10 до 200 ((ресурс))ов. Чтобы иметь возможность запросить их побыстрее, браузеры делают несколько запросов одновременно, а не ждут окончания запросов одного за другим.
+
+(((GET method)))Такие документы всегда запрашиваются через ((запрос))ы `GET`.
 
 [[http_forms]]
-HTML pages may include _((form))s_, which allow
-the user to fill out information and send it to the server. This is an
-example of a form:
+На страницах HTML могут быть _((форм))ы_, которые позволяют пользователям вписывать информацию и отправлять её на сервер. Вот пример формы:
 
 [source,text/html]
 ----
 <form method="GET" action="example/message.html">
-  <p>Name: <input type="text" name="name"></p>
-  <p>Message:<br><textarea name="message"></textarea></p>
-  <p><button type="submit">Send</button></p>
+  <p>Имя: <input type="text" name="name"></p>
+  <p>Сообщение:<br><textarea name="message"></textarea></p>
+  <p><button type="submit">Отправить</button></p>
 </form>
 ----
 
-(((form)))(((method attribute)))(((GET method)))This code describes a form with two
-((field))s: a small one asking for a name and a larger one to write a
-message in. When you click the Send ((button)), the information in
-those fields will be encoded into a _((query string))_. When the
-`<form>` element's `method` attribute is `GET` (or is omitted), that
-query string is tacked onto the `action` URL, and the browser makes a
-`GET` request to that URL.
+(((form)))(((method attribute)))(((GET method)))Код описывает форму с двумя ((поля))ми: маленькое запрашивает имя, а большое – сообщение. При нажатии ((кнопки)) «Отправить» информация из этих полей будет закодирована в _((строку запроса))_ (или _((query string))_). Когда атрибут `method` элемента `<form>` равен `GET`, или когда он вообще не указан, строка запроса помещается в URL из поля `action`, и браузер делает запрос `GET` с этим URL.
 
 [source,text/html]
 ----
 GET /example/message.html?name=Jean&message=Yes%3F HTTP/1.1
 ----
 
-(((ampersand character)))The start of a ((query string)) is indicated
-by a ((question mark)). After that follow pairs of names and values,
-corresponding to the `name` attribute on the form field elements and
-the content of those elements, respectively. An ampersand character (`&`) is used to separate
-the pairs.
+(((ampersand character)))Начало ((строки запроса)) обозначено ((знаком вопроса)). После этого идут пары имён и значений, соответствующие атрибуту `name` полей формы и содержимому этих полей. Амперсанд (`&`) используется для их разделения.
 
-(((escaping,in URLs)))(((hexadecimal number)))(((percent
-sign)))(((URL encoding)))(((encodeURIComponent
-function)))(((decodeURIComponent function)))The actual message encoded
-in the previous URL is “Yes?”, even though the question mark is replaced
-by a strange code. Some characters in query strings must be
-escaped. The question mark, represented as `%3F`, is one of those.
-There seems to be an unwritten rule that every format needs its
-own way of escaping characters. This one, called _URL
-encoding_, uses a percent sign followed by two hexadecimal digits
-that encode the character code. In this case, 3F, which is 63 in
-decimal notation, is the code of a question mark character. JavaScript
-provides the `encodeURIComponent` and `decodeURIComponent` functions
-to encode and decode this format.
+(((escaping,in URLs)))(((hexadecimal number)))(((percent sign)))(((URL encoding)))(((encodeURIComponent function)))(((decodeURIComponent function)))Сообщение, отправляемое в примере, содержит строку “Yes?”, хотя знак вопроса и заменён каким-то странным кодом. Некоторые символы в строке запроса нужно экранировать (escape). Знак вопроса в том числе, и он представляется кодом `%3F`. Есть какое-то неписаное правило, по которому у каждого формата должен быть способ экранировать символы. Это правило под названием _кодирование URL_ использует процент, за которым идут две шестнадцатеричные цифры, которые представляют код символа. В этом случае, число 3F, которое означает 63 в десятичной системе счисления, - это код знака вопроса. У JavaScript есть функции `encodeURIComponent` и `decodeURIComponent` для кодирования и раскодирования этого формата.
 
 [source,javascript]
 ----
@@ -202,10 +115,7 @@ console.log(decodeURIComponent("Hello%20%26%20goodbye"));
 // → Hello & goodbye
 ----
 
-(((body (HTTP))))(((POST method)))If we change the `method` attribute
-of the HTML form in the example we saw earlier to `POST`, the ((HTTP)) request made to submit the
-((form)) will use the `POST` method and put the ((query string)) in
-body of the request, rather than adding it to the URL.
+(((body (HTTP))))(((POST method)))Если мы поменяем атрибут `method` в форме в предыдущем примере на `POST`, запрос ((HTTP)) с отправкой ((формы)) пройдёт при помощи метода `POST`, который отправит ((строку запроса)) в теле запроса, вместо добавления её к URL.
 
 [source,http]
 ----
@@ -216,59 +126,24 @@ Content-type: application/x-www-form-urlencoded
 name=Jean&message=Yes%3F
 ----
 
-By convention, the `GET` method is used for requests that do not have
-side effects, such as doing a search. Requests that change something on
-the server, such as creating a new account or posting a message, should
-be expressed with other methods, such as `POST`. Client-side software,
-such as a browser, knows that it shouldn't blindly make `POST`
-requests but will often implicitly make `GET` requests—for example, to
-prefetch a resource it believes the user will soon need.
+По соглашению метод `GET` используется для запросов, не имеющих побочных эффектов, таких, как поиск. Запросы, которые что-то меняют на сервере – создают новый аккаунт или размещают сообщение, должны отправляться методом `POST`. Клиентские программы типа браузера знают, что просто так делать запросы формата `POST` не нужно, и иногда незаметно для пользователя делают запросы `GET` – к примеру, чтобы загрузить заранее контент, который может вскоре понадобиться пользователю.
 
-The link:18_forms.html#forms[next chapter] will return to forms
-and talk about how we can script them with JavaScript.
+В link:18_forms.html#forms[следующей главе] мы вернёмся к формам и поговорим про то, как мы можем делать их при помощи JavaScript.
 
 [[xmlhttprequest]]
 == XMLHttpRequest ==
 
-(((capitalization)))(((XMLHttpRequest)))The ((interface)) through
-which browser JavaScript can make HTTP requests is called
-`XMLHttpRequest` (note the inconsistent capitalization). It was
-designed by ((Microsoft)), for its ((Internet Explorer))
-((browser)), in the late 1990s. During this time, the ((XML)) file format 
-was _very_ popular in the world of ((business software))—a world where 
-Microsoft has always been at home. In fact, it was so popular that the
-acronym XML was tacked onto the front of the name of an interface for
-((HTTP)), which is in no way tied to XML.
+(((capitalization)))(((XMLHttpRequest)))((Интерфейс)), через который JavaScript в браузере может делать HTTP-запросы, называется `XMLHttpRequest` (заметьте, как прыгает размер букв). Он был разработан в ((Microsoft)) для ((браузер))а ((Internet Explorer)) в конце 1990-х. В это время формат ((XML)) был _очень_ популярным в мире ((бизнес-программ)) – а в этом мире Microsoft всегда чувствовал себя, как дома. Он был настолько популярным, что аббревиатура XML была пришпилена перед названием интерфейса для работы с ((HTTP)), хотя последний с XML вообще не связан.
 
-(((modularity)))(((interface,design)))The name isn't completely
-nonsensical, though. The interface allows you to parse response documents as
-XML if you want. Conflating two distinct concepts (making a request
-and ((parsing)) the response) into a single thing is terrible design,
-of course, but so it goes.
+(((modularity)))(((interface,design)))И всё же имя не полностью бессмысленное. Интерфейс позволяет разбирать вам ответы, как если бы это были документы XML. Смешивать две разные вещи (запрос и ((разбор)) ответа) в одну – это, конечно, отвратительный дизайн, но что поделаешь.
 
-When the `XMLHttpRequest` interface was added to Internet Explorer, it
-allowed people to do things with JavaScript that had been very hard
-before. For example, websites started showing lists of suggestions
-when the user was typing something into a text field. The script would
-send the text to the server over ((HTTP)) as the user typed. The ((server)),
-which had some ((database)) of possible inputs, would
-match the database entries against the partial input and send back possible
-((completion))s to show the user. This was
-considered spectacular—people were used to waiting for a full page reload
-for every interaction with a website.
+Когда интерфейс `XMLHttpRequest` был добавлен в Internet Explorer, стало можно делать вещи, которые раньше было делать очень сложно. К примеру, сайты стали показывать списки из подсказок, пока пользователь вводит что-либо в текстовое поле. Скрипт отправляет текст на сервер через ((HTTP)) одновременно с набором текста пользователем. ((Сервер)), у которого есть ((база данных)) для возможных вариантов ввода, ищет среди записей ((подходящие)) и возвращает их назад для показа. Это выглядело очень круто – люди до этого привыкли ждать перезагрузки всей страницы после каждого взаимодействия с сайтом.
 
-(((compatibility)))(((Firefox)))(((XMLHttpRequest)))The other
-significant browser at that time, ((Mozilla)) (later Firefox), did not
-want to be left behind. To allow people to do similarly neat things in
-_its_ browser, Mozilla copied the interface, including the bogus name.
-The next generation of ((browser))s followed this example, and today
-`XMLHttpRequest` is a de facto standard ((interface)).
+(((compatibility)))(((Firefox)))(((XMLHttpRequest)))Другой важный браузер того времени ((Mozilla)) (позже Firefox), не хотел отставать. Чтобы разрешить делать сходные вещи, Mozilla скопировал интерфейс вместе с названием. Следующее поколение ((браузеров)) последовало этому примеру, и сегодня `XMLHttpRequest` является стандартом de facto.
 
-== Sending a request ==
+== Отправка запроса ==
 
-(((open method)))(((send method)))(((XMLHttpRequest)))To make a simple
-((request)), we create a request object with the `XMLHttpRequest`
-constructor and call its `open` and `send` methods.
+(((open method)))(((send method)))(((XMLHttpRequest)))Чтобы отправить простой ((запрос)), мы создаём объект запроса с конструктором `XMLHttpRequest` и вызываем методы `open` и `send`.
 
 // test: trim
 
@@ -281,30 +156,11 @@ console.log(req.responseText);
 // → This is the content of data.txt
 ----
 
-(((path,URL)))(((open method)))(((relative URL)))(((slash character)))The `open`
-method configures the request. In this case, we choose to make a `GET`
-request for the _example/data.txt_ file. ((URL))s that don't start
-with a protocol name (such as _http:_) are relative, which means that
-they are interpreted relative to the current document. When they start
-with a slash (/), they replace the current path, which is the part after the
-server name. When they do not, the part of the current path up to
-and including its last slash character is put in front of the relative
-URL.
+(((path,URL)))(((open method)))(((relative URL)))(((slash character)))Метод `open` настраивает запрос. В нашем случае мы решили сделать `GET` запрос на файл _example/data.txt_. ((URL)), не начинающиеся с названия протокола (например, _http:_) называются относительными, то есть они интерпретируются относительно текущего документа. Когда они начинаются со слеша (/), они заменяют текущий путь – часть после названия сервера. В ином случае часть текущего пути вплоть до последнего слеша помещается перед относительным URL.
 
-(((send method)))(((GET method)))(((body (HTTP))))(((responseText
-property)))After opening the request, we can send it with the `send`
-method. The argument to send is the request body. For `GET` requests,
-we can pass `null`. If the third argument to `open` was `false`, `send`
-will return only  after the response to our request was received. We
-can read the request object's `responseText` property to get the
-response body.
+(((send method)))(((GET method)))(((body (HTTP))))(((responseText property)))После открытия запроса мы можем отправить его методом `send`. Аргументом служит тело запроса. Для запросов `GET` может использоваться `null`. Если третий аргумент для `open` был `false`, то `send` завершится только после того, как был получен ответ на наш запрос. Для получения тела ответа мы можем прочесть свойство `responseText` объекта `request`.
 
-(((status property)))(((statusText
-property)))(((header)))(((getResponseHeader method)))The other
-information included in the response can also be extracted from this
-object. The ((status code)) is accessible through the `status`
-property, and the human-readable status text is accessible through `statusText`.
-Headers can be read with `getResponseHeader`.
+(((status property)))(((statusText property)))(((header)))(((getResponseHeader method)))Из объекта `response` можно получить и другую информацию. ((Код статуса)) доступен в свойстве `status`, а текст статуса – в `statusText`. Заголовки можно прочесть из `getResponseHeader`.
 
 // test: no
 
@@ -319,45 +175,19 @@ console.log(req.getResponseHeader("content-type"));
 // → text/plain
 ----
 
-(((case sensitivity)))(((capitalization)))Header names are
-case-insensitive. They are usually written with a capital letter at
-the start of each word, such as “Content-Type”, but “content-type” and
-“cOnTeNt-TyPe” refer to the same header.
+(((case sensitivity)))(((capitalization)))Названия заголовков не чувствительны к регистру. Они обычно пишутся с заглавной буквы в начале каждого слова, например “Content-Type”, но “content-type” или “cOnTeNt-TyPe” будут описывать один и тот же заголовок.
 
-(((Host header)))(((setRequestHeader method)))The browser will
-automatically add some request ((header))s, such as “Host” and those
-needed for the server to figure out the size of the body. But you can
-add your own headers with the `setRequestHeader` method. This is 
-needed only for advanced uses and requires the cooperation of the
-((server)) you are talking to—a server is free to ignore headers it
-does not know how to handle.
+(((Host header)))(((setRequestHeader method)))Браузер сам добавит некоторые ((заголовки)), такие, как “Host” и другие, которые нужны серверу, чтобы вычислить размер тела. Но вы можете добавлять свои собственные заголовки методом `setRequestHeader`. Это нужно для особых случаев и требует содействия ((сервер))а, к которому вы обращаетесь – он волен игнорировать заголовки, которые он не умеет обрабатывать.
 
-== Asynchronous Requests ==
+== Асинхронные запросы ==
 
-(((XMLHttpRequest)))(((event handling)))(((blocking)))(((synchronous
-I/O)))(((responseText property)))(((send method)))In the examples we
-saw, the request has finished when the call to `send` returns. This is
-convenient because it means properties such as `responseText` are
-available immediately. But it also means that our program is suspended
-as long as the ((browser)) and server are communicating. When the
-((connection)) is bad, the server is slow, or the file is big, that
-might take quite a while. Worse, because no event handlers can fire
-while our program is suspended, the whole document will become
-unresponsive.
+(((XMLHttpRequest)))(((event handling)))(((blocking)))(((synchronous I/O)))(((responseText property)))(((send method)))В примере запрос был окончен, когда заканчивается вызов `send`. Это удобно потому, что свойства вроде `responseText` становятся доступными сразу. Но это значит, что программа наша будет ожидать, пока ((браузер)) и сервер общаются меж собой. При плохой связи, слабом сервере или большом файле это может занять длительное время. Это плохо ещё и потому, что никакие обработчики событий не сработают, пока программа находится в режиме ожидания – документ перестанет реагировать на действия пользователя.
 
-(((XMLHttpRequest)))(((open method)))(((asynchronous I/O)))If we pass
-`true` as the third argument to `open`, the request is _asynchronous_.
-This means that when we call `send`, the only thing that happens right
-away is that the request is scheduled to be sent. Our program can
-continue, and the browser will take care of the sending and receiving
-of data in the background.
+(((XMLHttpRequest)))(((open method)))(((asynchronous I/O)))Если третьим аргументом `open` мы передадим `true`, запрос будет _асинхронным_. Это значит, что при вызове `send` запрос ставится в очередь на отправку. Программа продолжает работать, а браузер позаботиться об отправке и получении данных в фоне.
 
-But as long as the request is running, we won't be able to access the
-response. We need a mechanism that will notify us when the data is
-available.
+Но пока запрос обрабатывается, мы не получим ответ. Нам нужен механизм оповещения о том, что данные поступили и готовы.
 
-(((event handling)))(((load event)))For this, we must listen for the
-`"load"` event on the request object.
+(((event handling)))(((load event)))Для этого нам нужно будет слушать событие `"load"` объекта запроса.
 
 [source,javascript]
 ----
@@ -369,25 +199,11 @@ req.addEventListener("load", function() {
 req.send(null);
 ----
 
-(((asynchronous programming)))(((callback function)))Just like the use
-of `requestAnimationFrame` in link:15_game.html#game[Chapter 15], this
-forces us to use an asynchronous style of programming, wrapping the
-things that have to be done after the request in a function and
-arranging for that to be called at the appropriate time. We will come
-back to this link:17_http.html#promises[later].
+(((asynchronous programming)))(((callback function)))Так же, как вызов `requestAnimationFrame` в link:15_game.html#game[главе 15], этот код вынуждает нас использовать асинхронный стиль программирования, оборачивая в функцию тот код, который должен быть выполнен после запроса, и устраивая вызов этой функции в нужное время. Мы вернёмся к этому link:17_http.html#promises[позже].
 
-== Fetching XML Data ==
+== Получение данных XML ==
 
-(((documentElement property)))(((responseXML property)))When the
-resource retrieved by an `XMLHttpRequest` object is an ((XML))
-document, the object's `responseXML` property will hold a parsed
-representation of this document. This representation works much like
-the ((DOM)) discussed in link:13_dom.html#dom[Chapter 13], except that
-it doesn't have HTML-specific functionality like the `style` property.
-The object that `responseXML` holds corresponds to the `document`
-object. Its `documentElement` property refers to the outer tag of the
-XML document. In the following document (_example/fruit.xml_), that
-would be the `<fruits>` tag:
+(((documentElement property)))(((responseXML property)))Когда ресурс, возвращённый объектом `XMLHttpRequest`, является документом ((XML)), свойство `responseXML` будет содержать разобранное представление о документе. Оно работает схожим образом с обсуждавшимся в link:13_dom.html#dom[главе 13] ((DOM)), за исключением того, что у него нет присущей HTML функциональности навроде свойства `style`. Объект, содержащийся в `responseXML`, соответствует объекту `document`. Его свойство `documentElement` ссылается на внешний тег документа XML. В следующем документе (_example/fruit.xml_) таким тегом будет `<fruits>`:
 
 [source,application/xml]
 ----
@@ -398,7 +214,7 @@ would be the `<fruits>` tag:
 </fruits>
 ----
 
-We can retrieve such a file like this:
+Мы можем получить такой файл следующим образом:
 
 // test: no
 
@@ -411,13 +227,7 @@ console.log(req.responseXML.querySelectorAll("fruit").length);
 // → 3
 ----
 
-(((data format)))XML documents can be used to exchange structured
-information with the server. Their form—tags nested inside other
-tags—lends itself well to storing most types of data, or at least
-better than flat text files. The DOM interface is rather clumsy for
-extracting information, though, and ((XML)) documents tend to be
-verbose. It is often a better idea to communicate using ((JSON)) data,
-which is easier to read and write, both for programs and for humans.
+(((data format)))Документы XML можно использовать для обмена с сервером структурированной информацией. Их форма – вложенные теги – хорошо подходит для хранения большинства данных, ну или по крайней мере лучше, чем текстовые файлы. Интерфейс DOM неуклюж в плане извлечения информации, и ((XML)) документы получаются довольно многословными. Часто лучше общаться при помощи данных в формате ((JSON)), которые проще читать и писать – как программам, так и людям.
 
 [source,javascript]
 ----
@@ -429,42 +239,21 @@ console.log(JSON.parse(req.responseText));
 ----
 
 [[http_sandbox]]
-== HTTP sandboxing ==
+== Песочница для HTTP ==
 
-(((sandbox)))Making ((HTTP)) requests in web page scripts once
-again raises concerns about ((security)). The person who controls the
-script might not have the same interests as the person on whose
-computer it is running. More specifically, if I visit _themafia.org_,
-I do not want its scripts to be able to make a request to
-_mybank.com_, using identifying information from my ((browser)), with
-instructions to transfer all my money to some random ((mafia))
-account.
+(((sandbox)))((HTTP))-запросы из скриптов веб-страницы вызывают вопросы касаемо ((безопасности)). Человек, контролирующий скрипт, может иметь интересы отличные от интересов пользователя, на чьём компьютере он запущен. Конкретно, если я зашёл на сайт _themafia.org_, я не хочу, чтобы их скрипты могли делать запросы к _mybank.com_, используя информацию моего ((браузер))а в качестве идентификатора, и давая команду отправить все мои деньги на какой-нибудь счёт ((мафии)).
 
-It is possible for ((website))s to protect themselves against such
-((attack))s, but that requires effort, and many websites fail to do it.
-For this reason, browsers protect us by disallowing scripts to make
-HTTP requests to other _((domain))s_ (names such as _themafia.org_ and
-_mybank.com_).
+((Вебсайты)) могут защитить себя от подобных ((атак)), но для этого требуются определённые усилия, и многие сайты с этим не справляются. Из-за этого браузеры защищают их, запрещая скриптам делать запросы к другим _((домен))ам_ (именам вроде _themafia.org_ и _mybank.com_).
 
-(((Access-Control-Allow-Origin header)))(((cross-domain request)))This
-can be an annoying problem when building systems that want to access
-several domains for legitimate reasons. Fortunately, ((server))s can
-include a ((header)) like this in their ((response)) to explicitly
-indicate to browsers that it is okay for the request to come from
-other domains:
+(((Access-Control-Allow-Origin header)))(((cross-domain request)))Это может мешать разработке систем, которым надо иметь доступ к разным доменам по уважительной причине. К счастью, ((сервер)) может включать в ((ответ)) следующий ((заголовок)), поясняя браузерам, что запрос может прийти с других доменов:
 
 ----
 Access-Control-Allow-Origin: *
 ----
 
-== Abstracting requests ==
+== Абстрагируем запросы ==
 
-(((HTTP)))(((XMLHttpRequest)))(((backgroundReadFile function)))In
-link:10_modules.html#amd[Chapter 10], in our implementation of the AMD
-module system, we used a hypothetical function called
-`backgroundReadFile`. It took a filename and a function and called
-that function with the contents of the file when it had finished
-fetching it. Here's a simple implementation of that function:
+(((HTTP)))(((XMLHttpRequest)))(((backgroundReadFile function)))В link:10_modules.html#amd[главе 10] в нашей реализации модульной системы AMD мы использовали гипотетическую функцию `backgroundReadFile`. Она принимала имя файла и функцию, и вызывала эту функцию после прочтения содержимого файла. Вот простая реализация этой функции:
 
 // include_code
 
@@ -481,48 +270,17 @@ function backgroundReadFile(url, callback) {
 }
 ----
 
-(((XMLHttpRequest)))This simple ((abstraction)) makes it easier to use
-`XMLHttpRequest` for simple `GET` requests. If you are writing a
-program that has to make HTTP requests, it is a good idea to use a
-helper function so that you don't end up repeating the ugly
-`XMLHttpRequest` pattern all through your code.
+(((XMLHttpRequest)))Простая ((абстракция)) упрощает использование `XMLHttpRequest` для простых `GET`-запросов. Если вы пишете программу, которая делает HTTP-запросы, будет неплохо использовать вспомогательную функцию, чтобы вам не приходилось всё время повторять уродливый шаблон `XMLHttpRequest`.
 
-(((function,as value)))(((callback function)))The function argument's
-name, `callback`, is a term that is often used to describe functions
-like this. A callback function is given to other code to provide that
-code with a way to “call us back” later.
+(((function,as value)))(((callback function)))Аргумент `callback` (обратный вызов) – термин, часто использующийся для описания подобных функций. Функция обратного вызова передаётся в другой код, чтобы он мог “позвать нас обратно” позже.
 
-(((library)))It is not hard to write an HTTP utility function, tailored to what your
-application is doing. The previous one does only `GET` requests and
-doesn't give us control over the headers or the request body. You
-could write another variant for `POST` requests or a more generic one
-that supports various kinds of requests. Many JavaScript libraries
-also provide wrappers for `XMLHttpRequest`.
+(((library)))Несложно написать свою вспомогательную функцию HTTP, специально скроенную под вашу программу. Предыдущая делает только `GET`-запросы, и не даёт нам контроля над заголовками или телом запроса. Можно написать ещё один вариант для запроса `POST`, или более общий, поддерживающий разные запросы. Многие библиотеки JavaScript предлагают обёртки для `XMLHttpRequest`.
 
-(((user experience)))(((error response)))The main problem with the previous
-wrapper is its handling of ((failure)). When the request returns
-a ((status code)) that indicates an error (400 and up), it does
-nothing. This might be okay, in some circumstances, but imagine we put
-a “loading” indicator on the page to indicate that we are fetching
-information. If the request fails because the server crashed or the
-((connection)) is briefly interrupted, the page will just sit there,
-misleadingly looking like it is doing something. The user will wait
-for a while, get impatient, and consider the site uselessly flaky.
+(((user experience)))(((error response)))Основная проблема с приведённой обёрткой – обработка ((ошибок)). Когда запрос возвращает ((код статуса)), обозначающий ошибку (от 400 и выше), он ничего не делает. В некоторых случаях это нормально, но представьте, что мы поставили индикатор загрузки на странице, показывающий, что мы получаем информацию. Если запрос не удался, потому что сервер упал или ((соединение)) прервано, страница будет делать вид, что она чем-то занята. Пользователь подождёт немного, потом ему надоест и он решит, что сайт какой-то дурацкий.
 
-We should also have an option to be notified when the request fails
-so that we can take appropriate action. For example, we could remove the
-“loading” message and inform the user that something went wrong.
+Нам нужен вариант, в котором мы получаем предупреждение о неудачном запросе, чтобы мы могли принять меры. Например, мы можем убрать сообщение о загрузке и сообщить пользователю, что что-то пошло не так.
 
-(((exception handling)))(((callback function)))(((error
-handling)))(((asynchronous programming)))(((try
-keyword)))(((stack)))Error handling in asynchronous code is even 
-trickier than error handling in synchronous code. Because we often need
-to defer part of our work, putting it in a callback function, the
-scope of a `try` block becomes meaningless. In the following code, the
-exception will _not_ be caught because the call to
-`backgroundReadFile` returns immediately. Control then leaves the
-`try` block, and the function it was given won't be called until
-later.
+(((exception handling)))(((callback function)))(((error handling)))(((asynchronous programming)))(((try keyword)))(((stack)))Обработка ошибок в асинхронном коде ещё сложнее, чем в синхронном. Поскольку нам часто приходится отделять часть работы и размещать её в функции обратного вызова, область видимости блока `try` теряет смысл. В следующем коде исключение _не_ будет поймано, потому что вызов `backgroundReadFile` возвращается сразу же. Затем управление уходит из блока `try`, и функция из него не будет вызвана.
 
 // test: no
 
@@ -539,12 +297,7 @@ try {
 ----
 
 [[getURL]]
-(((HTTP)))(((getURL function)))(((exception)))To handle failing
-requests, we have to allow an additional function to be passed to our
-wrapper and call that when a request goes wrong. Alternatively, we
-can use the convention that if the request fails, an additional
-argument describing the problem is passed to the regular callback
-function. Here's an example:
+(((HTTP)))(((getURL function)))(((exception)))Чтобы обрабатывать неудачные запросы, придётся передавать дополнительную функцию в нашу обёртку, и вызывать её в случае проблем. Другой вариант – использовать соглашение, что если запрос не удался, то в функцию обратного вызова передаётся дополнительный аргумент с описанием проблемы. Пример:
 
 // include_code
 
@@ -567,13 +320,9 @@ function getURL(url, callback) {
 }
 ----
 
-(((error event)))We have added a handler for the `"error"` event,
-which will be signaled when the request fails entirely. We also call
-the ((callback function)) with an error argument when the request
-completes with a ((status code)) that indicates an error.
+(((error event)))Мы добавили обработчик события `"error"`, который сработает при проблеме с вызовом. Также мы вызываем функцию ((обратного вызова)) с аргументом `Error`, когда запрос завершается со ((статус))ом, говорящим об ошибке.
 
-Code using `getURL` must then check whether an error was given and, if
-it finds one, handle it.
+Код, использующий `getURL`, должен проверять не возвращена ли ошибка, и обрабатывать её, если она есть.
 
 [source,javascript]
 ----
@@ -585,48 +334,20 @@ getURL("data/nonsense.txt", function(content, error) {
 });
 ----
 
-(((uncaught exception)))(((exception handling)))(((try keyword)))This
-does not help when it comes to exceptions. When chaining several
-asynchronous actions together, an exception at any point of the chain
-will still (unless you wrap each handling function in its own
-`try/catch` block) land at the top level and abort your chain of
-actions.
+(((uncaught exception)))(((exception handling)))(((try keyword)))С исключениями это не помогает. Когда мы совершаем последовательно несколько асинхронных действий, исключение в любой точке цепочки в любом случае (если только вы не обернули каждый обработчик в свой блок `try/catch`) вывалится на верхнем уровне и прервёт всю цепочку.
 
 [[promises]]
-== Promises ==
+== Обещания ==
 
-(((promise)))(((asynchronous programming)))(((callback
-function)))(((readability)))(((uncaught exception)))For complicated
-projects, writing asynchronous code in plain callback style is hard to
-do correctly. It is easy to forget to check for an error or to allow
-an unexpected exception to cut the program short in a crude way.
-Additionally, arranging for correct error handling when the error has
-to flow through multiple callback functions and `catch` blocks is
-tedious.
+(((promise)))(((asynchronous programming)))(((callback function)))(((readability)))(((uncaught exception)))Тяжело писать асинхронный код для сложных проектов в виде простых обратных вызовов. Очень легко забыть проверку на ошибку или позволить неожиданному исключению резко прервать программу. Кроме того, организация правильной обработки ошибок и проход ошибки через несколько последовательных обратных вызовов очень утомительна.
 
-(((future)))(((ECMAScript 6)))There have been a lot of attempts to
-solve this with extra abstractions. One of the more successful ones is
-called _promises_. Promises wrap an asynchronous action in an object,
-which can be passed around and told to do certain things when the
-action finishes or fails. This interface is set to become part of the next
-version of the JavaScript language but can already be used as a
-library.
+(((future)))(((ECMAScript 6)))Предпринималось множество попыток решить эту проблему дополнительными абстракциями. Одна из наиболее удачных попыток называется _обещаниями_ (_promises_). Обещания оборачивают асинхронное действие в объект, который может передаваться и которому нужно сделать какие-то вещи, когда действие завершается или не удаётся. Такой интерфейс уже стал частью текущей версии JavaScript, а для старых версий его можно использовать в виде библиотеки.
 
-The ((interface)) for promises isn't entirely intuitive, but it is 
-powerful. This chapter will only roughly describe it. You can find a more thorough
-treatment at
-https://www.promisejs.org/[_www.promisejs.org_].
+((Интерфейс)) обещаний не особенно интуитивно понятный, но мощный. В этой главе мы лишь частично опишем его. Больше информации можно найти на https://www.promisejs.org/[_www.promisejs.org_].
 
-(((Promise constructor)))To create a promise object, we call the
-`Promise` constructor, giving it a function that initializes the
-asynchronous action. The constructor calls that function, passing it
-two arguments, which are themselves functions. The first should be
-called when the action finishes successfully, and the second should be called when it
-fails.
+(((Promise constructor)))Для создания объекта обещание мы вызываем конструктор `Promise`, задавая ему функцию инициализации асинхронного действия. Конструктор вызывает эту функцию и передаёт ей два аргумента, которые сами также являются функциями. Первая должна вызываться в удачном случае, другая – в неудачном.
 
-(((HTTP)))(((get function)))Once again, here is our wrapper for `GET`
-requests, this time returning a promise. We'll simply call it `get`
-this time.
+(((HTTP)))(((get function)))И вот наша обёртка для запросов `GET`, которая на этот раз возвращает обещание. Теперь мы просто назовём его `get`.
 
 // include_code
 
@@ -650,11 +371,7 @@ function get(url) {
 }
 ----
 
-Note that the ((interface)) to the function itself is now a lot
-simpler. You give it a URL, and it returns a ((promise)). That promise
-acts as a _handle_ to the request's outcome. It has a `then` method
-that you can call with two functions: one to handle success and one
-to handle failure.
+Заметьте, что ((интерфейс)) к самой функции упростился. Мы передаём ей URL, а она возвращает ((обещание)). Оно работает как _обработчик_ для выходных данных запроса. У него есть метод `then`, который вызывается с двумя функциями: одной для обработки успеха, другой – для неудачи.
 
 [source,javascript]
 ----
@@ -665,23 +382,11 @@ get("example/data.txt").then(function(text) {
 });
 ----
 
-(((chaining)))So far, this is just another way to express the same
-thing we already expressed. It is only when you need to chain
-actions together that promises make a significant difference.
+(((chaining)))Пока это всё ещё один из способов выразить то же, что мы уже сделали. Только когда у вас появляется цепь событий, становится видна заметная разница.
 
-(((then method)))Calling `then` produces a new ((promise)), whose
-result (the value passed to success handlers) depends on the return
-value of the first function we passed to `then`. This function may
-return another promise to indicate that more asynchronous work is
-being done. In this case, the promise returned by `then` itself will
-wait for the promise returned by the handler function, succeeding or
-failing with the same value when it is resolved. When the handler
-function returns a nonpromise value, the promise returned by `then`
-immediately succeeds with that value as its result.
+(((then method)))Вызов `then` производит новое ((обещание)), чей результат (значение, передающееся в обработчики успешных результатов) зависит от значения, возвращаемого первой переданной нами в `then` функцией. Эта функция может вернуть ещё одно обещание, обозначая что проводится дополнительная асинхронная работа. В этом случае обещание, возвращаемое `then` само по себе будет ждать обещания, возвращённого функцией-обработчиком, и успех или неудача произойдут с таким же значением. Когда функция-обработчик возвращает значение, не являющееся обещанием, обещание, возвращаемое `then`, становится успешным, в качестве результата используя это значение.
 
-(((then method)))(((chaining)))This means you can use `then` to
-transform the result of a promise. For example, this returns a promise
-whose result is the content of the given URL, parsed as ((JSON)):
+(((then method)))(((chaining)))Значит, вы можете использовать `then` для изменения результата обещания. К примеру, следующая функция возвращает обещание, чей результат – содержимое с данного URL, разобранное как ((JSON)):
 
 // include_code
 
@@ -692,22 +397,11 @@ function getJSON(url) {
 }
 ----
 
-(((error handling)))That last call to `then` did not specify a failure
-handler. This is allowed. The error will be passed to the promise
-returned by `then`, which is exactly what we want—`getJSON` does not
-know what to do when something goes wrong, but hopefully its caller 
-does.
+(((error handling)))Последний вызов `then` не обозначил обработчик неудач. Это допустимо. Ошибка будет передана в обещание, возвращаемое через `then`, а ведь это нам и надо – `getJSON` не знает, что делать, когда что-то идёт не так, но есть надежда, что вызывающий её код это знает.
 
-As an example that shows the use of ((promise))s, we will build a
-program that fetches a number of JSON files from the server and,
-while it is doing that, shows the word _loading_. The JSON files
-contain information about people, with links to files that represent
-other people in properties such as `father`, `mother`, or `spouse`.
+В качестве примера, показывающего использование ((обещаний)), мы напишем программу, получающую число JSON-файлов с сервера, и показывающую во время исполнения запроса слово _загрузка_. Файлы содержат информацию о людях и ссылки на другие файлы с информацией о других людях в свойствах типа отец, мать, супруг.
 
-(((error message)))(((JSON)))We want to get the name of the mother of
-the spouse of _example/bert.json_. And if something goes wrong, we
-want to remove the _loading_ text and show an error message instead.
-Here is how that might be done with ((promise))s:
+(((error message)))(((JSON)))Нам нужно получить имя матери супруга из _example/bert.json_. В случае проблем нам нужно убрать текст _загрузка_ и показать сообщение об ошибке. Вот как это можно делать при помощи ((обещаний)):
 
 [source,text/html]
 ----
@@ -718,13 +412,13 @@ Here is how that might be done with ((promise))s:
     return document.body.appendChild(elt);
   }
 
-  var loading = showMessage("Loading...");
+  var loading = showMessage("Загрузка...");
   getJSON("example/bert.json").then(function(bert) {
     return getJSON(bert.spouse);
   }).then(function(spouse) {
     return getJSON(spouse.mother);
   }).then(function(mother) {
-    showMessage("The name is " + mother.name);
+    showMessage("Имя " + mother.name);
   }).catch(function(error) {
     showMessage(String(error));
   }).then(function() {
@@ -733,111 +427,40 @@ Here is how that might be done with ((promise))s:
 </script>
 ----
 
-(((error handling)))(((catch method)))(((then
-method)))(((readability)))(((program size)))The resulting program is
-relatively compact and readable. The `catch` method is similar to
-`then`, except that it only expects a failure handler and will pass
-through the result unmodified in case of success. Much like with the
-`catch` clause for the `try` statement, control will continue as
-normal after the failure is caught. That way, the final `then`, which
-removes the loading message, is always executed, even if something
-went wrong.
+(((error handling)))(((catch method)))(((then method)))(((readability)))(((program size)))Итоговая программа относительно компактна и читаема. Метод `catch` схож с `then`, но он ожидает только обработчик неудачного результата и в случае успеха передаёт дальше неизменённый результат. Исполнение программы будет продолжено обычным путём после отлова исключения – так же, как в случае с `try/catch`. Таким образом, последний `then`, удаляющий сообщение о загрузке, выполняется в любом случае, даже в случае неудачи.
 
-(((asynchronous programming)))(((domain-specific language)))You can
-think of the promise interface as implementing its own language for
-asynchronous ((control flow)). The extra method calls and function
-expressions needed to achieve this make the code look somewhat
-awkward but not remotely as awkward as it would look if we took care
-of all the error handling ourselves.
+(((asynchronous programming)))(((domain-specific language)))Можно представлять себе, что интерфейс обещаний – это отдельный язык для асинхронной обработки ((исполнения программы)). Дополнительные вызовы методов и функций, которые нужны для его работы, придают коду несколько странный вид, но не настолько неудобный, как обработка всех ошибок вручную.
 
-== Appreciating HTTP ==
+== Цените HTTP ==
 
-(((client)))(((HTTP)))When building a system that requires
-((communication)) between a JavaScript program running in the
-((browser)) (client-side) and a program on a ((server)) (server-side),
-there are several different ways to model this communication.
+(((client)))(((HTTP)))При создании системы, в которой программа на JavaScript в ((браузер))е (клиентская) ((общается)) с ((сервер))ной программой, можно использовать несколько вариантов моделирования такого общения.
 
-(((network)))(((abstraction)))A commonly used model is that of
-_((remote procedure call))s_. In this model, communication follows the
-patterns of normal function calls, except that the function is
-actually running on another machine. Calling it involves making a
-request to the server that includes the function's name and arguments.
-The response to that request contains the returned value.
+(((network)))(((abstraction)))Общепринятый метод – _((удалённые вызовы процедур))_. В этой модели общение идёт по шаблону обычных вызовов функций, только функции эти выполняются на другом компьютере. Вызов заключается в создании запроса на сервер, в который входят имя функции и аргументы. Ответ на запрос включает возвращаемое значение.
 
-When thinking in terms of remote procedure calls, HTTP is just a
-vehicle for communication, and you will most likely write an
-abstraction layer that hides it entirely.
+При использовании удалённых вызовов процедур HTTP служит лишь транспортом для общения, и вы, скорее всего, напишете слой абстракции, который спрячет его полностью.
 
-(((media type)))(((document format)))Another approach is to build your
-communication around the concept of ((resource))s and ((HTTP))
-((method))s. Instead of a remote procedure called `addUser`, you use a
-`PUT` request to `/users/larry`. Instead of encoding that user's
-properties in function arguments, you define a document format or use
-an existing format that represents a user. The body of the `PUT` request
-to create a new resource is then simply such a document. A resource is
-fetched by making a `GET`
-request to the resource's URL (for example, `/user/larry`), which
-returns the document representing the resource.
+(((media type)))(((document format)))Другой подход – построить свою систему общения на концепции ((ресурс))ов и ((метод))ов ((HTTP)). Вместо удалённого вызова процедуры по имени `addUser` вы делаете запрос `PUT` к `/users/larry`. Вместо кодирования свойств пользователя в аргументах функции вы определяете формат документа или используете существующий формат, который будет представлять пользователя. Тело `PUT`-запроса, создающего новый ресурс, будет просто документом этого формата. Ресурс получается через запрос `GET` к его URL (`/user/larry`), который возвращает представляющий этот ресурс документ.
 
-This second approach makes it easier to use some of the features that
-HTTP provides, such as support for caching resources (keeping a copy
-on the client side). It can also help the coherence of your interface
-since resources are easier to reason about than a jumble of functions.
+Второй подход упрощает использование некоторых возможностей HTTP, например поддержки кеширования ресурсов (копия ресурса хранится на стороне клиента). Также он способствует созданию согласованного интерфейса, потому что думать в терминах ресурсов проще, чем в терминах функций.
 
-== Security and HTTPS ==
+== Безопасность и HTTPS ==
 
-(((man-in-the-middle)))(((security)))(((HTTPS)))Data traveling over
-the Internet tends to follow a long, dangerous road. To get
-to its destination, it must hop through anything from coffee-shop Wi-Fi
-((network))s to networks controlled by various companies and states.
-At any point along its route it may be inspected or even modified.
+(((man-in-the-middle)))(((security)))(((HTTPS)))Данные путешествуют по интернету по длинному и опасному пути. Чтобы добраться до пункта назначения, им надо попрыгать через всякие места, начиная от Wi-Fi ((сети)) кофейни до сетей, контролируемых разными организациями и государствами. В любой точке пути их могут прочитать или даже поменять.
 
-(((tampering)))If it is important that something remain secret,
-such as the ((password)) to your ((email)) account, or that it arrive
-at its destination unmodified, such as the account number you transfer
-money to from your bank's website, plain HTTP is not good enough.
+(((tampering)))Если нужно хранить что-либо в секрете, например ((пароли)) к ((емейл))у, или данным необходимо прийти в пункт назначения в неизменном виде — таким, например, как номер банковского счёта, на который вы переводите деньги,- простого HTTP недостаточно.
 
 indexsee:[Secure HTTP,HTTPS]
-(((cryptography)))(((encryption)))The secure ((HTTP)) protocol, whose
-((URL))s start with _https://_, wraps HTTP traffic in a way that makes
-it harder to read and tamper with. First, the client verifies that the
-server is who it claims to be by requiring that server to prove that it has a
-cryptographic ((certificate)) issued by a certificate authority that
-the ((browser)) recognizes. Next, all data going over the
-((connection)) is encrypted in a way that should prevent eavesdropping
-and tampering.
+(((cryptography)))(((encryption)))Безопасный протокол ((HTTP)), ((URL)) которого начинаются с _https://_, оборачивает HTTP-трафик так, чтобы его было сложнее прочитать и поменять. Сначала клиент подтверждает, что сервер – тот, за кого себя выдаёт, требуя с сервера представить криптографический ((сертификат)), выданный авторитетной стороной, которую признаёт ((браузер)). Потом, все данные, проходящие через ((соединение)), шифруются так, чтобы предотвратить прослушку и изменение.
 
-Thus, when it works right, ((HTTPS)) prevents both the
-someone impersonating the website you were trying to talk to and the
-someone snooping on your communication. It is not
-perfect, and there have been various incidents where HTTPS failed because of
-forged or stolen certificates and broken software. Still, plain
-HTTP is trivial to mess with, whereas breaking HTTPS requires the kind
-of effort that only states or sophisticated criminal organizations can
-hope to make.
+Таким образом, когда всё работает правильно, ((HTTPS)) предотвращает как случаи, когда кто-то притворяется другим веб-сайтом, с которым вы общаетесь, так и случаи прослушки вашего общения. Он не идеален, и уже были случаи, когда HTTPS не справлялся с работой из-за поддельных или краденых сертификатов или сломанных программ. Тем не менее, с HTTP очень легко сделать что-то плохое, а взлом HTTPS требует таких усилий, которые могут прикладывать только государственные структуры или очень серьёзные криминальные организации.
 
-== Summary ==
+== Итог ==
 
-In this chapter, we saw that HTTP is a protocol for accessing
-resources over the Internet. A _client_ sends a request, which
-contains a method (usually `GET`) and a path that identifies a
-resource. The _server_ then decides what to do with the request and
-responds with a status code and a response body. Both requests and
-responses may contain headers that provide additional information.
+В этой главе мы увидели, что HTTP – это протокол доступа к ресурсам в интернете. _Клиент_ отправляет запрос, содержащий метод (обычно `GET`), и путь, который определяет ресурс. _Сервер_ решает, что ему делать с запросом и отвечает с кодом статуса и телом ответа. Запросы и ответы могут содержать заголовки, в которых передаётся дополнительная информация.
 
-Browsers make `GET` requests to fetch the resources needed to display
-a web page. A web page may also contain forms, which allow information
-entered by the user to be sent along in the request made when the form
-is submitted. You will learn more about that in the link:18_forms.html#forms[next
-chapter].
+Браузеры делают `GET`-запросы для получения ресурсов, необходимых для показа страницы. Страница может содержать формы, которые позволяют информации, введённой пользователем, быть отправленной в запросе, который создаётся после отправки формы. Вы узнаете об этом больше в link:18_forms.html#forms[следующей главе].
 
-The interface through which browser JavaScript can make HTTP requests
-is called `XMLHttpRequest`. You can usually ignore the “XML” part of
-that name (but you still have to type it). There are two ways in which
-it can be used—synchronous, which blocks everything until the request
-finishes, and asynchronous, which requires an event handler to notice
-that the response came in. In almost all cases, asynchronous is
-preferable. Making a request looks like this:
+Интерфейс, через который JavaScript делает HTTP-запросы из браузера, называется `XMLHttpRequest`. Можно игнорировать приставку “XML” (но писать её всё равно нужно). Использовать его можно двумя способами: синхронным, который блокирует всю работу до окончания выполнения запроса, и асинхронным, который требует установки обработчика событий, отслеживающего окончание запроса. Почти во всех случаях предпочтительным является асинхронный способ. Создание запроса выглядит так:
 
 [source,javascript]
 ----
@@ -849,40 +472,20 @@ req.addEventListener("load", function() {
 req.send(null);
 ----
 
-Asynchronous programming is tricky. _Promises_ are an interface that
-makes it slightly easier by helping route error conditions and
-exceptions to the right handler and by abstracting away some of the more
-repetitive and error-prone elements in this style of programming.
+Асинхронное программирование – непростая вещь. _Обещания_ – интерфейс, который делает её проще, помогая направлять сообщения об ошибках и исключения к нужному обработчику, и абстрагируя некоторые повторяющиеся элементы, подверженные ошибкам.
 
-== Exercises ==
+== Упражнения ==
 
 [[exercise_accept]]
-=== Content negotiation ===
+=== Согласование содержания ===
 
-(((Accept header)))(((media type)))(((document format)))(((content
-negotiation (exercise))))One of the things that HTTP can do, but that
-we have not discussed in this chapter, is called _content
-negotiation_. The `Accept` header for a request can be used to tell
-the server what type of document the client would like to get. Many
-servers ignore this header, but when a server knows of various ways to
-encode a resource, it can look at this header and send the one that
-the client prefers.
+(((Accept header)))(((media type)))(((document format)))(((content negotiation (exercise))))Одна из вещей, которые HTTP умеет делать, но которую мы не обсуждали, называется _согласованием содержания_ (_content negotiation_). Заголовок `Accept` в запросе можно использовать для сообщения серверу того, какие типы документов клиент желает получить. Многие серверы его игнорируют, но когда сервер знает о разных способах кодирования ресурса, он может взглянуть на заголовок и отправить тот, который предпочитает клиент.
 
-(((media type)))(((MIME type)))The URL
-http://eloquentjavascript.net/author[_eloquentjavascript.net/author_]
-is configured to respond with either plaintext, HTML, or JSON,
-depending on what the client asks for. These formats are identified by
-the standardized _media types_ `text/plain`, `text/html`, and
-`application/json`.
+(((media type)))(((MIME type)))URL http://eloquentjavascript.net/author[_eloquentjavascript.net/author_] настроен на ответ как прямым текстом, так и HTML или JSON, в зависимости от запроса клиента. Эти форматы определяются стандартизированными _типами содержимого_ `text/plain`, `text/html` и `application/json`.
 
-(((setRequestHeader method)))(((XMLHttpRequest)))Send requests to
-fetch all three formats of this resource. Use the `setRequestHeader`
-method of your `XMLHttpRequest` object to set the header named `Accept`
-to one of the media types given earlier. Make sure you set the header
-_after_ calling `open` but before calling `send`.
+(((setRequestHeader method)))(((XMLHttpRequest)))Отправьте запрос для получения всех трёх форматов этого ресурса. Используйте метод `setRequestHeader` объекта `XMLHttpRequest` для установки заголовка `Accept` в один из нужных типов содержимого. Убедитесь, что вы устанавливаете заголовок _после_ `open`, но _перед_ `send`.
 
-Finally, try asking for the media type `application/rainbows+unicorns`
-and see what happens.
+Наконец, попробуйте запросить содержимое типа `application/rainbows+unicorns` и посмотрите, что произойдёт.
 
 ifdef::interactive_target[]
 
@@ -910,22 +513,13 @@ which is the code a server should return when it can't fulfill the
 
 !!hint!!
 
-=== Waiting for multiple promises ===
+=== Ожидание нескольких обещаний ===
 
-(((all function)))(((Promise constructor)))The `Promise` constructor
-has an `all` method that, given an array of ((promise))s, returns a
-promise that waits for all of the promises in the array to finish. It then succeeds,
-yielding an array of result values. If any of the promises in
-the array fail, the promise returned by `all` fails too (with the
-failure value from the failing promise).
+(((all function)))(((Promise constructor)))У конструктора `Promise` есть метод `all`, который, получая массив ((обещаний)), возвращает обещание, которое ждёт завершения всех указанных в массиве обещаний. Затем он выдаёт успешный результат и возвращает массив с результатами. Если какие-то из обещаний в массиве завершились неудачно, общее обещание также возвращает неудачу (со значением неудавшегося обещания из массива).
 
-Try to implement something like this yourself as a regular function
-called `all`.
+Попробуйте сделать что-либо подобное, написав функцию `all`.
 
-Note that after a promise is resolved (has succeeded or failed), it
-can't succeed or fail again, and further calls to the functions that
-resolve it are ignored. This can simplify the way you handle failure
-of your promise.
+Заметьте, что после завершения обещания (когда оно либо завершилось успешно, либо с ошибкой), оно не может заново выдать ошибку или успех, и дальнейшие вызовы функции игнорируются. Это может упростить обработку ошибок в вашем обещании.
 
 ifdef::interactive_target[]
 
@@ -935,13 +529,13 @@ ifdef::interactive_target[]
 ----
 function all(promises) {
   return new Promise(function(success, fail) {
-    // Your code here.
+    // Ваш код.
   });
 }
 
-// Test code.
+// Проверочный код.
 all([]).then(function(array) {
-  console.log("This should be []:", array);
+  console.log("Это должен быть []:", array);
 });
 function soon(val) {
   return new Promise(function(success) {
@@ -950,18 +544,18 @@ function soon(val) {
   });
 }
 all([soon(1), soon(2), soon(3)]).then(function(array) {
-  console.log("This should be [1, 2, 3]:", array);
+  console.log("Это должен быть [1, 2, 3]:", array);
 });
 function fail() {
   return new Promise(function(success, fail) {
-    fail(new Error("boom"));
+    fail(new Error("бабах"));
   });
 }
 all([soon(1), fail(), soon(3)]).then(function(array) {
-  console.log("We should not get here");
+  console.log("Сюда мы попасть не должны");
 }, function(error) {
-  if (error.message != "boom")
-    console.log("Unexpected failure:", error);
+  if (error.message != "бабах")
+    console.log("Неожиданный облом:", error);
 });
 ----
 
