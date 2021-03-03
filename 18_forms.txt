@@ -119,11 +119,6 @@ indexsee:[keyboard focus,focus]
 ----
 
 (((tab key)))(((keyboard)))(((tabindex attribute)))(((a (HTML tag))))Браузеры по традиции позволяют пользователю перемещать фокус клавишей Tab. Мы можем влиять на порядок перемещения через атрибут `tabindex`. В примере документ будет переносить фокус с текстового поля на кнопку OK, вместо того, чтобы сначала пройти через ссылку `help`:
-Browsers traditionally also allow the user to move the focus
-through the document by pressing the Tab key. We can influence the
-order in which elements receive focus with the `tabindex` attribute.
-The following example document will let focus jump from the text input to
-the OK button, rather than going through the help link first:
 
 [source,text/html]
 [focus="yes"]
