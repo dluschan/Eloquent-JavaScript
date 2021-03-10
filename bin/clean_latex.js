@@ -1,4 +1,4 @@
-  var allowedUnicode = /[→←“”’π½⅓¼…×βϕ≈é—]/;
+  var allowedUnicode = /[→←“”’π½⅓¼…×βϕ≈é—–«»]|[\u0400-\u04ff]/;
 function replaceUnicode(input) {
   var inCode = false;
   return input.replace(/\\(end|begin)\{lstlisting\}|([\x80-\uffff])/g, function(full, beginEnd, ch) {
@@ -36,11 +36,14 @@ var deEscapeRE = new RegExp("\\\\lstinline:::((?:" + specials + ")+?):::", "g");
 var specialRE = new RegExp(specials, "g");
 function cleanLstInline(str) {
   return str.replace(deEscapeRE, function(m, content) {
-    return "\\lstinline`" + content.replace(specialRE, function(f) {
+    var inline_body = content.replace(specialRE, function(f) {
       if (f.length > 1) return escaped[f];
       else if (f == "\n") return " ";
       else return f;
-    }) + "`";
+    });
+    if (/[\u0400-\u04ff]/.test(inline_body[0]))
+      inline_body = ' ' + inline_body;
+    return "\\lstinline`" + inline_body + "`";
   });
 }
 
@@ -49,7 +52,7 @@ process.stdin.on("data", function(chunk) {
   input += chunk;
 });
 process.stdin.on("end", function() {
-  input = input.replace(/(\n\n\\end{Code})|(\n{3,})|(_why,)|\\chapter\{(Introduction|Exercise Hints)\}|\\hyperref\[((?:[^\]]|\\_\{\})+)\]|\\index\{([^|}]+?)\\textbar\{\}see\{([^}]+)}}|\\textasciicircum\{\}\{([^\}]+?)\}|(���)/g,
+  input = input.replace(/(\n\n\\end{Code})|(\n{3,})|(_why,)|\\chapter\{(Introduction|Введение|Exercise Hints)\}|\\hyperref\[((?:[^\]]|\\_\{\})+)\]|\\index\{([^|}]+?)\\textbar\{\}see\{([^}]+)}}|\\textasciicircum\{\}\{([^\}]+?)\}|(���)/g,
                         function(all, codeSpace, manyBlanks, why, simplechapter, link, seeFrom, seeTo, superscript, bogusChars) {
     if (codeSpace)
       return codeSpace.slice(1);
