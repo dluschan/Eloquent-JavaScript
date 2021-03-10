@@ -5,7 +5,7 @@ CHAPTERS := 00_intro 01_values 02_program_structure 03_functions 04_data 05_high
 SVGS := $(wildcard img/*.svg)
 
 html: $(foreach CHAP,$(CHAPTERS),html/$(CHAP).html) html/js/acorn_codemirror.js \
-      code/skillsharing.zip code/solutions/20_4_a_public_space_on_the_web.zip html/js/chapter_info.js \
+      code/skillsharing.zip code/solutions/20_4_общественное_место_в_сети.zip html/js/chapter_info.js \
       $(patsubst img/%.svg,img/generated/%.png,$(SVGS))
 
 html/%.html: %.txt asciidoc_html.conf
@@ -35,9 +35,9 @@ code/skillsharing.zip: html/21_skillsharing.html
 	rm -f $@
 	cd code; zip skillsharing.zip skillsharing/*.js* skillsharing/public/*.*
 
-code/solutions/20_4_a_public_space_on_the_web.zip: $(wildcard code/solutions/20_4_a_public_space_on_the_web/*)
+code/solutions/20_4_общественное_место_в_сети.zip: $(wildcard code/solutions/20_4_общественное_место_в_сети/*)
 	rm -f $@
-	cd code/solutions; zip 20_4_a_public_space_on_the_web.zip 20_4_a_public_space_on_the_web/*
+	cd code/solutions; zip 20_4_общественное_место_в_сети.zip 20_4_общественное_место_в_сети/*
 
 test: html
 	@for F in $(CHAPTERS); do echo Testing $$F:; node bin/run_tests.js $$F.txt; done
