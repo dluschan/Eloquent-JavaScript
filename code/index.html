@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <base href="..">
-  <title>Eloquent JavaScript :: Code Sandbox</title>
+  <title>Выразительный JavaScript :: Песочница для кода</title>
 
   <script src="js/acorn_codemirror.js"></script>
   <link rel=stylesheet href="js/node_modules/codemirror/lib/codemirror.css">
@@ -18,17 +18,14 @@
 </head>
 
 <article style="max-width: 50em;">
-  <h1>Code Sandbox<div style="font-size: 70%"><a class="subtlelink" href="../index.html">Eloquent JavaScript</a></div></h2>
+  <h1>Песочница для кода<div style="font-size: 70%"><a class="subtlelink" href="../index.html">Выразительный JavaScript</a></div></h2>
 
-  <p>You can use this page to download source code and solutions to
-  exercises for the book Eloquent JavaScript, and to directly run code
-  in the context of chapters from that book, either to solve exercises
-  to simply play around.</p>
+  <p>Вы можете использовать эту страницу для загрузки исходного кода и решений упражнений из книги Выразительный JavaScript, а также для запуска кода прямо в контексте глав из этой книги, либо для решения упражнений, чтобы просто поиграть.</p>
 
   <p>
-    Chapter: <select id="chapters" class=control></select>
+    Глава: <select id="chapters" class=control></select>
     <select id="per_chapter" class=control></select>
-    <button id="run" class=control>run code</button>
+    <button id="run" class=control>запустить код</button>
   </p>
 
   <div class="editor-wrap">
@@ -37,23 +34,18 @@
   </div>
 
   <div id="runLocally">
-    To run this chapter's code locally, use these files:
+    Чтобы запустить код этой главы локально, используйте следующие файлы:
     <ul id="local-files" style="font-family: 'PT Mono', monospace; margin-top: 0"></ul>
   </div>
 
   <div id="fileInfo">
-    These files contain this chapter’s project code:
+    Эти файлы содержат код проекта этой главы:
     <ul id="files" style="font-family: 'PT Mono', monospace; margin-top: 0"></ul>
   </div>
 
-  <p id="exercise_info">If you've solved the exercise and want to compare your code with
-  mine, or you <em>really</em> tried, but can't get your code to work,
-  you can <button id="solution" style="color: #c22;" class=control>look at the
-  solution</button> (or <a id="download">download it</a>).</p>
+  <p id="exercise_info">Если вы выполнили упражнение и хотите сравнить свой код с моим, или вы <em>действительно</em> пытались, но не можете заставить свой код работать, вы можете <button id="solution" style="color: #c22;" class=control>посмотреть решение</button> (или <a id="download">загрузить его</a>).</p>
 
   <p id="box_info">
-    The base environment for this chapter (if any) is available in the
-    sandbox above, allowing you to run the chapter's examples by
-    simply pasting them into the editor.
+    Базовая среда для этой главы (если есть) доступна в песочнице выше, что позволяет запускать примеры главы, просто вставляя их в редактор.
   </p>
 </article>
