@@ -72,56 +72,56 @@ dir.forEach(function(file) {
 
   var nodeInfo = "// Node exercises can not be ran in the browser,\n// but you can look at their solution here.\n";
   if (chapter.number == 20) chapter.exercises = [
-    {name: "Content negotiation, again",
-     file: "code/solutions/20_1_content_negotiation_again.js",
+    {name: "И снова согласование содержания",
+     file: "code/solutions/20_1_и_снова_согласование_содержания.js",
      number: 1,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/20_1_content_negotiation_again.js", "utf8")
+     solution: fs.readFileSync("code/solutions/20_1_и_снова_согласование_содержания.js", "utf8")
     },
-    {name: "Fixing a leak",
-     file: "code/solutions/20_2_fixing_a_leak.js",
+    {name: "Устранение утечек",
+     file: "code/solutions/20_2_устранение_утечек.js",
      number: 2,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/20_2_fixing_a_leak.js", "utf8")
+     solution: fs.readFileSync("code/solutions/20_2_устранение_утечек.js", "utf8")
     },
-    {name: "Creating directories",
-     file: "code/solutions/20_3_creating_directories.js",
+    {name: "Создание директорий",
+     file: "code/solutions/20_3_создание_директорий.js",
      number: 3,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/20_3_creating_directories.js", "utf8")
+     solution: fs.readFileSync("code/solutions/20_3_создание_директорий.js", "utf8")
     },
-    {name: "A public space on the web",
-     file: "code/solutions/20_4_a_public_space_on_the_web.zip",
+    {name: "Общественное место в сети",
+     file: "code/solutions/20_4_общественное_место_в_сети.zip",
      number: 4,
      type: "js",
      code: nodeInfo,
-     solution: "// This solutions consists of multiple files. Download it\n// though the link below.\n"
+     solution: "// Это решение состоит из нескольких файлов. Загрузите его\n// по ссылке ниже.\n"
     }
   ];
   if (chapter.number == 21) chapter.exercises = [
-    {name: "Disk persistence",
-     file: "code/solutions/21_1_disk_persistence.js",
+    {name: "Сохранение состояния на диск",
+     file: "code/solutions/21_1_сохранение_состояния_на_диск.js",
      number: 1,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/21_1_disk_persistence.js", "utf8")
+     solution: fs.readFileSync("code/solutions/21_1_сохранение_состояния_на_диск.js", "utf8")
     },
-    {name: "Comment field resets",
-     file: "code/solutions/21_2_comment_field_resets.js",
+    {name: "Обнуление полей комментариев",
+     file: "code/solutions/21_2_обнуление_полей_комментариев.js",
      number: 2,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/21_2_comment_field_resets.js", "utf8")
+     solution: fs.readFileSync("code/solutions/21_2_обнуление_полей_комментариев.js", "utf8")
     },
-    {name: "Better templates",
-     file: "code/solutions/21_3_better_templates.js",
+    {name: "Улучшенные шаблоны",
+     file: "code/solutions/21_3_улучшенные_шаблоны.js",
      number: 3,
      type: "js",
      code: nodeInfo,
-     solution: fs.readFileSync("code/solutions/21_3_better_templates.js", "utf8")
+     solution: fs.readFileSync("code/solutions/21_3_улучшенные_шаблоны.js", "utf8")
     }
   ];
 
