@@ -85,13 +85,13 @@ addEventListener("load", function() {
     per.textContent = "";
     var chapter = getChapter(number);
     if (chapter.exercises.length) {
-      per.appendChild(opt("box", "Select an exercise"));
+      per.appendChild(opt("box", "Выберете упражнение"));
       chapter.exercises.forEach(function(exercise) {
         var num = chapter.number + "." + exercise.number;
         per.appendChild(opt(num, num + " " + exercise.name));
       });
     } else {
-      per.appendChild(opt("box", "This chapter has no exercises"));
+      per.appendChild(opt("box", "В этой главе нет упражнений"));
     }
     fileInfo.style.display = runLocally.style.display = "none";
     fileList.textContent = localFileList.textContent = "";
@@ -122,8 +122,8 @@ addEventListener("load", function() {
     var chapter = getChapter(chapters.value), visible;
     if (value == "box") {
       var code = (chapters.value < 20 || chapters.value > 21)
-       ? "Run code here in the context of Chapter " + chapter.number
-       : "Code from Node.js chapters can't be run in the browser";
+       ? "Запускайте здесь код в контексте Главы " + chapter.number
+       : "Код из глав Node.js нельзя запустить в браузере";
       var guessed = guessType(chapter.start_code);
       if (guessed == "js")
         code = "// " + code;
